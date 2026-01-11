@@ -55,9 +55,9 @@ export default function EditorDashboard() {
     fetchVideos();
   }, [router]);
 
-  const fetchCreatorId = async () => {
-    // Mock: In real app, fetch from API based on current user
-    setCreatorId("67828c89c890f5b90558a23c"); // Mock creator ID
+  const fetchCreatorId = () => {
+    const data = getUserData();
+    setCreatorId(data?.creatorId || "");
   };
 
   const fetchVideos = async () => {
@@ -77,6 +77,13 @@ export default function EditorDashboard() {
     e.preventDefault();
     if (!file || !title) return;
 
+    if (!creatorId) {
+      setError(
+        "No creator associated with your account. Please contact support."
+      );
+      return;
+    }
+
     setUploadLoading(true);
     setError("");
 
@@ -85,6 +92,7 @@ export default function EditorDashboard() {
     formData.append("title", title);
     formData.append("description", description);
     formData.append("creatorId", creatorId);
+    formData.append("editorId", userData?.id || "");
 
     try {
       await videoAPI.upload(formData);
@@ -93,8 +101,11 @@ export default function EditorDashboard() {
       setDescription("");
       setFile(null);
       fetchVideos();
-    } catch (err) {
-      setError("Upload failed. Please try again.");
+    } catch (err: any) {
+      console.error("Upload error:", err);
+      setError(
+        err.response?.data?.message || "Upload failed. Please try again."
+      );
     } finally {
       setUploadLoading(false);
     }

@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useRouter } from 'next/navigation';
-import { 
-  Play, 
-  Video, 
-  CheckCircle, 
-  XCircle, 
-  Youtube, 
-  Clock, 
-  Users, 
+import { useState, useEffect, useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useRouter } from "next/navigation";
+import {
+  Play,
+  Video,
+  CheckCircle,
+  XCircle,
+  Youtube,
+  Clock,
+  Users,
   Plus,
   Settings,
   Bell,
@@ -23,18 +23,18 @@ import {
   Check,
   ExternalLink,
   TrendingUp,
-  Upload
-} from 'lucide-react';
-import VideoCard from '@/components/VideoCard';
-import { videoAPI, inviteAPI, getGoogleAuthUrl } from '@/lib/api';
-import { isAuthenticated, getUserData, logout } from '@/lib/auth';
+  Upload,
+} from "lucide-react";
+import VideoCard from "@/components/VideoCard";
+import { videoAPI, inviteAPI, getGoogleAuthUrl } from "@/lib/api";
+import { isAuthenticated, getUserData, logout } from "@/lib/auth";
 
 interface Video {
   _id: string;
   title: string;
   description: string;
   fileUrl: string;
-  status: 'pending' | 'approved' | 'rejected' | 'uploaded';
+  status: "pending" | "approved" | "rejected" | "uploaded";
   youtubeId?: string;
 }
 
@@ -42,24 +42,28 @@ export default function CreatorDashboard() {
   const router = useRouter();
   const [videos, setVideos] = useState<Video[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'pending' | 'all'>('pending');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [activeTab, setActiveTab] = useState<"pending" | "all">("pending");
+  const [searchQuery, setSearchQuery] = useState("");
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
-  const [inviteEmail, setInviteEmail] = useState('');
-  const [inviteLink, setInviteLink] = useState('');
+  const [inviteEmail, setInviteEmail] = useState("");
+  const [inviteLink, setInviteLink] = useState("");
   const [isCopied, setIsCopied] = useState(false);
   const [isInviting, setIsInviting] = useState(false);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [avatarLetter, setAvatarLetter] = useState("U");
 
   const userData = getUserData();
 
   useEffect(() => {
     if (!isAuthenticated()) {
-      router.push('/auth/signin');
+      router.push("/auth/signin");
       return;
     }
     fetchVideos();
-  }, [router]);
+    // Set avatar letter after component mounts
+    const letter = userData?.name?.[0] || userData?.email?.[0] || "U";
+    setAvatarLetter(letter);
+  }, [router]); // Removed userData dependency to prevent re-runs
 
   const fetchVideos = async () => {
     setIsLoading(true);
@@ -67,7 +71,7 @@ export default function CreatorDashboard() {
       const response = await videoAPI.getPending();
       setVideos(response.data);
     } catch (error) {
-      console.error('Failed to fetch videos:', error);
+      console.error("Failed to fetch videos:", error);
     } finally {
       setIsLoading(false);
     }
@@ -77,11 +81,10 @@ export default function CreatorDashboard() {
     setActionLoading(id);
     try {
       await videoAPI.approve(id);
-      setVideos(videos.map(v => 
-        v._id === id ? { ...v, status: 'uploaded' as const } : v
-      ));
+      // Refetch videos to get updated status from backend
+      await fetchVideos();
     } catch (error) {
-      console.error('Failed to approve video:', error);
+      console.error("Failed to approve video:", error);
     } finally {
       setActionLoading(null);
     }
@@ -91,11 +94,13 @@ export default function CreatorDashboard() {
     setActionLoading(id);
     try {
       await videoAPI.reject(id);
-      setVideos(videos.map(v => 
-        v._id === id ? { ...v, status: 'rejected' as const } : v
-      ));
+      setVideos(
+        videos.map((v) =>
+          v._id === id ? { ...v, status: "rejected" as const } : v
+        )
+      );
     } catch (error) {
-      console.error('Failed to reject video:', error);
+      console.error("Failed to reject video:", error);
     } finally {
       setActionLoading(null);
     }
@@ -108,7 +113,7 @@ export default function CreatorDashboard() {
       const response = await inviteAPI.sendInvite(inviteEmail);
       setInviteLink(response.data.inviteLink);
     } catch (error) {
-      console.error('Failed to send invite:', error);
+      console.error("Failed to send invite:", error);
     } finally {
       setIsInviting(false);
     }
@@ -122,46 +127,52 @@ export default function CreatorDashboard() {
 
   const handleLogout = () => {
     logout();
-    router.push('/');
+    router.push("/");
   };
 
-  const filteredVideos = videos.filter(video => {
-    const matchesSearch = video.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         video.description?.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesTab = activeTab === 'all' || video.status === activeTab;
-    return matchesSearch && matchesTab;
-  });
+  const filteredVideos = useMemo(() => {
+    return videos.filter((video) => {
+      const matchesSearch =
+        video.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        video.description?.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesTab = activeTab === "all" || video.status === activeTab;
+      return matchesSearch && matchesTab;
+    });
+  }, [videos, searchQuery, activeTab]);
 
-  const stats = [
-    { 
-      label: 'Pending', 
-      value: videos.filter(v => v.status === 'pending').length, 
-      icon: Clock, 
-      color: 'text-yellow-400',
-      bgColor: 'bg-yellow-400/20'
-    },
-    { 
-      label: 'Approved', 
-      value: videos.filter(v => v.status === 'approved').length, 
-      icon: CheckCircle, 
-      color: 'text-green-400',
-      bgColor: 'bg-green-400/20'
-    },
-    { 
-      label: 'Uploaded', 
-      value: videos.filter(v => v.status === 'uploaded').length, 
-      icon: Youtube, 
-      color: 'text-red-400',
-      bgColor: 'bg-red-400/20'
-    },
-    { 
-      label: 'Rejected', 
-      value: videos.filter(v => v.status === 'rejected').length, 
-      icon: XCircle, 
-      color: 'text-gray-400',
-      bgColor: 'bg-gray-400/20'
-    },
-  ];
+  const stats = useMemo(
+    () => [
+      {
+        label: "Pending",
+        value: videos.filter((v) => v.status === "pending").length,
+        icon: Clock,
+        color: "text-yellow-400",
+        bgColor: "bg-yellow-400/20",
+      },
+      {
+        label: "Approved",
+        value: videos.filter((v) => v.status === "approved").length,
+        icon: CheckCircle,
+        color: "text-green-400",
+        bgColor: "bg-green-400/20",
+      },
+      {
+        label: "Uploaded",
+        value: videos.filter((v) => v.status === "uploaded").length,
+        icon: Youtube,
+        color: "text-red-400",
+        bgColor: "bg-red-400/20",
+      },
+      {
+        label: "Rejected",
+        value: videos.filter((v) => v.status === "rejected").length,
+        icon: XCircle,
+        color: "text-gray-400",
+        bgColor: "bg-gray-400/20",
+      },
+    ],
+    [videos]
+  );
 
   return (
     <div className="min-h-screen bg-[#0a0a0a]">
@@ -185,7 +196,7 @@ export default function CreatorDashboard() {
             <Video className="w-5 h-5" />
             <span className="font-medium">Videos</span>
           </button>
-          <button 
+          <button
             onClick={() => setIsInviteModalOpen(true)}
             className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:bg-white/5 hover:text-white transition-colors"
           >
@@ -213,11 +224,11 @@ export default function CreatorDashboard() {
         <div className="p-4 border-t border-white/5">
           <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5">
             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-red-500 to-red-700 flex items-center justify-center text-white font-medium">
-              {userData?.name?.[0] || userData?.email?.[0] || 'U'}
+              {avatarLetter}
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-white truncate">
-                {userData?.name || 'Creator'}
+                {userData?.name || "Creator"}
               </p>
               <p className="text-xs text-gray-500 truncate">
                 {userData?.email}
@@ -240,7 +251,9 @@ export default function CreatorDashboard() {
           <div className="flex items-center justify-between px-6 py-4">
             <div>
               <h1 className="text-2xl font-bold text-white">Dashboard</h1>
-              <p className="text-gray-500 text-sm">Manage your video approvals</p>
+              <p className="text-gray-500 text-sm">
+                Manage your video approvals
+              </p>
             </div>
 
             <div className="flex items-center gap-4">
@@ -268,23 +281,21 @@ export default function CreatorDashboard() {
         <div className="p-6">
           {/* Stats Grid */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-            {stats.map((stat, index) => (
-              <motion.div
-                key={stat.label}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className="glass rounded-2xl p-5"
-              >
+            {stats.map((stat) => (
+              <div key={stat.label} className="glass rounded-2xl p-5">
                 <div className="flex items-center justify-between mb-3">
-                  <div className={`w-10 h-10 rounded-xl ${stat.bgColor} flex items-center justify-center`}>
+                  <div
+                    className={`w-10 h-10 rounded-xl ${stat.bgColor} flex items-center justify-center`}
+                  >
                     <stat.icon className={`w-5 h-5 ${stat.color}`} />
                   </div>
                   <TrendingUp className="w-4 h-4 text-gray-500" />
                 </div>
-                <p className="text-3xl font-bold text-white mb-1">{stat.value}</p>
+                <p className="text-3xl font-bold text-white mb-1">
+                  {stat.value}
+                </p>
                 <p className="text-sm text-gray-500">{stat.label}</p>
-              </motion.div>
+              </div>
             ))}
           </div>
 
@@ -306,26 +317,28 @@ export default function CreatorDashboard() {
                 onClick={fetchVideos}
                 className="p-3 rounded-xl bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 transition-colors"
               >
-                <RefreshCw className={`w-5 h-5 ${isLoading ? 'animate-spin' : ''}`} />
+                <RefreshCw
+                  className={`w-5 h-5 ${isLoading ? "animate-spin" : ""}`}
+                />
               </button>
 
               <div className="flex rounded-xl bg-white/5 p-1">
                 <button
-                  onClick={() => setActiveTab('pending')}
+                  onClick={() => setActiveTab("pending")}
                   className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                    activeTab === 'pending'
-                      ? 'bg-red-500 text-white'
-                      : 'text-gray-400 hover:text-white'
+                    activeTab === "pending"
+                      ? "bg-red-500 text-white"
+                      : "text-gray-400 hover:text-white"
                   }`}
                 >
                   Pending
                 </button>
                 <button
-                  onClick={() => setActiveTab('all')}
+                  onClick={() => setActiveTab("all")}
                   className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                    activeTab === 'all'
-                      ? 'bg-red-500 text-white'
-                      : 'text-gray-400 hover:text-white'
+                    activeTab === "all"
+                      ? "bg-red-500 text-white"
+                      : "text-gray-400 hover:text-white"
                   }`}
                 >
                   All
@@ -338,7 +351,10 @@ export default function CreatorDashboard() {
           {isLoading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
               {[1, 2, 3, 4, 5, 6].map((i) => (
-                <div key={i} className="glass rounded-2xl overflow-hidden animate-pulse">
+                <div
+                  key={i}
+                  className="glass rounded-2xl overflow-hidden animate-pulse"
+                >
                   <div className="aspect-video bg-gray-800" />
                   <div className="p-5 space-y-3">
                     <div className="h-5 bg-gray-800 rounded w-3/4" />
@@ -356,7 +372,7 @@ export default function CreatorDashboard() {
                   video={video}
                   onApprove={handleApprove}
                   onReject={handleReject}
-                  showActions={video.status === 'pending'}
+                  showActions={video.status === "pending"}
                   isLoading={actionLoading === video._id}
                 />
               ))}
@@ -370,12 +386,13 @@ export default function CreatorDashboard() {
               <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-white/5 flex items-center justify-center">
                 <Video className="w-10 h-10 text-gray-600" />
               </div>
-              <h3 className="text-xl font-semibold text-white mb-2">No Videos Found</h3>
+              <h3 className="text-xl font-semibold text-white mb-2">
+                No Videos Found
+              </h3>
               <p className="text-gray-500 mb-6 max-w-md mx-auto">
-                {activeTab === 'pending' 
+                {activeTab === "pending"
                   ? "No pending videos to review. Invite editors to start uploading!"
-                  : "No videos match your search criteria."
-                }
+                  : "No videos match your search criteria."}
               </p>
               <button
                 onClick={() => setIsInviteModalOpen(true)}
@@ -410,7 +427,9 @@ export default function CreatorDashboard() {
                 <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-red-500 to-red-700 flex items-center justify-center">
                   <Users className="w-8 h-8 text-white" />
                 </div>
-                <h2 className="text-2xl font-bold text-white mb-2">Invite an Editor</h2>
+                <h2 className="text-2xl font-bold text-white mb-2">
+                  Invite an Editor
+                </h2>
                 <p className="text-gray-400">
                   Send an invite link to collaborate with your video editor
                 </p>
@@ -419,7 +438,9 @@ export default function CreatorDashboard() {
               {!inviteLink ? (
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm text-gray-400 mb-2">Editor&apos;s Email</label>
+                    <label className="block text-sm text-gray-400 mb-2">
+                      Editor&apos;s Email
+                    </label>
                     <div className="relative">
                       <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
                       <input
@@ -486,8 +507,8 @@ export default function CreatorDashboard() {
 
                   <button
                     onClick={() => {
-                      setInviteLink('');
-                      setInviteEmail('');
+                      setInviteLink("");
+                      setInviteEmail("");
                       setIsInviteModalOpen(false);
                     }}
                     className="w-full btn-secondary py-4"

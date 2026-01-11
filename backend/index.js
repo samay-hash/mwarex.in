@@ -23,6 +23,7 @@ app.use(
 );
 app.use(cookieParser());
 app.use(express.json());
+app.use("/uploads", express.static("uploads"));
 
 connectDB();
 

@@ -26,6 +26,7 @@ function JoinContent() {
   );
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [creatorId, setCreatorId] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -40,6 +41,7 @@ function JoinContent() {
       try {
         const res = await inviteAPI.verifyInvite(token);
         setEmail(res.data.email);
+        setCreatorId(res.data.creatorId);
         setStep("signup");
       } catch (err) {
         setStep("error");
@@ -53,12 +55,19 @@ function JoinContent() {
     e.preventDefault();
     setIsLoading(true);
     try {
-      await authAPI.editorSignup({ email, password });
+      const signupRes = await authAPI.userSignup({
+        email,
+        password,
+        name,
+        creatorId,
+        role: "editor",
+      });
+
       const signinRes = await authAPI.userSignin({ email, password });
 
       setToken(signinRes.data.token);
       setUserRole("editor");
-      setUserData({ email });
+      setUserData({ email, id: signupRes.data.user._id, creatorId });
 
       router.push("/dashboard/editor");
     } catch (err) {

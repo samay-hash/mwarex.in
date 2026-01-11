@@ -35,6 +35,7 @@ router.get("/verify", async (req, res) => {
   res.json({
     message: "invite valid, proceed to signup",
     email: invite.editorEmail,
+    creatorId: invite.creatorId,
   });
 });
 

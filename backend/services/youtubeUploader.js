@@ -1,8 +1,9 @@
 const { google } = require("googleapis");
-const oauth2Client = require("../tools/googleClient");
+const { getOAuth2Client } = require("../tools/googleClient");
 const fs = require("fs");
 
-async function uploadToYoutube(video) {
+async function uploadToYoutube(video, userId) {
+  const oauth2Client = await getOAuth2Client(userId);
   const youtube = google.youtube({
     version: "v3",
     auth: oauth2Client,

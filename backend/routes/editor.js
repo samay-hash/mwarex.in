@@ -11,15 +11,19 @@ router.post("/signup", async (req, res) => {
 
   const hashed = await bcrypt.hash(password, 10);
 
-  const newUser = await userModel.create({
-    email,
-    password: hashed,
-    role: "editor"
-  });
-
+  // Find the invite to get creatorId
   const invite = await EditorAssignment.findOne({
     editorEmail: email,
     status: "invited"
+  });
+
+  const creatorId = invite ? invite.creatorId : null;
+
+  const newUser = await userModel.create({
+    email,
+    password: hashed,
+    role: "editor",
+    creatorId: creatorId
   });
 
   if (invite) {
@@ -29,7 +33,11 @@ router.post("/signup", async (req, res) => {
   }
 
   res.json({
-    message: "Editor signup successful"
+    message: "Editor signup successful",
+    user: {
+      _id: newUser._id,
+      email: newUser.email
+    }
   });
 });
 

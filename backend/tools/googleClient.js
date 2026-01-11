@@ -1,4 +1,5 @@
 const { google } = require("googleapis");
+const userModel = require("../models/user");
 require("dotenv").config();
 
 const oauth2Client = new google.auth.OAuth2(
@@ -7,8 +8,21 @@ const oauth2Client = new google.auth.OAuth2(
   process.env.GOOGLE_REDIRECT
 );
 
-oauth2Client.setCredentials({
-  refresh_token: process.env.YOUTUBE_REFRESH_TOKEN
-});
+// Function to get OAuth2 client with user-specific tokens
+async function getOAuth2Client(userId) {
+  const user = await userModel.findById(userId);
+  if (user && user.youtubeTokens) {
+    oauth2Client.setCredentials({
+      access_token: user.youtubeTokens.accessToken,
+      refresh_token: user.youtubeTokens.refreshToken,
+    });
+  } else if (process.env.YOUTUBE_REFRESH_TOKEN) {
+    // Fallback to environment variable for backward compatibility
+    oauth2Client.setCredentials({
+      refresh_token: process.env.YOUTUBE_REFRESH_TOKEN,
+    });
+  }
+  return oauth2Client;
+}
 
-module.exports = oauth2Client;
+module.exports = { oauth2Client, getOAuth2Client };
