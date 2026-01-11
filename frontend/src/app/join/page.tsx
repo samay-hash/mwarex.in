@@ -24,6 +24,7 @@ function JoinContent() {
   const [step, setStep] = useState<"verifying" | "signup" | "error">(
     "verifying"
   );
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [creatorId, setCreatorId] = useState("");
@@ -116,6 +117,23 @@ function JoinContent() {
             </div>
 
             <form onSubmit={handleSignup} className="space-y-4">
+              <div>
+                <label className="text-sm text-gray-400 mb-2 block">
+                  Full Name
+                </label>
+                <div className="relative">
+                  <Users className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                  <input
+                    type="text"
+                    required
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="John Doe"
+                    className="input-field pl-12"
+                  />
+                </div>
+              </div>
+
               <div>
                 <label className="text-sm text-gray-400 mb-2 block">
                   Email Address
