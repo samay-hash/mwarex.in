@@ -10,15 +10,20 @@ const adminAuth = require("../middlewares/adminMiddleware");
 const userAuth = require("../middlewares/userMiddleware");
 const uploadToYoutube = require("../services/youtubeUploader");
 
-// Configure Multer to preserve file extensions
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/");
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    // Use path.extname to get safe extension (e.g. .mp4)
-    cb(null, uniqueSuffix + path.extname(file.originalname));
+const cloudinary = require("cloudinary").v2;
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: "mwarex_videos",
+    resource_type: "video",
   },
 });
 
@@ -47,10 +52,10 @@ router.get("/pending", userAuth, async (req, res) => {
   if (req.role === "creator") {
     filter.creatorId = req.userId;
   } else if (req.role === "editor") {
-    // For editors, show videos they uploaded or assigned to their creator
+
     const user = await userModel.findById(req.userId);
     if (!user || !user.creatorId) {
-      return res.json([]); // No videos if no creator associated
+      return res.json([]);
     }
     filter.creatorId = user.creatorId;
   }
@@ -65,7 +70,6 @@ router.post("/:id/approve", userAuth, async (req, res) => {
       return res.status(404).json({ message: "Video Not Found" });
     }
 
-    // Check if user has connected YouTube
     const user = await userModel.findById(req.userId);
     if (!user || !user.youtubeTokens || !user.youtubeTokens.refreshToken) {
       return res.status(400).json({
@@ -76,7 +80,7 @@ router.post("/:id/approve", userAuth, async (req, res) => {
     video.status = "approved";
     await video.save();
 
-    // Upload to YouTube
+
     try {
       const yt = await uploadToYoutube(video, req.userId);
       video.status = "uploaded";

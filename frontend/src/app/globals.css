@@ -1,151 +1,74 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-@plugin "tailwindcss-animate";
+@layer base {
+  :root {
+    /* Warm Paper / Off-White Background */
+    --background: #FAF9F6;
+    --foreground: #1A1A1A;
 
-@custom-variant dark (&:where(.dark, .dark *));
+    /* Glassmorphism Cards (Light) */
+    --card: #FFFFFF;
+    --card-foreground: #1A1A1A;
 
-@theme {
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-serif: var(--font-playfair), ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+    --popover: #FFFFFF;
+    --popover-foreground: #1A1A1A;
 
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+    /* Muted Copper / Warm Orange Accent */
+    --primary: #C2410C;
+    --primary-foreground: #FFFFFF;
 
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
+    --secondary: #E5E5E5;
+    --secondary-foreground: #1A1A1A;
 
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
+    --muted: #F4F4F5;
+    --muted-foreground: #737373;
 
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
+    --accent: #FDE68A;
+    --accent-foreground: #1A1A1A;
 
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
+    --destructive: #EF4444;
+    --destructive-foreground: #FFFFFF;
 
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
+    --border: #E5E5E5;
+    --input: #E5E5E5;
+    --ring: #C2410C;
 
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-
-  --color-destructive: var(--destructive);
-  --color-destructive-foreground: var(--destructive-foreground);
-
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
-
-  --radius-lg: var(--radius);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-sm: calc(var(--radius) - 4px);
-
-  --animate-accordion-down: accordion-down 0.2s ease-out;
-  --animate-accordion-up: accordion-up 0.2s ease-out;
-  --animate-float: float 6s ease-in-out infinite;
-
-  @keyframes accordion-down {
-    from {
-      height: 0
-    }
-
-    to {
-      height: var(--radix-accordion-content-height)
-    }
+    --radius: 0.75rem;
   }
 
-  @keyframes accordion-up {
-    from {
-      height: var(--radix-accordion-content-height)
-    }
+  .dark {
+    /* Deep Warm Charcoal */
+    --background: #1C1C1E;
+    --foreground: #E5E5E5;
 
-    to {
-      height: 0
-    }
+    /* Glassmorphism Cards (Dark) */
+    --card: #2C2C2E;
+    --card-foreground: #E5E5E5;
+
+    --popover: #2C2C2E;
+    --popover-foreground: #E5E5E5;
+
+    --primary: #EA580C;
+    --primary-foreground: #FFFFFF;
+
+    --secondary: #27272A;
+    --secondary-foreground: #E5E5E5;
+
+    --muted: #27272A;
+    --muted-foreground: #A3A3A3;
+
+    --accent: #EA580C;
+    --accent-foreground: #FFFFFF;
+
+    --destructive: #7F1D1D;
+    --destructive-foreground: #E5E5E5;
+
+    --border: #3F3F46;
+    --input: #3F3F46;
+    --ring: #EA580C;
   }
-
-  @keyframes float {
-
-    0%,
-    100% {
-      transform: translateY(0);
-    }
-
-    50% {
-      transform: translateY(-10px);
-    }
-  }
-}
-
-/*
-  The default theme is light-mode, but we support dark-mode via data-theme or class.
-  Using HSL/RGB variables for Shadcn/Tailwind compatibility.
-*/
-:root {
-  /* Warm Paper / Off-White Background */
-  --background: #FAF9F6;
-  --foreground: #1A1A1A;
-
-  /* Glassmorphism Cards (Light) */
-  --card: #FFFFFF;
-  --card-foreground: #1A1A1A;
-
-  --popover: #FFFFFF;
-  --popover-foreground: #1A1A1A;
-
-  /* Muted Copper / Warm Orange Accent */
-  --primary: #C2410C;
-  --primary-foreground: #FFFFFF;
-
-  --secondary: #E5E5E5;
-  --secondary-foreground: #1A1A1A;
-
-  --muted: #F4F4F5;
-  --muted-foreground: #737373;
-
-  --accent: #FDE68A;
-  --accent-foreground: #1A1A1A;
-
-  --destructive: #EF4444;
-  --destructive-foreground: #FFFFFF;
-
-  --border: #E5E5E5;
-  --input: #E5E5E5;
-  --ring: #C2410C;
-
-  --radius: 0.75rem;
-}
-
-.dark {
-  /* Deep Warm Charcoal */
-  --background: #1C1C1E;
-  --foreground: #E5E5E5;
-
-  /* Glassmorphism Cards (Dark) */
-  --card: #2C2C2E;
-  --card-foreground: #E5E5E5;
-
-  --popover: #2C2C2E;
-  --popover-foreground: #E5E5E5;
-
-  --primary: #EA580C;
-  --primary-foreground: #FFFFFF;
-
-  --secondary: #27272A;
-  --secondary-foreground: #E5E5E5;
-
-  --muted: #27272A;
-  --muted-foreground: #A3A3A3;
-
-  --accent: #EA580C;
-  --accent-foreground: #FFFFFF;
-
-  --destructive: #7F1D1D;
-  --destructive-foreground: #E5E5E5;
-
-  --border: #3F3F46;
-  --input: #3F3F46;
-  --ring: #EA580C;
 }
 
 @layer base {
@@ -160,32 +83,33 @@
   }
 }
 
-/* Custom Utilities for Glassmorphism & Noise */
-@utility glass {
-  background: rgba(255, 255, 255, 0.4);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
+@layer utilities {
+  .glass {
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
 
-.dark .glass {
-  background: rgba(28, 28, 30, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
+  .dark .glass {
+    background: rgba(28, 28, 30, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
 
-@utility shadow-soft {
-  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.08);
-}
+  .shadow-soft {
+    box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.08);
+  }
 
-.dark .shadow-soft {
-  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.3);
-}
+  .dark .shadow-soft {
+    box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.3);
+  }
 
-@utility noise {
-  position: relative;
-  isolation: isolate;
+  .noise {
+    position: relative;
+    isolation: isolate;
+  }
 
-  &::before {
+  .noise::before {
     content: "";
     position: absolute;
     inset: 0;

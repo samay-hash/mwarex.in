@@ -1,6 +1,6 @@
 const { google } = require("googleapis");
 const { getOAuth2Client } = require("../tools/googleClient");
-const fs = require("fs");
+const axios = require("axios");
 
 async function uploadToYoutube(video, userId) {
   const oauth2Client = await getOAuth2Client(userId);
@@ -20,7 +20,11 @@ async function uploadToYoutube(video, userId) {
       },
     },
     media: {
-      body: fs.createReadStream(video.fileUrl),
+      body: (await axios({
+        method: "get",
+        url: video.fileUrl,
+        responseType: "stream",
+      })).data,
     },
   });
   return res.data;
