@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Play, Youtube, Twitter, Github, Mail } from 'lucide-react';
+import { Play, Youtube, Twitter, Github, Mail, Linkedin } from 'lucide-react';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -27,9 +27,10 @@ export default function Footer() {
   };
 
   const socialLinks = [
-    { icon: Youtube, href: 'https://www.youtube.com/@futxsamay', label: 'YouTube' },
-    { icon: Twitter, href: 'https://x.com/ChemistGamer1', label: 'Twitter' },
     { icon: Github, href: 'https://github.com/samay-hash', label: 'GitHub' },
+    { icon: Linkedin, href: 'https://www.linkedin.com/in/samaysamrat/', label: 'LinkedIn' },
+    { icon: Twitter, href: 'https://x.com/ChemistGamer1', label: 'Twitter' },
+    { icon: Youtube, href: 'https://www.youtube.com/@futxsamay', label: 'YouTube' },
     { icon: Mail, href: 'mailto:samay3076@gmail.com', label: 'Email' },
   ];
 
@@ -118,6 +119,32 @@ export default function Footer() {
                 </li>
               ))}
             </ul>
+          </div>
+        </div>
+
+        {/* Connect Section - Professional Social Links */}
+        <div className="mt-12 pt-8 border-t border-white/5">
+          <div className="flex flex-col items-center gap-6">
+            <h3 className="text-white font-semibold text-lg">Connect with me</h3>
+            <div className="flex items-center gap-4">
+              {socialLinks.slice(0, 3).map((social) => (
+                <a
+                  key={social.label}
+                  href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group relative"
+                  aria-label={social.label}
+                >
+                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center text-gray-400 hover:text-white hover:from-red-500/20 hover:to-red-700/20 transition-all duration-300 border border-white/10 hover:border-red-500/50">
+                    <social.icon className="w-6 h-6" />
+                  </div>
+                  <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 text-xs text-gray-500 group-hover:text-gray-300 transition-colors whitespace-nowrap">
+                    {social.label}
+                  </span>
+                </a>
+              ))}
+            </div>
           </div>
         </div>
 
