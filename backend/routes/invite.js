@@ -13,7 +13,8 @@ router.post("/invite", creatorAuth, async (req, res) => {
       editorEmail: email,
       inviteToken: token,
     });
-    const inviteLink = `http://localhost:3000/join?token=${token}`;
+    const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3000";
+    const inviteLink = `${frontendUrl}/join?token=${token}`;
     console.log("SEND THIS TO EDITOR:", inviteLink);
     res.json({
       message: "Invite sent successfully",
