@@ -76,7 +76,7 @@ export default function LandingPage() {
               transition={{ delay: 0.8, duration: 1 }}
               className="text-2xl md:text-3xl font-medium mb-6 text-muted-foreground"
             >
-              The middleware for professional creators.
+              Upload • Review • Approve • Publish
             </motion.div>
 
             <motion.div
@@ -115,10 +115,13 @@ export default function LandingPage() {
 
       {/* Scroll Door Section (Transition to Workflow) */}
       <ScrollDoorSection>
-        <BlurReveal text="The Invisible" className="text-4xl md:text-6xl font-serif font-bold mb-2" />
-        <BlurReveal text="Approval Layer" className="text-4xl md:text-6xl font-serif font-bold text-primary mb-6" delay={0.2} />
+        <BlurReveal text="Start" className="text-4xl md:text-6xl font-serif font-bold mb-2" />
+        <BlurReveal text=" Secure Workflow" className="text-4xl md:text-6xl font-serif font-bold text-primary mb-6" delay={0.2} />
         <p className="text-xl text-muted-foreground max-w-lg mx-auto">
-          Enter a workspace where creativity flows without security risks.
+          MWareX lets editors upload videos securely while creators
+review and approve them in one click — without downloads,
+password sharing, or risk to your YouTube channel.
+
         </p>
         <div className="mt-8">
           <div className="w-px h-24 bg-gradient-to-b from-transparent via-primary to-transparent mx-auto animate-pulse" />
@@ -207,7 +210,7 @@ export default function LandingPage() {
             <Link href="#" className="text-sm font-medium text-gray-400 hover:text-primary transition-colors">
               Security
             </Link>
-            <Link href="mailto:support@mwarex.com" className="text-sm font-medium text-gray-400 hover:text-primary transition-colors">
+            <Link href="samaysamrat64@gmail.com:support@mwarex.com" className="text-sm font-medium text-gray-400 hover:text-primary transition-colors">
               Contact
             </Link>
           </div>

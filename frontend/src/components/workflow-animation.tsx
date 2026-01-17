@@ -6,16 +6,16 @@ import { Upload, FileVideo, CheckCircle2, Youtube, DollarSign, BarChart2, Globe,
 import { cn } from "@/lib/utils";
 
 const WORKFLOW_STEPS = [
-    { title: "1. Upload Raw", description: "Editor sends raw clips to the secure project folder.", icon: Upload, color: "bg-blue-600" },
-    { title: "2. Editor Processing", description: "Drafts are uploaded. No more WeTransfer links.", icon: FileVideo, color: "bg-purple-600" },
-    { title: "3. Cloud Feedback", description: "Review on mobile. Approve with one tap.", icon: CheckCircle2, color: "bg-orange-600" },
-    { title: "4. Auto-Publish", description: "Server pushes to YouTube API directly.", icon: Youtube, color: "bg-red-600" },
-    { title: "5. Instant Payout", description: "Revenue split is calculated and sent automatically.", icon: DollarSign, color: "bg-green-600" },
-    { title: "6. Performance Audit", description: "Track growth and optimize future content strategy.", icon: BarChart2, color: "bg-indigo-600" },
-    { title: "7. Global CDN", description: "Assets replicated worldwide for instant editor access.", icon: Globe, color: "bg-cyan-600" },
-    { title: "8. Audience Retention", description: "Deep analytics on viewer drop-off points.", icon: Users, color: "bg-pink-600" },
-    { title: "9. Sponsorships", description: "Manage brand deals and deliverables in one place.", icon: Briefcase, color: "bg-teal-600" },
-    { title: "10. Archive Vault", description: "Long-term cold storage for all your project files.", icon: Archive, color: "bg-slate-600" }
+    { title: "1. Upload Without Risk", description: "Editors upload raw or edited videos to a secure workspace No passwords. No channel access. No third-party links", icon: Upload, color: "bg-blue-600" },
+    { title: "2. Process & Version Safely", description: "Multiple versions can be uploaded and tracked. Every change is stored, compared, and auditable.", icon: FileVideo, color: "bg-purple-600" },
+    { title: "3. Review Anywhere", description: "Creators review videos instantly on desktop or mobile. No downloads. No waiting for large files.", icon: CheckCircle2, color: "bg-orange-600" },
+    { title: "4. One-Tap Approval", description: "Approve or reject with a single click, Optional instant approval links via WhatsApp or email.", icon: Youtube, color: "bg-red-600" },
+    { title: "5. Instant Payout", description: "Automatically split revenue between creators and editors, after video approval and publishing — no manual tracking.", icon: DollarSign, color: "bg-green-600" },
+    { title: "6. Performance Audit", description: "Monitor video performance after publishing and use insights to improve future uploads.", icon: BarChart2, color: "bg-indigo-600" },
+    { title: "7. Global CDN", description: "Videos are streamed from global servers so editors and creators can review instantly from anywhere.", icon: Globe, color: "bg-cyan-600" },
+    { title: "8. Audience Retention", description: "Understand where viewers lose interest and optimize edits before your next upload.", icon: Users, color: "bg-pink-600" },
+    { title: "9. Sponsorships", description: "Track sponsored videos, brand deliverables, and approvals alongside your content workflow.", icon: Briefcase, color: "bg-teal-600" },
+    { title: "10. Archive Vault", description: "Securely archive raw footage, edits, and published videos for future reuse.", icon: Archive, color: "bg-slate-600" }
 ];
 
 export function WorkflowAnimation() {
@@ -41,8 +41,13 @@ export function WorkflowAnimation() {
                 viewport={{ once: true }}
                 className="text-center mb-20 relative z-20"
             >
-                <h2 className="text-3xl md:text-5xl font-serif font-medium mb-4">Connected Pipeline</h2>
-                <p className="text-muted-foreground text-lg">A live audit trail from upload to payout.</p>
+                <h2 className="text-3xl md:text-5xl font-serif font-medium mb-4">Built for YouTube creators, 
+                    <br />
+                 editors, and studios
+                 <br />
+                 
+                </h2>
+                <p className="text-muted-foreground text-lg">who care about security and spee</p>
             </motion.div>
 
             {/* The Connection Layer (SVG) - Zig Zag Path */}

@@ -10,12 +10,14 @@ const pricingPlans = [
     {
         name: "Free",
         price: "0",
-        description: "Best for beginners looking to start their journey with DCA investing strategy.",
+        description: "Best for Individual creators working with 1 editor",
         features: [
-            "Basic DCA Scheduling",
-            "Portfolio Tracking Dashboard",
-            "Standard Email Support",
-            "3 Active Plans"
+            "Secure editor uploads",
+            "Video review & approval",
+            "No channel access sharing",
+            "Limited storage",
+            "Manual publishing",
+            "Direct publish to YouTube via API"
         ],
         icon: Shield,
         buttonText: "Get Started",
@@ -23,14 +25,14 @@ const pricingPlans = [
     },
     {
         name: "Standard",
-        price: "98.00",
-        description: "Best for investors looking to grow their portfolio in stable and secure way.",
+        price: "45.00",
+        description: "Best for Creators working with multiple editors",
         features: [
-            "Up to 10 Active DCA Plans",
-            "Portfolio Tracking with Profit Analysis",
-            "Real-Time Market Data",
-            "Smart Execution Logic",
-            "Priority Email Support"
+            "One-tap approval (mobile & desktop)",
+            "Direct publish to YouTube via API",
+            "Version control for edits",
+            "Automatic revenue split calculation",
+            "Automatic revenue split calculation",
         ],
         icon: Zap,
         buttonText: "Get Started",
@@ -38,14 +40,14 @@ const pricingPlans = [
     },
     {
         name: "Business",
-        price: "124.00",
-        description: "Best for professionals looking to grow their portfolio in with all the features we offer.",
+        price: "99.00",
+        description: "Best for YouTube studios, agencies & large channels",
         features: [
-            "Unlimited Active DCA Plans",
-            "Full Historical Data and Insights",
-            "Custom Strategy Integration",
-            "Zero Fees on Crypto Trades",
-            "24/7 Dedicated Agent"
+            "Multiple creators & editors",
+            "Advanced approval workflows",
+            "Sponsorship tracking",
+            "Secure archive vault",
+            "Priority support"
         ],
         icon: Crown,
         buttonText: "Get Started",
@@ -86,7 +88,7 @@ export function PricingSection() {
                         Unlock Your Potential
                     </h2>
                     <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
-                        Choose the plan that fits your studio needs. Scale as you grow.
+                        Simple Pricing for Secure YouTube Workflows
                     </p>
 
                     {/* Billing Toggle */}
