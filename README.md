@@ -37,10 +37,10 @@ YouTube creators face a **dangerous dilemma**:
 │  Traditional Workflow (❌ INSECURE)                      │
 ├─────────────────────────────────────────────────────────┤
 │                                                         │
-│  1. Creator shares YouTube password with editor 😱       │
+│  1. Creator shares YouTube password with editor        │
 │  2. Editor downloads 10GB render (wasted hours) ⏳       │
-│  3. Creator manually re-uploads to YouTube 🐌            │
-│  4. Channel security = ZERO 🔓                           │
+│  3. Creator manually re-uploads to YouTube            │
+│  4. Channel security = ZERO                         │
 │                                                         │
 └─────────────────────────────────────────────────────────┘
 ```
