@@ -22,20 +22,23 @@ router.post("/invite", creatorAuth, async (req, res) => {
     const creator = await userModel.findById(req.userId);
     const creatorName = creator ? creator.name : "A Creator";
 
-    console.log("SEND THIS TO EDITOR (Fallback):", inviteLink);
+    console.log("Invite link generated:", inviteLink);
 
-    // Send Email
-    try {
-      await sendInviteEmail(email, inviteLink, creatorName);
-    } catch (emailErr) {
-      console.error("Email sending failed:", emailErr);
-      // We continue even if email fails, so the user can copy the link manually if needed
+    // Send response IMMEDIATELY (don't wait for email)
+    res.json({
+      message: "Invite link generated!",
+      inviteLink,
+    });
+
+    // Fire-and-forget email (runs in background after response is sent)
+    if (process.env.EMAIL_USER && process.env.EMAIL_PASS && email) {
+      sendInviteEmail(email, inviteLink, creatorName)
+        .then(() => console.log("Email sent successfully to:", email))
+        .catch((emailErr) => console.error("Email sending failed (non-blocking):", emailErr.message));
+    } else {
+      console.log("Email not configured or recipient missing. Link-only mode.");
     }
 
-    res.json({
-      message: "Invite sent successfully (check email)",
-      inviteLink, // Keep returning it for now in case details are needed in frontend
-    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "something went wrong" });
