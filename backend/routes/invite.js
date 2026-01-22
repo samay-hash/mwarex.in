@@ -15,22 +15,19 @@ router.post("/invite", creatorAuth, async (req, res) => {
       editorEmail: email,
       inviteToken: token,
     });
-    const frontendUrl = (process.env.FRONTEND_URL || "http://localhost:3000").replace(/\/$/, "");
+    const frontendUrl = (process.env.FRONTEND_URL || "https://mware-x.vercel.app").replace(/\/$/, "");
     const inviteLink = `${frontendUrl}/join?token=${token}`;
 
-    // Fetch creator name for the email
     const creator = await userModel.findById(req.userId);
     const creatorName = creator ? creator.name : "A Creator";
 
     console.log("Invite link generated:", inviteLink);
 
-    // Send response IMMEDIATELY (don't wait for email)
     res.json({
       message: "Invite link generated!",
       inviteLink,
     });
 
-    // Fire-and-forget email (runs in background after response is sent)
     if (process.env.EMAIL_USER && process.env.EMAIL_PASS && email) {
       sendInviteEmail(email, inviteLink, creatorName)
         .then(() => console.log("Email sent successfully to:", email))

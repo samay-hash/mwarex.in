@@ -20,7 +20,7 @@ const editorAssignmentSchema = new mongoose.Schema({
 
   status: {
     type: String,
-    enum: ["invited", "accepted"],
+    enum: ["invited", "accepted", "rejected"],
     default: "invited"
   },
 

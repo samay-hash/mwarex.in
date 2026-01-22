@@ -6,9 +6,9 @@ async function connectDB() {
     console.log("Connecting to MongoDB at:", mongoURI);
 
     await mongoose.connect(mongoURI, {
-      maxPoolSize: 10,              // Maintain up to 10 socket connections
-      serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 30s default
-      socketTimeoutMS: 45000,       // Close sockets after 45s of inactivity
+      maxPoolSize: 10,              
+      serverSelectionTimeoutMS: 5000,  
+      socketTimeoutMS: 45000,       
     });
     console.log("MongoDB connected");
   } catch (e) {

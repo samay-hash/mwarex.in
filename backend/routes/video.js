@@ -80,10 +80,9 @@ router.post("/:id/approve", userAuth, async (req, res) => {
     video.status = "processing";
     await video.save();
 
-    // Send immediate response to prevent timeout
+  
     res.json({ message: "Video approved. Uploading to YouTube in background..." });
 
-    // Background Upload Task (Fire & Forget)
     uploadToYoutube(video, req.userId)
       .then(async (yt) => {
         console.log("YouTube Upload Success:", yt.id);
