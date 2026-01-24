@@ -264,36 +264,6 @@ GET    /api/v1/verify?token=xxx       # Verify invite token
 ```
 
 ---
-
-## 🌐 Deployment
-
-### Backend (Render)
-1. Create new Web Service
-2. Connect GitHub repo
-3. Set **Root Directory**: `backend`
-4. **Build Command**: `npm install`
-5. **Start Command**: `node index.js`
-6. Add environment variables from `.env`
-
-### Frontend (Vercel)
-1. Import GitHub repo
-2. Set **Root Directory**: `frontend`
-3. Framework: **Next.js**
-4. Add environment variable:
-   ```
-   NEXT_PUBLIC_API_URL=https://mwarex-backend.onrender.com
-   ```
-
-### Google Cloud Console Setup
-1. **OAuth Consent Screen**:
-   - Add Privacy Policy URL, Terms URL
-   - Add authorized domains
-2. **Credentials**:
-   - Authorized redirect URIs: `https://mwarex-backend.onrender.com/oauth2callback`
-   - Authorized JavaScript origins: `https://mware-x.vercel.app`
-
----
-
 ## 🤝 Contributing
 
 We welcome contributions! Here's how:
