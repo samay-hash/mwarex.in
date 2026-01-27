@@ -44,6 +44,16 @@ router.post("/generate-titles", userAuth, async (req, res) => {
     }
 });
 
+// Cloudinary Config
+const cloudinary = require("cloudinary").v2;
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+const axios = require("axios");
+
 // Generate Thumbnail Ideas (Images via Pollinations)
 router.post("/generate-thumbnails", userAuth, async (req, res) => {
     const { topic } = req.body;
@@ -75,19 +85,54 @@ router.post("/generate-thumbnails", userAuth, async (req, res) => {
         ];
     }
 
-    // 2. Convert to Pollinations URLs
-    // Using image.pollinations.ai/prompt/ returns the actual image (JPEG)
-    const thumbnails = prompts.map(p => {
-        const seed = Math.floor(Math.random() * 1000000);
-        // Note: encodeURIComponent is important. 
-        // We use image.pollinations.ai/prompt/{prompt}
-        return {
-            prompt: p,
-            url: `https://image.pollinations.ai/prompt/${encodeURIComponent(p)}?width=1280&height=720&nologo=true&seed=${seed}&model=flux`
-        };
-    });
+    try {
+        // 2. Generate Images
+        // If POLLINATIONS_API_KEY is present, we fetch -> upload to Cloudinary for persistence
+        if (process.env.POLLINATIONS_API_KEY) {
+            console.log("Using Pollinations API Key for generation...");
 
-    res.json({ thumbnails });
+            const uploadPromises = prompts.map(async (p) => {
+                const seed = Math.floor(Math.random() * 1000000);
+                const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(p)}?width=1280&height=720&nologo=true&seed=${seed}&model=flux`;
+
+                // Fetch image buffer
+                const imageRes = await axios.get(imageUrl, {
+                    responseType: 'arraybuffer',
+                    headers: { 'Authorization': `Bearer ${process.env.POLLINATIONS_API_KEY}` }
+                });
+
+                // Upload to Cloudinary
+                return new Promise((resolve, reject) => {
+                    const uploadStream = cloudinary.uploader.upload_stream(
+                        { folder: "mwarex_thumbnails" },
+                        (error, result) => {
+                            if (error) reject(error);
+                            else resolve({ prompt: p, url: result.secure_url });
+                        }
+                    );
+                    uploadStream.end(imageRes.data);
+                });
+            });
+
+            const thumbnails = await Promise.all(uploadPromises);
+            return res.json({ thumbnails });
+        }
+
+        // Fallback: Client-side URLs (Free Tier)
+        const thumbnails = prompts.map(p => {
+            const seed = Math.floor(Math.random() * 1000000);
+            return {
+                prompt: p,
+                url: `https://image.pollinations.ai/prompt/${encodeURIComponent(p)}?width=1280&height=720&nologo=true&seed=${seed}&model=flux`
+            };
+        });
+
+        res.json({ thumbnails });
+
+    } catch (error) {
+        console.error("Thumbnail Generation Error:", error);
+        res.status(500).json({ message: "Failed to generate thumbnails" });
+    }
 });
 
 // Analyze Score
