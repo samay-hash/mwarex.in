@@ -47,6 +47,21 @@ router.post("/upload", upload.single("video"), async (req, res) => {
   }
 });
 
+router.get("/", userAuth, async (req, res) => {
+  let filter = {};
+  if (req.role === "creator") {
+    filter.creatorId = req.userId;
+  } else if (req.role === "editor") {
+    const user = await userModel.findById(req.userId);
+    if (!user || !user.creatorId) {
+      return res.json([]);
+    }
+    filter.creatorId = user.creatorId;
+  }
+  const videos = await videoModel.find(filter).sort({ createdAt: -1 });
+  res.json(videos);
+});
+
 router.get("/pending", userAuth, async (req, res) => {
   let filter = { status: "pending" };
   if (req.role === "creator") {
@@ -80,7 +95,7 @@ router.post("/:id/approve", userAuth, async (req, res) => {
     video.status = "processing";
     await video.save();
 
-  
+
     res.json({ message: "Video approved. Uploading to YouTube in background..." });
 
     uploadToYoutube(video, req.userId)

@@ -47,6 +47,8 @@ export const videoAPI = {
       headers: { "Content-Type": "multipart/form-data" },
     }),
 
+  getVideos: () => api.get("/api/v1/videos"),
+
   getPending: () => api.get("/api/v1/videos/pending"),
 
   approve: (id: string) => api.post(`/api/v1/videos/${id}/approve`),

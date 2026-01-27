@@ -22,6 +22,7 @@ import {
   Trash2,
   Plus,
   Filter,
+  Sparkles,
 } from "lucide-react";
 import { isAuthenticated, getUserData, logout } from "@/lib/auth";
 import { videoAPI } from "@/lib/api";
@@ -30,7 +31,7 @@ interface Video {
   _id: string;
   title: string;
   description: string;
-  status: "pending" | "approved" | "rejected" | "uploaded";
+  status: "pending" | "approved" | "rejected" | "uploaded" | "processing";
   creatorId?: string;
   editorId?: string;
   youtubeId?: string;
@@ -165,44 +166,44 @@ export default function AdminDashboard() {
         <nav className="flex-1 p-4 space-y-2">
           <button
             onClick={() => setActiveTab("overview")}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${
-              activeTab === "overview"
-                ? "bg-red-500/20 text-red-400"
-                : "text-gray-400 hover:bg-white/5 hover:text-white"
-            }`}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${activeTab === "overview"
+              ? "bg-red-500/20 text-red-400"
+              : "text-gray-400 hover:bg-white/5 hover:text-white"
+              }`}
           >
             <BarChart3 className="w-5 h-5" />
             <span className="font-medium">Overview</span>
           </button>
           <button
             onClick={() => setActiveTab("videos")}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${
-              activeTab === "videos"
-                ? "bg-red-500/20 text-red-400"
-                : "text-gray-400 hover:bg-white/5 hover:text-white"
-            }`}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${activeTab === "videos"
+              ? "bg-red-500/20 text-red-400"
+              : "text-gray-400 hover:bg-white/5 hover:text-white"
+              }`}
           >
             <Video className="w-5 h-5" />
             <span className="font-medium">All Videos</span>
           </button>
           <button
             onClick={() => setActiveTab("users")}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${
-              activeTab === "users"
-                ? "bg-red-500/20 text-red-400"
-                : "text-gray-400 hover:bg-white/5 hover:text-white"
-            }`}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${activeTab === "users"
+              ? "bg-red-500/20 text-red-400"
+              : "text-gray-400 hover:bg-white/5 hover:text-white"
+              }`}
           >
             <Users className="w-5 h-5" />
             <span className="font-medium">User Management</span>
           </button>
           <button
-            onClick={() => setActiveTab("settings")}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${
-              activeTab === "settings"
-                ? "bg-red-500/20 text-red-400"
-                : "text-gray-400 hover:bg-white/5 hover:text-white"
-            }`}
+            onClick={() => router.push("/dashboard/admin/ai-studio")}
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors text-gray-400 hover:bg-white/5 hover:text-white"
+          >
+            <Sparkles className="w-5 h-5" />
+            <span className="font-medium">AI Studio</span>
+          </button>
+          <button
+            onClick={() => router.push("/dashboard/admin/settings")}
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors text-gray-400 hover:bg-white/5 hover:text-white"
           >
             <Settings className="w-5 h-5" />
             <span className="font-medium">Settings</span>
@@ -412,15 +413,14 @@ export default function AdminDashboard() {
                             </td>
                             <td className="p-4">
                               <span
-                                className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                  video.status === "pending"
-                                    ? "bg-yellow-500/20 text-yellow-400"
-                                    : video.status === "approved"
+                                className={`px-2 py-1 rounded-full text-xs font-medium ${video.status === "pending"
+                                  ? "bg-yellow-500/20 text-yellow-400"
+                                  : video.status === "approved"
                                     ? "bg-green-500/20 text-green-400"
                                     : video.status === "rejected"
-                                    ? "bg-red-500/20 text-red-400"
-                                    : "bg-blue-500/20 text-blue-400"
-                                }`}
+                                      ? "bg-red-500/20 text-red-400"
+                                      : "bg-blue-500/20 text-blue-400"
+                                  }`}
                               >
                                 {video.status}
                               </span>
@@ -487,13 +487,12 @@ export default function AdminDashboard() {
                       </div>
                       <div className="flex items-center justify-between">
                         <span
-                          className={`px-2 py-1 rounded-full text-xs font-medium ${
-                            user.role === "admin"
-                              ? "bg-red-500/20 text-red-400"
-                              : user.role === "creator"
+                          className={`px-2 py-1 rounded-full text-xs font-medium ${user.role === "admin"
+                            ? "bg-red-500/20 text-red-400"
+                            : user.role === "creator"
                               ? "bg-blue-500/20 text-blue-400"
                               : "bg-green-500/20 text-green-400"
-                          }`}
+                            }`}
                         >
                           {user.role}
                         </span>

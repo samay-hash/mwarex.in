@@ -11,7 +11,8 @@ import {
   X,
   ExternalLink,
   AlertTriangle,
-  FileVideo
+  FileVideo,
+  Loader2
 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
@@ -22,7 +23,7 @@ interface VideoCardProps {
     title: string;
     description: string;
     fileUrl: string;
-    status: "pending" | "approved" | "rejected" | "uploaded";
+    status: "pending" | "approved" | "rejected" | "uploaded" | "processing";
     creatorId?: string;
     editorId?: string;
     youtubeId?: string;
@@ -49,6 +50,7 @@ export default function VideoCard({
       case "approved": return <CheckCircle className="w-3.5 h-3.5" />;
       case "rejected": return <XCircle className="w-3.5 h-3.5" />;
       case "uploaded": return <Youtube className="w-3.5 h-3.5" />;
+      case "processing": return <Loader2 className="w-3.5 h-3.5 animate-spin" />;
       default: return null;
     }
   };
@@ -59,6 +61,7 @@ export default function VideoCard({
       case "approved": return "bg-emerald-500/10 text-emerald-500 border-emerald-500/20";
       case "rejected": return "bg-red-500/10 text-red-500 border-red-500/20";
       case "uploaded": return "bg-red-600/10 text-red-600 border-red-600/20";
+      case "processing": return "bg-blue-500/10 text-blue-500 border-blue-500/20";
       default: return "bg-gray-500/10 text-gray-500";
     }
   };
@@ -69,6 +72,7 @@ export default function VideoCard({
       case "approved": return "Approved";
       case "rejected": return "Rejected";
       case "uploaded": return "On YouTube";
+      case "processing": return "Uploading...";
       default: return video.status;
     }
   }

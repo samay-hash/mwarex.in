@@ -16,7 +16,9 @@ import {
   X,
   LogOut,
   LayoutDashboard,
-  Eye
+  Eye,
+  Sparkles,
+  Settings,
 } from "lucide-react";
 import VideoCard from "@/components/VideoCard";
 import { videoAPI } from "@/lib/api";
@@ -30,7 +32,7 @@ interface Video {
   title: string;
   description: string;
   fileUrl: string;
-  status: "pending" | "approved" | "rejected" | "uploaded";
+  status: "pending" | "approved" | "rejected" | "uploaded" | "processing";
 }
 
 export default function EditorDashboard() {
@@ -84,7 +86,7 @@ export default function EditorDashboard() {
 
     setIsLoading(true);
     try {
-      const response = await videoAPI.getPending();
+      const response = await videoAPI.getVideos();
       setVideos(response.data);
     } catch (error) {
       console.error("Failed to fetch videos:", error);
@@ -147,7 +149,7 @@ export default function EditorDashboard() {
     },
     {
       label: "Approved",
-      value: videos.filter((v) => v.status === "approved" || v.status === "uploaded").length,
+      value: videos.filter((v) => v.status === "approved" || v.status === "uploaded" || v.status === "processing").length,
       icon: CheckCircle,
       color: "text-emerald-500",
       bg: "bg-emerald-500/10",
@@ -206,7 +208,22 @@ export default function EditorDashboard() {
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => router.push("/dashboard/editor/ai-studio")}
+              className="hidden sm:flex items-center gap-2 px-3 py-2 rounded-lg bg-gradient-to-r from-primary/10 to-violet-500/10 hover:from-primary/20 hover:to-violet-500/20 text-primary border border-primary/20 font-medium text-sm transition-all"
+              title="AI Studio"
+            >
+              <Sparkles className="w-4 h-4" />
+              <span className="hidden md:inline">AI Studio</span>
+            </button>
+            <button
+              onClick={() => router.push("/dashboard/editor/settings")}
+              className="p-2 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
+              title="Settings"
+            >
+              <Settings className="w-4 h-4" />
+            </button>
             <ThemeToggle />
             <button
               onClick={handleLogout}
