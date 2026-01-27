@@ -41,11 +41,11 @@ export function WorkflowAnimation() {
                 viewport={{ once: true }}
                 className="text-center mb-20 relative z-20"
             >
-                <h2 className="text-3xl md:text-5xl font-serif font-medium mb-4">Built for YouTube creators, 
+                <h2 className="text-3xl md:text-5xl font-serif font-medium mb-4">Built for YouTube creators,
                     <br />
-                 editors, and studios
-                 <br />
-                 
+                    editors, and studios
+                    <br />
+
                 </h2>
                 <p className="text-muted-foreground text-lg">who care about security and spee</p>
             </motion.div>
@@ -182,7 +182,7 @@ function WorkflowNode({ icon, title, description, color, align, connectorPositio
             {/* The Active Connector Dot */}
             <div className={cn(
                 "absolute w-4 h-4 rounded-full border-2 border-background z-20 flex items-center justify-center transition-colors duration-300",
-                "bg-muted-foreground/30",
+                "bg-muted",
                 connectorPosition === 'bottom' && "-bottom-2 left-1/2 -translate-x-1/2",
                 connectorPosition === 'top' && "-top-2 left-1/2 -translate-x-1/2",
                 connectorPosition === 'left' && "-left-2 top-1/2 -translate-y-1/2",

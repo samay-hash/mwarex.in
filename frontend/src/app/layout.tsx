@@ -29,7 +29,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${inter.variable} ${playfair.variable} antialiased bg-background text-foreground font-sans selection:bg-primary/20 selection:text-primary noise`}
+        className={`${inter.variable} ${playfair.variable} antialiased bg-background text-foreground font-sans selection:bg-primary/20 selection:text-primary`}
       >
         <ThemeProvider
           attribute="class"
@@ -37,7 +37,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <div className="relative isolate min-h-screen flex flex-col">
+          <div className="relative isolate min-h-screen flex flex-col noise">
             {children}
           </div>
         </ThemeProvider>
