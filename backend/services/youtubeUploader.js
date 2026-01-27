@@ -27,6 +27,29 @@ async function uploadToYoutube(video, userId) {
       })).data,
     },
   });
+
+  // Upload Thumbnail if exists
+  if (video.thumbnailUrl) {
+    try {
+      console.log("Uploading thumbnail...", video.thumbnailUrl);
+      const thumbRes = await axios({
+        method: "get",
+        url: video.thumbnailUrl,
+        responseType: "stream",
+      });
+
+      await youtube.thumbnails.set({
+        videoId: res.data.id,
+        media: {
+          body: thumbRes.data
+        }
+      });
+      console.log("Thumbnail set successfully");
+    } catch (err) {
+      console.error("Thumbnail upload failed:", err.message);
+    }
+  }
+
   return res.data;
 }
 

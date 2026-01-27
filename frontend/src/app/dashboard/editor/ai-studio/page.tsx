@@ -27,7 +27,7 @@ import { getUserData, logout, isAuthenticated } from "@/lib/auth";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { MWareXLogo } from "@/components/mwarex-logo";
 import { cn } from "@/lib/utils";
-import { aiAPI } from "@/lib/api";
+import { aiAPI, videoAPI } from "@/lib/api";
 import { toast } from "sonner";
 
 export default function AIStudioPage() {
@@ -38,6 +38,35 @@ export default function AIStudioPage() {
 
     const [thumbnailTopic, setThumbnailTopic] = useState("");
     const [titleKeywords, setTitleKeywords] = useState("");
+
+    // Video context
+    const [videos, setVideos] = useState<any[]>([]);
+    const [selectedVideoId, setSelectedVideoId] = useState("");
+
+    useEffect(() => {
+        const fetchVideos = async () => {
+            try {
+                const res = await videoAPI.getVideos();
+                setVideos(res.data.filter((v: any) => v.status === "pending" || v.status === "processing"));
+            } catch (error) {
+                console.error("Failed to fetch videos", error);
+            }
+        };
+        fetchVideos();
+    }, []);
+
+    const attachThumbnail = async (url: string) => {
+        if (!selectedVideoId) {
+            toast.error("Please select a video first");
+            return;
+        }
+        try {
+            await videoAPI.updateThumbnail(selectedVideoId, url);
+            toast.success("Thumbnail attached to video!");
+        } catch (error) {
+            toast.error("Failed to attach thumbnail");
+        }
+    };
 
     // Demo states
     const [isGenerating, setIsGenerating] = useState(false);
@@ -256,6 +285,24 @@ export default function AIStudioPage() {
 
                                 <div className="space-y-4">
                                     <div className="p-4 rounded-xl bg-secondary/50 border border-border">
+                                        <div className="mb-4">
+                                            <label className="block text-sm font-medium mb-2">Target Video (Optional)</label>
+                                            <select
+                                                value={selectedVideoId}
+                                                onChange={(e) => {
+                                                    setSelectedVideoId(e.target.value);
+                                                    const v = videos.find(v => v._id === e.target.value);
+                                                    if (v) setThumbnailTopic(v.title);
+                                                }}
+                                                className="w-full bg-background border border-border rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                                            >
+                                                <option value="">-- Select a pending video --</option>
+                                                {videos.map(v => (
+                                                    <option key={v._id} value={v._id}>{v.title}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+
                                         <label className="block text-sm font-medium mb-2">Video Topic / Description</label>
                                         <textarea
                                             value={thumbnailTopic}
@@ -273,264 +320,301 @@ export default function AIStudioPage() {
                                                     initial={{ opacity: 0, scale: 0.9 }}
                                                     animate={{ opacity: 1, scale: 1 }}
                                                     transition={{ delay: i * 0.1 }}
-                                                    className="aspect-video rounded-xl bg-black border border-border flex items-center justify-center group cursor-pointer hover:border-primary/50 transition-all relative overflow-hidden"
+                                                    className="flex flex-col"
                                                 >
-                                                    {isGenerating ? (
-                                                        <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
-                                                    ) : (
-                                                        <img src={_} alt="Generated Thumbnail" className="w-full h-full object-cover" />
-                                                    )}
-                                                    <div className="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                                                        <button className="p-2 bg-background rounded-lg">
-                                                            <Download className="w-4 h-4" />
-                                                        </button>
-                                                        <button className="p-2 bg-background rounded-lg">
-                                                            <Eye className="w-4 h-4" />
-                                                        </button>
+                                                    <div className="aspect-video rounded-xl bg-black border border-border flex items-center justify-center relative overflow-hidden">
+                                                        {isGenerating ? (
+                                                            <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+                                                        ) : (
+                                                            <img src={_} alt="Generated Thumbnail" className="w-full h-full object-cover" />
+                                                        )}
+                                                    </div>
+
+                                                    <div className="flex flex-col gap-2 mt-2">
+                                                        {selectedVideoId ? (
+                                                            <button
+                                                                onClick={() => attachThumbnail(_)}
+                                                                className="w-full py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg font-bold text-sm transition-colors flex items-center justify-center gap-2"
+                                                            >
+                                                                <Check className="w-4 h-4" />
+                                                                Use This
+                                                            </button>
+                                                        ) : (
+                                                            <div className="text-xs text-center text-amber-500 py-1 border border-amber-500/20 bg-amber-500/10 rounded-lg">
+                                                                Select video to attach
+                                                            </div>
+                                                        )}
+
+                                                        <div className="flex gap-2">
+                                                            <button
+                                                                onClick={() => window.open(_, "_blank")}
+                                                                className="flex-1 py-1.5 bg-secondary hover:bg-secondary/80 text-foreground rounded-lg text-xs font-medium transition-colors flex items-center justify-center gap-1"
+                                                            >
+                                                                <Eye className="w-3 h-3" /> View
+                                                            </button>
+                                                            <button
+                                                                onClick={() => {
+                                                                    const a = document.createElement("a");
+                                                                    a.href = _;
+                                                                    a.download = "thumbnail.jpg";
+                                                                    a.click();
+                                                                }}
+                                                                className="flex-1 py-1.5 bg-secondary hover:bg-secondary/80 text-foreground rounded-lg text-xs font-medium transition-colors flex items-center justify-center gap-1"
+                                                            >
+                                                                <Download className="w-3 h-3" /> Save
+                                                            </button>
+                                                        </div>
                                                     </div>
                                                 </motion.div>
                                             ))}
                                         </div>
                                     )}
                                 </div>
-                            </div>
-                        </motion.div>
-                    )}
+                            </div >
+                        </motion.div >
+                    )
+                    }
 
                     {/* Title Suggestions */}
-                    {activeTab === "titles" && (
-                        <motion.div
-                            key="titles"
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -20 }}
-                            className="space-y-6"
-                        >
-                            <div className="bg-card border border-border rounded-2xl p-6">
-                                <div className="flex items-center justify-between mb-6">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500/20 to-cyan-500/20 flex items-center justify-center">
-                                            <Type className="w-6 h-6 text-blue-500" />
+                    {
+                        activeTab === "titles" && (
+                            <motion.div
+                                key="titles"
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -20 }}
+                                className="space-y-6"
+                            >
+                                <div className="bg-card border border-border rounded-2xl p-6">
+                                    <div className="flex items-center justify-between mb-6">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500/20 to-cyan-500/20 flex items-center justify-center">
+                                                <Type className="w-6 h-6 text-blue-500" />
+                                            </div>
+                                            <div>
+                                                <h2 className="text-xl font-bold">Title & Description AI</h2>
+                                                <p className="text-sm text-muted-foreground">Generate engaging titles</p>
+                                            </div>
+                                        </div>
+                                        <button
+                                            onClick={generateTitles}
+                                            disabled={isGenerating}
+                                            className="flex items-center gap-2 px-5 py-2.5 bg-primary text-primary-foreground rounded-xl font-medium text-sm hover:opacity-90 transition-opacity disabled:opacity-50"
+                                        >
+                                            {isGenerating ? (
+                                                <Loader2 className="w-4 h-4 animate-spin" />
+                                            ) : (
+                                                <Wand2 className="w-4 h-4" />
+                                            )}
+                                            Suggest Titles
+                                        </button>
+                                    </div>
+
+                                    <div className="space-y-4">
+                                        <div className="p-4 rounded-xl bg-secondary/50 border border-border">
+                                            <label className="block text-sm font-medium mb-2">Video Keywords</label>
+                                            <input
+                                                type="text"
+                                                value={titleKeywords}
+                                                onChange={(e) => setTitleKeywords(e.target.value)}
+                                                placeholder="Enter keywords: productivity, morning routine, tips..."
+                                                className="w-full bg-background border border-border rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                                            />
+                                        </div>
+
+                                        {generatedTitles.length > 0 && (
+                                            <div className="space-y-3">
+                                                {generatedTitles.map((title, i) => (
+                                                    <motion.div
+                                                        key={i}
+                                                        initial={{ opacity: 0, x: -20 }}
+                                                        animate={{ opacity: 1, x: 0 }}
+                                                        transition={{ delay: i * 0.1 }}
+                                                        className="flex items-center justify-between p-4 rounded-xl bg-secondary/50 border border-border hover:border-primary/30 transition-colors"
+                                                    >
+                                                        <span className="text-sm font-medium">{title}</span>
+                                                        <button
+                                                            onClick={() => copyToClipboard(title)}
+                                                            className="p-2 rounded-lg hover:bg-background transition-colors"
+                                                        >
+                                                            {copied === title ? (
+                                                                <Check className="w-4 h-4 text-emerald-500" />
+                                                            ) : (
+                                                                <Copy className="w-4 h-4 text-muted-foreground" />
+                                                            )}
+                                                        </button>
+                                                    </motion.div>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </motion.div>
+                        )
+                    }
+
+                    {/* Content Enhancement */}
+                    {
+                        activeTab === "enhance" && (
+                            <motion.div
+                                key="enhance"
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -20 }}
+                                className="space-y-6"
+                            >
+                                <div className="bg-card border border-border rounded-2xl p-6">
+                                    <div className="flex items-center gap-3 mb-6">
+                                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 flex items-center justify-center">
+                                            <Wand2 className="w-6 h-6 text-emerald-500" />
                                         </div>
                                         <div>
-                                            <h2 className="text-xl font-bold">Title & Description AI</h2>
-                                            <p className="text-sm text-muted-foreground">Generate engaging titles</p>
+                                            <h2 className="text-xl font-bold">Content Enhancement Preview</h2>
+                                            <p className="text-sm text-muted-foreground">AI-powered improvements</p>
                                         </div>
                                     </div>
-                                    <button
-                                        onClick={generateTitles}
-                                        disabled={isGenerating}
-                                        className="flex items-center gap-2 px-5 py-2.5 bg-primary text-primary-foreground rounded-xl font-medium text-sm hover:opacity-90 transition-opacity disabled:opacity-50"
-                                    >
-                                        {isGenerating ? (
-                                            <Loader2 className="w-4 h-4 animate-spin" />
-                                        ) : (
-                                            <Wand2 className="w-4 h-4" />
-                                        )}
-                                        Suggest Titles
-                                    </button>
-                                </div>
 
-                                <div className="space-y-4">
-                                    <div className="p-4 rounded-xl bg-secondary/50 border border-border">
-                                        <label className="block text-sm font-medium mb-2">Video Keywords</label>
-                                        <input
-                                            type="text"
-                                            value={titleKeywords}
-                                            onChange={(e) => setTitleKeywords(e.target.value)}
-                                            placeholder="Enter keywords: productivity, morning routine, tips..."
-                                            className="w-full bg-background border border-border rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
-                                        />
+                                    <div className="grid md:grid-cols-2 gap-6">
+                                        {[
+                                            { title: "Auto Color Correction", icon: Zap, status: "Available" },
+                                            { title: "Audio Enhancement", icon: Target, status: "Available" },
+                                            { title: "Smart Cropping", icon: Image, status: "Coming Soon" },
+                                            { title: "Caption Generation", icon: Type, status: "Available" },
+                                        ].map((feature, i) => (
+                                            <motion.div
+                                                key={feature.title}
+                                                initial={{ opacity: 0, y: 20 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                transition={{ delay: i * 0.1 }}
+                                                className="p-5 rounded-xl bg-secondary/50 border border-border"
+                                            >
+                                                <div className="flex items-center justify-between mb-3">
+                                                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                                                        <feature.icon className="w-5 h-5 text-primary" />
+                                                    </div>
+                                                    <span className={cn(
+                                                        "text-xs font-medium px-2 py-1 rounded-full",
+                                                        feature.status === "Available"
+                                                            ? "bg-emerald-500/10 text-emerald-500"
+                                                            : "bg-muted text-muted-foreground"
+                                                    )}>
+                                                        {feature.status}
+                                                    </span>
+                                                </div>
+                                                <h3 className="font-semibold mb-1">{feature.title}</h3>
+                                                <p className="text-xs text-muted-foreground">
+                                                    Preview only in demo mode
+                                                </p>
+                                            </motion.div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </motion.div>
+                        )
+                    }
+
+                    {/* Performance Score */}
+                    {
+                        activeTab === "score" && (
+                            <motion.div
+                                key="score"
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -20 }}
+                                className="space-y-6"
+                            >
+                                <div className="bg-card border border-border rounded-2xl p-6">
+                                    <div className="flex items-center justify-between mb-6">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500/20 to-orange-500/20 flex items-center justify-center">
+                                                <TrendingUp className="w-6 h-6 text-amber-500" />
+                                            </div>
+                                            <div>
+                                                <h2 className="text-xl font-bold">Performance & Readiness Score</h2>
+                                                <p className="text-sm text-muted-foreground">Analyze your video's potential</p>
+                                            </div>
+                                        </div>
+                                        <button
+                                            onClick={analyzeScore}
+                                            disabled={isGenerating}
+                                            className="flex items-center gap-2 px-5 py-2.5 bg-primary text-primary-foreground rounded-xl font-medium text-sm hover:opacity-90 transition-opacity disabled:opacity-50"
+                                        >
+                                            {isGenerating ? (
+                                                <Loader2 className="w-4 h-4 animate-spin" />
+                                            ) : (
+                                                <RefreshCw className="w-4 h-4" />
+                                            )}
+                                            Analyze
+                                        </button>
                                     </div>
 
-                                    {generatedTitles.length > 0 && (
-                                        <div className="space-y-3">
-                                            {generatedTitles.map((title, i) => (
-                                                <motion.div
-                                                    key={i}
-                                                    initial={{ opacity: 0, x: -20 }}
-                                                    animate={{ opacity: 1, x: 0 }}
-                                                    transition={{ delay: i * 0.1 }}
-                                                    className="flex items-center justify-between p-4 rounded-xl bg-secondary/50 border border-border hover:border-primary/30 transition-colors"
-                                                >
-                                                    <span className="text-sm font-medium">{title}</span>
-                                                    <button
-                                                        onClick={() => copyToClipboard(title)}
-                                                        className="p-2 rounded-lg hover:bg-background transition-colors"
-                                                    >
-                                                        {copied === title ? (
-                                                            <Check className="w-4 h-4 text-emerald-500" />
-                                                        ) : (
-                                                            <Copy className="w-4 h-4 text-muted-foreground" />
+                                    {performanceScore !== null ? (
+                                        <motion.div
+                                            initial={{ opacity: 0, scale: 0.9 }}
+                                            animate={{ opacity: 1, scale: 1 }}
+                                            className="text-center py-12"
+                                        >
+                                            <div className="relative inline-flex items-center justify-center w-40 h-40 mb-6">
+                                                <svg className="w-40 h-40 transform -rotate-90">
+                                                    <circle
+                                                        className="text-muted"
+                                                        strokeWidth="8"
+                                                        stroke="currentColor"
+                                                        fill="transparent"
+                                                        r="62"
+                                                        cx="80"
+                                                        cy="80"
+                                                    />
+                                                    <circle
+                                                        className={cn(
+                                                            performanceScore >= 80 ? "text-emerald-500" :
+                                                                performanceScore >= 60 ? "text-amber-500" : "text-red-500"
                                                         )}
-                                                    </button>
-                                                </motion.div>
-                                            ))}
+                                                        strokeWidth="8"
+                                                        strokeDasharray={`${performanceScore * 3.9} 390`}
+                                                        strokeLinecap="round"
+                                                        stroke="currentColor"
+                                                        fill="transparent"
+                                                        r="62"
+                                                        cx="80"
+                                                        cy="80"
+                                                    />
+                                                </svg>
+                                                <span className="absolute text-4xl font-bold">{performanceScore}</span>
+                                            </div>
+                                            <p className="text-lg font-semibold text-foreground mb-2">
+                                                {performanceScore >= 80 ? "Excellent!" : performanceScore >= 60 ? "Good" : "Needs Work"}
+                                            </p>
+                                            <p className="text-sm text-muted-foreground max-w-md mx-auto">
+                                                Your video is {performanceScore >= 80 ? "ready for upload" : "almost ready"}.
+                                                Score is simulated for demo purposes.
+                                            </p>
+
+                                            <div className="grid grid-cols-3 gap-4 mt-8 max-w-lg mx-auto">
+                                                {[
+                                                    { label: "Title Score", value: Math.floor(performanceScore * 0.95) },
+                                                    { label: "Thumbnail", value: Math.floor(performanceScore * 1.02) },
+                                                    { label: "Description", value: Math.floor(performanceScore * 0.88) },
+                                                ].map((item) => (
+                                                    <div key={item.label} className="p-4 rounded-xl bg-secondary/50">
+                                                        <p className="text-2xl font-bold text-primary">{Math.min(item.value, 100)}</p>
+                                                        <p className="text-xs text-muted-foreground">{item.label}</p>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </motion.div>
+                                    ) : (
+                                        <div className="text-center py-16">
+                                            <BarChart3 className="w-16 h-16 text-muted-foreground mx-auto mb-4 opacity-50" />
+                                            <p className="text-muted-foreground">Click "Analyze" to check your video's readiness</p>
                                         </div>
                                     )}
                                 </div>
-                            </div>
-                        </motion.div>
-                    )}
-
-                    {/* Content Enhancement */}
-                    {activeTab === "enhance" && (
-                        <motion.div
-                            key="enhance"
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -20 }}
-                            className="space-y-6"
-                        >
-                            <div className="bg-card border border-border rounded-2xl p-6">
-                                <div className="flex items-center gap-3 mb-6">
-                                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 flex items-center justify-center">
-                                        <Wand2 className="w-6 h-6 text-emerald-500" />
-                                    </div>
-                                    <div>
-                                        <h2 className="text-xl font-bold">Content Enhancement Preview</h2>
-                                        <p className="text-sm text-muted-foreground">AI-powered improvements</p>
-                                    </div>
-                                </div>
-
-                                <div className="grid md:grid-cols-2 gap-6">
-                                    {[
-                                        { title: "Auto Color Correction", icon: Zap, status: "Available" },
-                                        { title: "Audio Enhancement", icon: Target, status: "Available" },
-                                        { title: "Smart Cropping", icon: Image, status: "Coming Soon" },
-                                        { title: "Caption Generation", icon: Type, status: "Available" },
-                                    ].map((feature, i) => (
-                                        <motion.div
-                                            key={feature.title}
-                                            initial={{ opacity: 0, y: 20 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            transition={{ delay: i * 0.1 }}
-                                            className="p-5 rounded-xl bg-secondary/50 border border-border"
-                                        >
-                                            <div className="flex items-center justify-between mb-3">
-                                                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                                                    <feature.icon className="w-5 h-5 text-primary" />
-                                                </div>
-                                                <span className={cn(
-                                                    "text-xs font-medium px-2 py-1 rounded-full",
-                                                    feature.status === "Available"
-                                                        ? "bg-emerald-500/10 text-emerald-500"
-                                                        : "bg-muted text-muted-foreground"
-                                                )}>
-                                                    {feature.status}
-                                                </span>
-                                            </div>
-                                            <h3 className="font-semibold mb-1">{feature.title}</h3>
-                                            <p className="text-xs text-muted-foreground">
-                                                Preview only in demo mode
-                                            </p>
-                                        </motion.div>
-                                    ))}
-                                </div>
-                            </div>
-                        </motion.div>
-                    )}
-
-                    {/* Performance Score */}
-                    {activeTab === "score" && (
-                        <motion.div
-                            key="score"
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -20 }}
-                            className="space-y-6"
-                        >
-                            <div className="bg-card border border-border rounded-2xl p-6">
-                                <div className="flex items-center justify-between mb-6">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500/20 to-orange-500/20 flex items-center justify-center">
-                                            <TrendingUp className="w-6 h-6 text-amber-500" />
-                                        </div>
-                                        <div>
-                                            <h2 className="text-xl font-bold">Performance & Readiness Score</h2>
-                                            <p className="text-sm text-muted-foreground">Analyze your video's potential</p>
-                                        </div>
-                                    </div>
-                                    <button
-                                        onClick={analyzeScore}
-                                        disabled={isGenerating}
-                                        className="flex items-center gap-2 px-5 py-2.5 bg-primary text-primary-foreground rounded-xl font-medium text-sm hover:opacity-90 transition-opacity disabled:opacity-50"
-                                    >
-                                        {isGenerating ? (
-                                            <Loader2 className="w-4 h-4 animate-spin" />
-                                        ) : (
-                                            <RefreshCw className="w-4 h-4" />
-                                        )}
-                                        Analyze
-                                    </button>
-                                </div>
-
-                                {performanceScore !== null ? (
-                                    <motion.div
-                                        initial={{ opacity: 0, scale: 0.9 }}
-                                        animate={{ opacity: 1, scale: 1 }}
-                                        className="text-center py-12"
-                                    >
-                                        <div className="relative inline-flex items-center justify-center w-40 h-40 mb-6">
-                                            <svg className="w-40 h-40 transform -rotate-90">
-                                                <circle
-                                                    className="text-muted"
-                                                    strokeWidth="8"
-                                                    stroke="currentColor"
-                                                    fill="transparent"
-                                                    r="62"
-                                                    cx="80"
-                                                    cy="80"
-                                                />
-                                                <circle
-                                                    className={cn(
-                                                        performanceScore >= 80 ? "text-emerald-500" :
-                                                            performanceScore >= 60 ? "text-amber-500" : "text-red-500"
-                                                    )}
-                                                    strokeWidth="8"
-                                                    strokeDasharray={`${performanceScore * 3.9} 390`}
-                                                    strokeLinecap="round"
-                                                    stroke="currentColor"
-                                                    fill="transparent"
-                                                    r="62"
-                                                    cx="80"
-                                                    cy="80"
-                                                />
-                                            </svg>
-                                            <span className="absolute text-4xl font-bold">{performanceScore}</span>
-                                        </div>
-                                        <p className="text-lg font-semibold text-foreground mb-2">
-                                            {performanceScore >= 80 ? "Excellent!" : performanceScore >= 60 ? "Good" : "Needs Work"}
-                                        </p>
-                                        <p className="text-sm text-muted-foreground max-w-md mx-auto">
-                                            Your video is {performanceScore >= 80 ? "ready for upload" : "almost ready"}.
-                                            Score is simulated for demo purposes.
-                                        </p>
-
-                                        <div className="grid grid-cols-3 gap-4 mt-8 max-w-lg mx-auto">
-                                            {[
-                                                { label: "Title Score", value: Math.floor(performanceScore * 0.95) },
-                                                { label: "Thumbnail", value: Math.floor(performanceScore * 1.02) },
-                                                { label: "Description", value: Math.floor(performanceScore * 0.88) },
-                                            ].map((item) => (
-                                                <div key={item.label} className="p-4 rounded-xl bg-secondary/50">
-                                                    <p className="text-2xl font-bold text-primary">{Math.min(item.value, 100)}</p>
-                                                    <p className="text-xs text-muted-foreground">{item.label}</p>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </motion.div>
-                                ) : (
-                                    <div className="text-center py-16">
-                                        <BarChart3 className="w-16 h-16 text-muted-foreground mx-auto mb-4 opacity-50" />
-                                        <p className="text-muted-foreground">Click "Analyze" to check your video's readiness</p>
-                                    </div>
-                                )}
-                            </div>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
-            </main>
-        </div>
+                            </motion.div>
+                        )
+                    }
+                </AnimatePresence >
+            </main >
+        </div >
     );
 }

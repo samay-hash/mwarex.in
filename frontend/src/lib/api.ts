@@ -57,6 +57,9 @@ export const videoAPI = {
 
   storeYouTubeTokens: (data: { accessToken: string; refreshToken?: string }) =>
     api.post("/api/v1/videos/store-youtube-tokens", data),
+
+  updateThumbnail: (id: string, thumbnailUrl: string) =>
+    api.put(`/api/v1/videos/${id}/thumbnail`, { thumbnailUrl }),
 };
 
 

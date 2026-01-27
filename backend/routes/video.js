@@ -151,6 +151,20 @@ router.post("/store-youtube-tokens", userAuth, async (req, res) => {
   }
 });
 
+router.put("/:id/thumbnail", userAuth, async (req, res) => {
+  try {
+    const { thumbnailUrl } = req.body;
+    const video = await videoModel.findByIdAndUpdate(
+      req.params.id,
+      { thumbnailUrl },
+      { new: true }
+    );
+    res.json(video);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to update thumbnail" });
+  }
+});
+
 module.exports = router;
 
 
