@@ -15,7 +15,11 @@ const settingsRoutes = require("./routes/settings");
 const { google } = require("googleapis");
 const googleAuthRoutes = require("./routes/googleAuth");
 
+const http = require("http");
+const { Server } = require("socket.io");
+
 const app = express();
+const server = http.createServer(app);
 
 const frontend = (process.env.FRONTEND_URL || "http://localhost:3000").replace(/\/$/, "");
 console.log("CORS Origin Allowed:", frontend);
@@ -27,8 +31,34 @@ const allowedOrigins = [
   "http://localhost:5173",
   "http://127.0.0.1:5173",
   "https://mware-x.vercel.app"
-
 ];
+
+const io = new Server(server, {
+  cors: {
+    origin: allowedOrigins,
+    methods: ["GET", "POST"],
+    credentials: true
+  }
+});
+
+io.on("connection", (socket) => {
+  console.log("Socket connected:", socket.id);
+
+  socket.on("join_video", (videoId) => {
+    socket.join(`video_${videoId}`);
+    console.log(`Socket ${socket.id} joined video_${videoId}`);
+  });
+
+  socket.on("disconnect", () => {
+    console.log("Socket disconnected:", socket.id);
+  });
+});
+
+// Inject IO
+app.use((req, res, next) => {
+  req.io = io;
+  next();
+});
 
 console.log("Allowed Origins:", allowedOrigins);
 
@@ -89,4 +119,4 @@ app.get("/oauth2callback", async (req, res) => {
 });
 
 const PORT = process.env.PORT || 8000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+server.listen(PORT, () => console.log(`Server running on port ${PORT}`));

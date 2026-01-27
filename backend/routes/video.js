@@ -181,6 +181,13 @@ router.post("/:id/comments", userAuth, async (req, res) => {
 
     // Populate sender info for immediate return
     const updatedVideo = await videoModel.findById(req.params.id).populate("comments.senderId", "name email");
+    const newComment = updatedVideo.comments[updatedVideo.comments.length - 1];
+
+    // Emit socket event
+    if (req.io) {
+      req.io.to(`video_${req.params.id}`).emit("new_comment", newComment);
+    }
+
     res.json(updatedVideo.comments);
   } catch (err) {
     res.status(500).json({ message: "Failed to add comment" });

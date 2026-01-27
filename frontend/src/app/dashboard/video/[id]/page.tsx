@@ -18,7 +18,7 @@ import {
     Scissors
 } from "lucide-react";
 import { videoAPI, userAPI } from "@/lib/api";
-// import { VideoPlayer } from "@/components/video-player"; // We will create this or use basic video tag
+import { getSocket } from "@/lib/socket";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { getUserData } from "@/lib/auth";
@@ -55,7 +55,26 @@ export default function VideoStudioPage() {
         const data = getUserData();
         setUserData(data);
         fetchVideo();
-    }, [id]);
+
+        // Socket Connection
+        const socket = getSocket();
+        socket.emit("join_video", id);
+
+        const handleNewComment = (comment: any) => {
+            setComments((prev) => [...prev, comment]);
+            if (activeTab === "chat") {
+                setTimeout(() => chatBottomRef.current?.scrollIntoView({ behavior: "smooth" }), 100);
+            } else {
+                toast.info("New message received");
+            }
+        };
+
+        socket.on("new_comment", handleNewComment);
+
+        return () => {
+            socket.off("new_comment", handleNewComment);
+        };
+    }, [id, activeTab]);
 
     useEffect(() => {
         if (activeTab === "chat") {
