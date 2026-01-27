@@ -10,6 +10,7 @@ const videoRoutes = require("./routes/video");
 const aiRoutes = require("./routes/ai");
 const editorRoutes = require("./routes/editor");
 const inviteRoutes = require("./routes/invite");
+const settingsRoutes = require("./routes/settings");
 
 const { google } = require("googleapis");
 const googleAuthRoutes = require("./routes/googleAuth");
@@ -43,6 +44,7 @@ app.use("/uploads", express.static("uploads"));
 
 connectDB();
 
+app.use("/api/v1/user", settingsRoutes);
 app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/admin", adminRoutes);
 app.use("/api/v1/videos", videoRoutes);

@@ -208,8 +208,9 @@ export default function AIStudioPage() {
             </header>
 
             <main className="max-w-6xl mx-auto px-4 md:px-6 py-8">
-                {/* Demo Mode Banner */}
+                {/* Demo Mode Banner (Hidden) */}
                 <motion.div
+                    style={{ display: "none" }}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     className="mb-8 p-4 rounded-xl bg-gradient-to-r from-primary/10 via-violet-500/10 to-primary/10 border border-primary/20 flex items-start gap-3"

@@ -107,13 +107,8 @@ export default function VideoCard({
       <div
         className="relative aspect-video bg-muted/30 overflow-hidden cursor-pointer group/thumb"
         onClick={() => {
-          if (video.status === "uploaded" && video.youtubeId) {
-            window.open(`https://youtube.com/watch?v=${video.youtubeId}`, "_blank");
-          } else {
-            // Reset error state when reopening to retry
-            setVideoError(false);
-            setIsVideoModalOpen(true);
-          }
+          // Navigate to studio workspace
+          window.location.href = `/dashboard/video/${video._id}`;
         }}
       >
         <div className="absolute inset-0 flex items-center justify-center z-10 transition-transform duration-500 group-hover/thumb:scale-110">

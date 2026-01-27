@@ -60,6 +60,14 @@ export const videoAPI = {
 
   updateThumbnail: (id: string, thumbnailUrl: string) =>
     api.put(`/api/v1/videos/${id}/thumbnail`, { thumbnailUrl }),
+
+  updateSettings: (id: string, editSettings: any) =>
+    api.put(`/api/v1/videos/${id}/edit-settings`, { editSettings }),
+
+  addComment: (id: string, text: string) =>
+    api.post(`/api/v1/videos/${id}/comments`, { text }),
+
+  getVideo: (id: string) => api.get(`/api/v1/videos/${id}`),
 };
 
 
@@ -74,6 +82,7 @@ export const aiAPI = {
 // User APIs
 export const userAPI = {
   getMe: () => api.get("/api/v1/user/me"),
+  getSettings: () => api.get("/api/v1/user/get-settings"),
   updateSettings: (settings: any) => api.put("/api/v1/user/settings", { settings }),
 };
 

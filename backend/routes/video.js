@@ -39,6 +39,7 @@ router.post("/upload", upload.single("video"), async (req, res) => {
       description: req.body.description,
       editorId: req.body.editorId,
       creatorId: req.body.creatorId,
+      thumbnailUrl: req.body.thumbnailUrl || "", // Add thumbnail URL
     });
     res.json({ message: "uploaded", video });
   } catch (err) {
@@ -162,6 +163,56 @@ router.put("/:id/thumbnail", userAuth, async (req, res) => {
     res.json(video);
   } catch (err) {
     res.status(500).json({ message: "Failed to update thumbnail" });
+  }
+});
+
+router.post("/:id/comments", userAuth, async (req, res) => {
+  try {
+    const { text } = req.body;
+    const video = await videoModel.findById(req.params.id);
+    if (!video) return res.status(404).json({ message: "Video not found" });
+
+    video.comments.push({
+      senderId: req.userId,
+      text,
+      createdAt: new Date()
+    });
+    await video.save();
+
+    // Populate sender info for immediate return
+    const updatedVideo = await videoModel.findById(req.params.id).populate("comments.senderId", "name email");
+    res.json(updatedVideo.comments);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to add comment" });
+  }
+});
+
+router.put("/:id/edit-settings", userAuth, async (req, res) => {
+  try {
+    const { editSettings } = req.body;
+    const video = await videoModel.findByIdAndUpdate(
+      req.params.id,
+      { editSettings },
+      { new: true }
+    );
+    res.json(video);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to save edit settings" });
+  }
+});
+
+// Get single video with populated data
+router.get("/:id", userAuth, async (req, res) => {
+  try {
+    const video = await videoModel.findById(req.params.id)
+      .populate("comments.senderId", "name email")
+      .populate("editorId", "name")
+      .populate("creatorId", "name");
+
+    if (!video) return res.status(404).json({ message: "Not found" });
+    res.json(video);
+  } catch (err) {
+    res.status(500).json({ message: "Error" });
   }
 });
 

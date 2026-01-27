@@ -21,6 +21,24 @@ const videoSchema = new mongoose.Schema({
     enum: ["pending", "approved", "rejected", "uploaded", "processing", "upload_failed"],
     default: "pending",
   },
+
+  // Messaging / Feedback
+  comments: [{
+    senderId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    text: String,
+    createdAt: { type: Date, default: Date.now }
+  }],
+
+  // Video Editing / Color Grading Metadata
+  editSettings: {
+    brightness: { type: Number, default: 100 },
+    contrast: { type: Number, default: 100 },
+    saturation: { type: Number, default: 100 },
+    grayscale: { type: Number, default: 0 },
+    sepia: { type: Number, default: 0 },
+    trimStart: { type: Number, default: 0 }, // In seconds
+    trimEnd: { type: Number, default: 0 }     // In seconds
+  }
 });
 
 const videoModel = mongoose.model("Video", videoSchema);

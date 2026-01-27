@@ -21,7 +21,7 @@ import {
   Settings,
 } from "lucide-react";
 import VideoCard from "@/components/VideoCard";
-import { videoAPI } from "@/lib/api";
+import { videoAPI, aiAPI } from "@/lib/api";
 import { isAuthenticated, getUserData, logout, isDemoUser } from "@/lib/auth";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { MWareXLogo } from "@/components/mwarex-logo";
@@ -51,6 +51,12 @@ export default function EditorDashboard() {
   const [description, setDescription] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [error, setError] = useState("");
+
+  // AI Thumbnail State
+  const [thumbnailPrompt, setThumbnailPrompt] = useState("");
+  const [generatedThumbnails, setGeneratedThumbnails] = useState<string[]>([]);
+  const [selectedThumbnail, setSelectedThumbnail] = useState("");
+  const [isGeneratingThumbnail, setIsGeneratingThumbnail] = useState(false);
 
   useEffect(() => {
     const data = getUserData();
@@ -115,6 +121,7 @@ export default function EditorDashboard() {
     formData.append("description", description);
     formData.append("creatorId", creatorId);
     formData.append("editorId", userData?.id || "");
+    formData.append("thumbnailUrl", selectedThumbnail);
 
     try {
       await videoAPI.upload(formData);
@@ -122,6 +129,9 @@ export default function EditorDashboard() {
       setTitle("");
       setDescription("");
       setFile(null);
+      setGeneratedThumbnails([]);
+      setSelectedThumbnail("");
+      setThumbnailPrompt("");
       fetchVideos();
     } catch (err: any) {
       console.error("Upload error:", err);
@@ -415,6 +425,87 @@ export default function EditorDashboard() {
                     className="w-full bg-secondary/50 border border-border focus:border-primary/50 rounded-lg px-4 py-3 outline-none transition-colors resize-none focus:bg-background"
                     placeholder="Add notes for the creator about this draft..."
                   />
+                </div>
+
+                {/* AI Thumbnail Generator */}
+                <div className="space-y-3 p-4 border border-border rounded-xl bg-secondary/10">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+                      <Sparkles className="w-3 h-3 text-primary" />
+                      AI Thumbnail Generator
+                    </label>
+                    {selectedThumbnail && (
+                      <button
+                        type="button"
+                        onClick={() => setSelectedThumbnail("")}
+                        className="text-xs text-red-500 hover:underline"
+                      >
+                        Remove Selected
+                      </button>
+                    )}
+                  </div>
+
+                  {!selectedThumbnail ? (
+                    <div className="space-y-3">
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          value={thumbnailPrompt}
+                          onChange={(e) => setThumbnailPrompt(e.target.value)}
+                          placeholder="Describe the thumbnail..."
+                          className="flex-1 bg-secondary/50 border border-border focus:border-primary/50 rounded-lg px-3 py-2 text-sm outline-none transition-colors"
+                        />
+                        <button
+                          type="button"
+                          onClick={async () => {
+                            if (!thumbnailPrompt) return;
+                            setIsGeneratingThumbnail(true);
+                            try {
+                              const res = await aiAPI.generateThumbnails({ topic: thumbnailPrompt });
+                              setGeneratedThumbnails(res.data.thumbnails.map((t: any) => t.url));
+                            } catch (err) {
+                              console.error(err);
+                            } finally {
+                              setIsGeneratingThumbnail(false);
+                            }
+                          }}
+                          disabled={isGeneratingThumbnail || !thumbnailPrompt}
+                          className="px-4 py-2 bg-primary/10 text-primary border border-primary/20 rounded-lg text-xs font-medium hover:bg-primary/20 transition-colors disabled:opacity-50"
+                        >
+                          {isGeneratingThumbnail ? (
+                            <Loader2 className="w-3 h-3 animate-spin" />
+                          ) : (
+                            "Generate"
+                          )}
+                        </button>
+                      </div>
+
+                      {generatedThumbnails.length > 0 && (
+                        <div className="grid grid-cols-4 gap-2">
+                          {generatedThumbnails.map((url, i) => (
+                            <div
+                              key={i}
+                              onClick={() => setSelectedThumbnail(url)}
+                              className="aspect-video relative rounded-md overflow-hidden cursor-pointer border-2 border-transparent hover:border-primary transition-colors group"
+                            >
+                              <img src={url} alt={`Generated ${i}`} className="w-full h-full object-cover" />
+                              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-medium">
+                                Select
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="relative aspect-video w-full rounded-lg overflow-hidden border border-border">
+                      <img src={selectedThumbnail} alt="Selected Thumbnail" className="w-full h-full object-cover" />
+                      <div className="absolute bottom-2 right-2 px-2 py-1 bg-black/60 backdrop-blur rounded text-white text-[10px] font-medium flex items-center gap-1">
+                        <CheckCircle className="w-3 h-3 text-emerald-500" />
+                        Selected
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 <div className="space-y-2">
