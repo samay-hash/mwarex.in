@@ -64,4 +64,27 @@ router.post("/signin", async (req, res) => {
   console.log("SIGN IN EMAIL:", email);
 });
 
+router.get("/me", require("../middlewares/userMiddleware"), async (req, res) => {
+  try {
+    const user = await userModel.findById(req.userId).select("-password");
+    res.json(user);
+  } catch (err) {
+    res.status(500).json({ message: "Error fetching user" });
+  }
+});
+
+router.put("/settings", require("../middlewares/userMiddleware"), async (req, res) => {
+  try {
+    const { settings } = req.body;
+    const user = await userModel.findByIdAndUpdate(
+      req.userId,
+      { $set: { settings } },
+      { new: true }
+    ).select("-password");
+    res.json({ message: "Settings updated", user });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to update settings" });
+  }
+});
+
 module.exports = router;

@@ -59,6 +59,21 @@ export const videoAPI = {
     api.post("/api/v1/videos/store-youtube-tokens", data),
 };
 
+
+
+// AI APIs
+export const aiAPI = {
+  generateTitles: (data: { keywords: string }) => api.post("/api/v1/ai/generate-titles", data),
+  generateThumbnails: (data: { topic: string }) => api.post("/api/v1/ai/generate-thumbnails", data),
+  analyzeScore: (data: { title: string; description: string }) => api.post("/api/v1/ai/analyze-score", data),
+};
+
+// User APIs
+export const userAPI = {
+  getMe: () => api.get("/api/v1/user/me"),
+  updateSettings: (settings: any) => api.put("/api/v1/user/settings", { settings }),
+};
+
 // Invite APIs
 export const inviteAPI = {
   sendInvite: (email: string) => api.post("/api/v1/invite", { email }),

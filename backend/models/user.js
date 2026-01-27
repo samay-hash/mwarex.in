@@ -6,7 +6,7 @@ const userSchema = new mongoose.Schema({
   creatorId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
-    required: false, 
+    required: false,
   },
   role: {
     type: String,
@@ -17,6 +17,14 @@ const userSchema = new mongoose.Schema({
     accessToken: String,
     refreshToken: String,
     updatedAt: Date,
+  },
+  settings: {
+    aiAutoSuggest: { type: Boolean, default: true },
+    aiThumbnailGen: { type: Boolean, default: true },
+    contentModeration: { type: String, default: 'medium' },
+    defaultStyle: { type: String, default: 'modern' },
+    emailNotifications: { type: Boolean, default: true },
+    pushNotifications: { type: Boolean, default: false }
   },
 });
 

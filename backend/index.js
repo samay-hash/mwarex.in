@@ -7,6 +7,7 @@ const { connectDB } = require("./db");
 const userRoutes = require("./routes/authUser");
 const adminRoutes = require("./routes/authAdmin");
 const videoRoutes = require("./routes/video");
+const aiRoutes = require("./routes/ai");
 const editorRoutes = require("./routes/editor");
 const inviteRoutes = require("./routes/invite");
 
@@ -25,7 +26,7 @@ const allowedOrigins = [
   "http://localhost:5173",
   "http://127.0.0.1:5173",
   "https://mware-x.vercel.app"
-  
+
 ];
 
 console.log("Allowed Origins:", allowedOrigins);
@@ -45,6 +46,7 @@ connectDB();
 app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/admin", adminRoutes);
 app.use("/api/v1/videos", videoRoutes);
+app.use("/api/v1/ai", aiRoutes);
 app.use("/api/editor", editorRoutes);
 app.use("/api/v1", inviteRoutes);
 app.use("/auth", googleAuthRoutes);
@@ -66,7 +68,7 @@ app.get("/oauth2callback", async (req, res) => {
     // Redirect to frontend callback with tokens (frontend should handle storing securely)
     const frontend = process.env.FRONTEND_URL ?? "http://localhost:3000";
     const params = new URLSearchParams();
-    
+
     if (tokens.access_token) params.append("access_token", tokens.access_token);
     if (tokens.refresh_token)
       params.append("refresh_token", tokens.refresh_token);

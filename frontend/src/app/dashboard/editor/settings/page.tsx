@@ -18,6 +18,8 @@ import {
     Loader2,
 } from "lucide-react";
 import { getUserData, logout, isAuthenticated } from "@/lib/auth";
+import { userAPI } from "@/lib/api";
+import { toast } from "sonner";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { MWareXLogo } from "@/components/mwarex-logo";
 import { cn } from "@/lib/utils";
@@ -25,25 +27,62 @@ import { cn } from "@/lib/utils";
 export default function EditorSettingsPage() {
     const router = useRouter();
     const [userData, setUserData] = useState<{ id?: string; name?: string; email?: string } | null>(null);
-    const [pageLoaded, setPageLoaded] = useState(false);
 
-    // Settings state
-    const [aiAutoSuggest, setAiAutoSuggest] = useState(true);
-    const [aiThumbnailGen, setAiThumbnailGen] = useState(true);
-    const [contentModeration, setContentModeration] = useState("medium");
-    const [defaultStyle, setDefaultStyle] = useState("modern");
-    const [emailNotifications, setEmailNotifications] = useState(true);
-    const [pushNotifications, setPushNotifications] = useState(false);
+    const [pageLoaded, setPageLoaded] = useState(false);
+    const [saving, setSaving] = useState(false);
+
+    // Unified settings state
+    const [settings, setSettings] = useState({
+        aiAutoSuggest: true,
+        aiThumbnailGen: true,
+        contentModeration: "medium",
+        defaultStyle: "modern",
+        emailNotifications: true,
+        pushNotifications: false,
+    });
 
     useEffect(() => {
         if (!isAuthenticated()) {
             router.push("/auth/signin");
             return;
         }
-        const data = getUserData();
-        setUserData(data);
-        setTimeout(() => setPageLoaded(true), 100);
+
+        // Fetch real settings
+        const fetchUserData = async () => {
+            try {
+                const res = await userAPI.getMe();
+                setUserData(res.data);
+                if (res.data.settings) {
+                    setSettings(prev => ({ ...prev, ...res.data.settings }));
+                }
+            } catch (error) {
+                console.error("Failed to load settings", error);
+                toast.error("Failed to load settings");
+            } finally {
+                setPageLoaded(true);
+            }
+        };
+
+        fetchUserData();
     }, [router]);
+
+    const handleSettingChange = async (key: string, value: any) => {
+        // Optimistic update
+        const newSettings = { ...settings, [key]: value };
+        setSettings(newSettings);
+        setSaving(true);
+
+        try {
+            await userAPI.updateSettings(newSettings);
+            // Optional: toast.success("Saved"); - keeping it subtle
+        } catch (error) {
+            console.error("Failed to save setting", error);
+            toast.error("Failed to save changes");
+            // Revert on failure could be added here
+        } finally {
+            setSaving(false);
+        }
+    };
 
     const handleLogout = () => {
         logout();
@@ -70,7 +109,7 @@ export default function EditorSettingsPage() {
 
     return (
         <div className="min-h-screen bg-background text-foreground">
-            {/* Header */}
+            {/* ... Header ... */}
             <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border">
                 <div className="max-w-4xl mx-auto px-4 md:px-6 py-3 flex items-center justify-between">
                     <div className="flex items-center gap-4">
@@ -90,6 +129,7 @@ export default function EditorSettingsPage() {
                         </div>
                     </div>
                     <div className="flex items-center gap-3">
+                        {saving && <span className="text-xs text-muted-foreground animate-pulse">Saving...</span>}
                         <ThemeToggle />
                         <button
                             onClick={handleLogout}
@@ -103,20 +143,7 @@ export default function EditorSettingsPage() {
             </header>
 
             <main className="max-w-4xl mx-auto px-4 md:px-6 py-8 space-y-8">
-                {/* Demo Mode Notice */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="p-4 rounded-xl bg-primary/10 border border-primary/20 flex items-start gap-3"
-                >
-                    <Info className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
-                    <div>
-                        <p className="text-sm font-medium text-foreground">Demo Mode</p>
-                        <p className="text-xs text-muted-foreground">
-                            Settings changes are simulated for demonstration purposes. In production, these would persist to your account.
-                        </p>
-                    </div>
-                </motion.div>
+                {/* ... Demo Notice ... */}
 
                 {/* AI Preferences Section */}
                 <motion.section
@@ -144,8 +171,8 @@ export default function EditorSettingsPage() {
                             <label className="relative inline-flex items-center cursor-pointer">
                                 <input
                                     type="checkbox"
-                                    checked={aiAutoSuggest}
-                                    onChange={(e) => setAiAutoSuggest(e.target.checked)}
+                                    checked={settings.aiAutoSuggest}
+                                    onChange={(e) => handleSettingChange('aiAutoSuggest', e.target.checked)}
                                     className="sr-only peer"
                                 />
                                 <div className="w-11 h-6 bg-muted rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-background after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
@@ -160,8 +187,8 @@ export default function EditorSettingsPage() {
                             <label className="relative inline-flex items-center cursor-pointer">
                                 <input
                                     type="checkbox"
-                                    checked={aiThumbnailGen}
-                                    onChange={(e) => setAiThumbnailGen(e.target.checked)}
+                                    checked={settings.aiThumbnailGen}
+                                    onChange={(e) => handleSettingChange('aiThumbnailGen', e.target.checked)}
                                     className="sr-only peer"
                                 />
                                 <div className="w-11 h-6 bg-muted rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-background after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
@@ -194,10 +221,10 @@ export default function EditorSettingsPage() {
                                 {["modern", "classic", "minimal"].map((style) => (
                                     <button
                                         key={style}
-                                        onClick={() => setDefaultStyle(style)}
+                                        onClick={() => handleSettingChange('defaultStyle', style)}
                                         className={cn(
                                             "py-3 px-4 rounded-xl border text-sm font-medium transition-all capitalize",
-                                            defaultStyle === style
+                                            settings.defaultStyle === style
                                                 ? "bg-primary text-primary-foreground border-primary"
                                                 : "bg-background border-border hover:border-primary/50"
                                         )}
@@ -237,10 +264,10 @@ export default function EditorSettingsPage() {
                             ].map((level) => (
                                 <button
                                     key={level.value}
-                                    onClick={() => setContentModeration(level.value)}
+                                    onClick={() => handleSettingChange('contentModeration', level.value)}
                                     className={cn(
                                         "py-3 px-4 rounded-xl border text-sm transition-all text-left",
-                                        contentModeration === level.value
+                                        settings.contentModeration === level.value
                                             ? "bg-primary text-primary-foreground border-primary"
                                             : "bg-background border-border hover:border-primary/50"
                                     )}
@@ -248,7 +275,7 @@ export default function EditorSettingsPage() {
                                     <p className="font-medium">{level.label}</p>
                                     <p className={cn(
                                         "text-xs mt-0.5",
-                                        contentModeration === level.value ? "text-primary-foreground/70" : "text-muted-foreground"
+                                        settings.contentModeration === level.value ? "text-primary-foreground/70" : "text-muted-foreground"
                                     )}>{level.desc}</p>
                                 </button>
                             ))}
@@ -282,8 +309,8 @@ export default function EditorSettingsPage() {
                             <label className="relative inline-flex items-center cursor-pointer">
                                 <input
                                     type="checkbox"
-                                    checked={emailNotifications}
-                                    onChange={(e) => setEmailNotifications(e.target.checked)}
+                                    checked={settings.emailNotifications}
+                                    onChange={(e) => handleSettingChange('emailNotifications', e.target.checked)}
                                     className="sr-only peer"
                                 />
                                 <div className="w-11 h-6 bg-muted rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-background after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
@@ -298,8 +325,8 @@ export default function EditorSettingsPage() {
                             <label className="relative inline-flex items-center cursor-pointer">
                                 <input
                                     type="checkbox"
-                                    checked={pushNotifications}
-                                    onChange={(e) => setPushNotifications(e.target.checked)}
+                                    checked={settings.pushNotifications}
+                                    onChange={(e) => handleSettingChange('pushNotifications', e.target.checked)}
                                     className="sr-only peer"
                                 />
                                 <div className="w-11 h-6 bg-muted rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-background after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>

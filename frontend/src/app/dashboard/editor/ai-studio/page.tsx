@@ -27,12 +27,17 @@ import { getUserData, logout, isAuthenticated } from "@/lib/auth";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { MWareXLogo } from "@/components/mwarex-logo";
 import { cn } from "@/lib/utils";
+import { aiAPI } from "@/lib/api";
+import { toast } from "sonner";
 
 export default function AIStudioPage() {
     const router = useRouter();
     const [userData, setUserData] = useState<{ name?: string; email?: string } | null>(null);
     const [pageLoaded, setPageLoaded] = useState(false);
     const [activeTab, setActiveTab] = useState<"thumbnail" | "titles" | "enhance" | "score">("thumbnail");
+
+    const [thumbnailTopic, setThumbnailTopic] = useState("");
+    const [titleKeywords, setTitleKeywords] = useState("");
 
     // Demo states
     const [isGenerating, setIsGenerating] = useState(false);
@@ -56,40 +61,54 @@ export default function AIStudioPage() {
         router.push("/");
     };
 
-    // Simulated AI generation functions
-    const generateThumbnails = () => {
+    const generateThumbnails = async () => {
+        if (!thumbnailTopic.trim()) {
+            toast.error("Please enter a topic");
+            return;
+        }
         setIsGenerating(true);
-        setTimeout(() => {
-            setGeneratedThumbnails([
-                "thumbnail-preview-1",
-                "thumbnail-preview-2",
-                "thumbnail-preview-3",
-                "thumbnail-preview-4",
-            ]);
+        try {
+            const res = await aiAPI.generateThumbnails({ topic: thumbnailTopic });
+            setGeneratedThumbnails(res.data.thumbnails.map((t: any) => t.url));
+        } catch (error) {
+            console.error(error);
+            toast.error("Failed to generate thumbnails");
+        } finally {
             setIsGenerating(false);
-        }, 2000);
+        }
     };
 
-    const generateTitles = () => {
+    const generateTitles = async () => {
+        if (!titleKeywords.trim()) {
+            toast.error("Please enter keywords");
+            return;
+        }
         setIsGenerating(true);
-        setTimeout(() => {
-            setGeneratedTitles([
-                "10 Mind-Blowing Tips That Changed My Life Forever",
-                "You Won't Believe What Happened Next...",
-                "The Ultimate Guide to [Your Topic] in 2024",
-                "I Tried This For 30 Days - Here's What Happened",
-                "Why Everyone Is Wrong About [Topic]",
-            ]);
+        try {
+            const res = await aiAPI.generateTitles({ keywords: titleKeywords });
+            if (res.data.titles) {
+                setGeneratedTitles(res.data.titles);
+            }
+        } catch (error) {
+            console.error(error);
+            toast.error("Failed to generate titles");
+        } finally {
             setIsGenerating(false);
-        }, 1500);
+        }
     };
 
-    const analyzePerformance = () => {
+    const analyzeScore = async () => {
         setIsGenerating(true);
-        setTimeout(() => {
-            setPerformanceScore(Math.floor(Math.random() * 30) + 70);
+        try {
+            // For demo/simplicity, we just fire the request. Real app would take inputs.
+            const res = await aiAPI.analyzeScore({ title: "Draft", description: "Draft content" });
+            setPerformanceScore(res.data.score);
+        } catch (error) {
+            console.error(error);
+            toast.error("Failed to analyze");
+        } finally {
             setIsGenerating(false);
-        }, 2500);
+        }
     };
 
     const copyToClipboard = (text: string) => {
@@ -239,6 +258,8 @@ export default function AIStudioPage() {
                                     <div className="p-4 rounded-xl bg-secondary/50 border border-border">
                                         <label className="block text-sm font-medium mb-2">Video Topic / Description</label>
                                         <textarea
+                                            value={thumbnailTopic}
+                                            onChange={(e) => setThumbnailTopic(e.target.value)}
                                             placeholder="Describe your video content for better thumbnail suggestions..."
                                             className="w-full bg-background border border-border rounded-lg p-3 text-sm resize-none h-20 focus:outline-none focus:ring-2 focus:ring-primary/50"
                                         />
@@ -252,12 +273,13 @@ export default function AIStudioPage() {
                                                     initial={{ opacity: 0, scale: 0.9 }}
                                                     animate={{ opacity: 1, scale: 1 }}
                                                     transition={{ delay: i * 0.1 }}
-                                                    className="aspect-video rounded-xl bg-gradient-to-br from-primary/20 via-violet-500/20 to-pink-500/20 border border-border flex items-center justify-center group cursor-pointer hover:border-primary/50 transition-all relative overflow-hidden"
+                                                    className="aspect-video rounded-xl bg-black border border-border flex items-center justify-center group cursor-pointer hover:border-primary/50 transition-all relative overflow-hidden"
                                                 >
-                                                    <div className="text-center">
-                                                        <Play className="w-8 h-8 text-primary mx-auto mb-2" />
-                                                        <span className="text-xs text-muted-foreground">Preview {i + 1}</span>
-                                                    </div>
+                                                    {isGenerating ? (
+                                                        <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+                                                    ) : (
+                                                        <img src={_} alt="Generated Thumbnail" className="w-full h-full object-cover" />
+                                                    )}
                                                     <div className="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
                                                         <button className="p-2 bg-background rounded-lg">
                                                             <Download className="w-4 h-4" />
@@ -314,6 +336,8 @@ export default function AIStudioPage() {
                                         <label className="block text-sm font-medium mb-2">Video Keywords</label>
                                         <input
                                             type="text"
+                                            value={titleKeywords}
+                                            onChange={(e) => setTitleKeywords(e.target.value)}
                                             placeholder="Enter keywords: productivity, morning routine, tips..."
                                             className="w-full bg-background border border-border rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
                                         />
@@ -428,7 +452,7 @@ export default function AIStudioPage() {
                                         </div>
                                     </div>
                                     <button
-                                        onClick={analyzePerformance}
+                                        onClick={analyzeScore}
                                         disabled={isGenerating}
                                         className="flex items-center gap-2 px-5 py-2.5 bg-primary text-primary-foreground rounded-xl font-medium text-sm hover:opacity-90 transition-opacity disabled:opacity-50"
                                     >
