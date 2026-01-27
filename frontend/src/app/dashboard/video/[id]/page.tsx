@@ -18,7 +18,7 @@ import {
     Scissors
 } from "lucide-react";
 import { videoAPI, userAPI } from "@/lib/api";
-import { VideoPlayer } from "@/components/video-player"; // We will create this or use basic video tag
+// import { VideoPlayer } from "@/components/video-player"; // We will create this or use basic video tag
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { getUserData } from "@/lib/auth";
