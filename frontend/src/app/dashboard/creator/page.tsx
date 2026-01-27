@@ -11,23 +11,25 @@ import {
   Users,
   Plus,
   Settings,
-  Bell,
   LogOut,
   Search,
   RefreshCw,
   Mail,
   Copy,
   Check,
-  TrendingUp,
   Video as VideoIcon,
   Menu,
   ChevronRight,
   Loader2,
-  LayoutDashboard
+  LayoutDashboard,
+  X,
+  Sun,
+  Moon,
+  Eye
 } from "lucide-react";
 import VideoCard from "@/components/VideoCard";
 import { videoAPI, inviteAPI, getGoogleAuthUrl } from "@/lib/api";
-import { isAuthenticated, getUserData, logout } from "@/lib/auth";
+import { isAuthenticated, getUserData, logout, isDemoUser } from "@/lib/auth";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { MWareXLogo } from "@/components/mwarex-logo";
 import { cn } from "@/lib/utils";
@@ -55,8 +57,9 @@ export default function CreatorDashboard() {
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [avatarLetter, setAvatarLetter] = useState("U");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
-  const [userData, setUserData] = useState<{ name?: string; email?: string } | null>(null);
+  const [userData, setUserData] = useState<{ name?: string; email?: string; isDemo?: boolean } | null>(null);
+  const [pageLoaded, setPageLoaded] = useState(false);
+  const [isDemo, setIsDemo] = useState(false);
 
   useEffect(() => {
     const data = getUserData();
@@ -65,12 +68,30 @@ export default function CreatorDashboard() {
       return;
     }
     setUserData(data);
-    fetchVideos();
+    setIsDemo(data?.isDemo === true);
+
+    // Only fetch videos if not a demo user
+    if (!data?.isDemo) {
+      fetchVideos();
+    } else {
+      // For demo users, just show empty state immediately
+      setIsLoading(false);
+    }
+
     const letter = data?.name?.[0] || data?.email?.[0] || "U";
     setAvatarLetter(letter);
+
+    // Page load animation
+    setTimeout(() => setPageLoaded(true), 100);
   }, [router]);
 
   const fetchVideos = async () => {
+    // Don't fetch if demo user
+    if (isDemoUser()) {
+      setIsLoading(false);
+      return;
+    }
+
     setIsLoading(true);
     try {
       const response = await videoAPI.getPending();
@@ -113,6 +134,16 @@ export default function CreatorDashboard() {
   const handleInviteEditor = async () => {
     if (!inviteEmail) return;
     setIsInviting(true);
+
+    // For demo users, show a mock invite link
+    if (isDemo) {
+      setTimeout(() => {
+        setInviteLink(`https://mwarex.app/invite/demo-${Date.now()}`);
+        setIsInviting(false);
+      }, 1000);
+      return;
+    }
+
     try {
       const response = await inviteAPI.sendInvite(inviteEmail);
       setInviteLink(response.data.inviteLink);
@@ -147,47 +178,62 @@ export default function CreatorDashboard() {
   const stats = useMemo(
     () => [
       {
-        label: "Pending Review",
+        label: "Pending",
         value: videos.filter((v) => v.status === "pending").length,
         icon: Clock,
-        style: "text-yellow-500",
-        bg: "bg-yellow-500/10",
-        border: "border-yellow-500/20",
-        bar: "bg-yellow-500"
+        color: "text-amber-500",
+        bg: "bg-amber-500/10",
+        border: "border-amber-500/20",
       },
       {
-        label: "Ready to Publish",
+        label: "Approved",
         value: videos.filter((v) => v.status === "approved").length,
         icon: CheckCircle,
-        style: "text-emerald-500",
+        color: "text-emerald-500",
         bg: "bg-emerald-500/10",
         border: "border-emerald-500/20",
-        bar: "bg-emerald-500"
       },
       {
         label: "Published",
         value: videos.filter((v) => v.status === "uploaded").length,
         icon: Youtube,
-        style: "text-red-500",
+        color: "text-red-500",
         bg: "bg-red-500/10",
         border: "border-red-500/20",
-        bar: "bg-red-500"
       },
       {
         label: "Rejected",
         value: videos.filter((v) => v.status === "rejected").length,
         icon: XCircle,
-        style: "text-muted-foreground",
-        bg: "bg-secondary/50",
-        border: "border-border/50",
-        bar: "bg-muted-foreground"
+        color: "text-zinc-400",
+        bg: "bg-zinc-500/10",
+        border: "border-zinc-500/20",
       },
     ],
     [videos]
   );
 
+  // Initial page loader
+  if (!pageLoaded) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="flex flex-col items-center gap-4"
+        >
+          <MWareXLogo showText={false} size="lg" />
+          <div className="flex items-center gap-2">
+            <Loader2 className="w-4 h-4 animate-spin text-primary" />
+            <span className="text-sm text-muted-foreground">Loading dashboard...</span>
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-background text-foreground flex overflow-hidden font-sans">
+    <div className="min-h-screen bg-background text-foreground flex overflow-hidden font-sans transition-colors duration-300">
 
       {/* Sidebar Overlay (Mobile) */}
       <AnimatePresence>
@@ -204,73 +250,63 @@ export default function CreatorDashboard() {
 
       {/* Sidebar */}
       <motion.aside
+        initial={{ x: -280 }}
+        animate={{ x: isSidebarOpen || typeof window !== 'undefined' && window.innerWidth >= 1024 ? 0 : -280 }}
         className={cn(
-          "fixed lg:relative inset-y-0 left-0 z-50 w-72 bg-card border-r border-border/50 flex flex-col shadow-2xl lg:shadow-none transition-transform duration-300 ease-in-out lg:translate-x-0 glass-card lg:bg-transparent lg:backdrop-filter-none",
+          "fixed lg:relative inset-y-0 left-0 z-50 w-64 bg-card border-r border-border flex flex-col transition-transform duration-300 ease-out lg:translate-x-0",
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
         {/* Logo Area */}
-        <div className="p-6 border-b border-white/5">
-          <div className="flex items-center gap-3">
-            <MWareXLogo showText={false} className="scale-100" />
-            <span className="text-xl font-bold tracking-tight">MWareX</span>
-          </div>
+        <div className="p-5 border-b border-border">
+          <MWareXLogo showText={true} size="md" />
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
-          <div className="text-xs font-semibold text-muted-foreground px-4 mb-2 uppercase tracking-wider">Menu</div>
+        <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+          <p className="text-[10px] font-semibold text-muted-foreground px-3 mb-3 uppercase tracking-widest">Menu</p>
 
-          <button className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-primary/10 text-primary font-medium transition-colors border border-primary/10">
-            <LayoutDashboard className="w-5 h-5" />
+          <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/10 text-primary font-medium text-sm transition-colors">
+            <LayoutDashboard className="w-4 h-4" />
             <span>Dashboard</span>
-            <ChevronRight className="w-4 h-4 ml-auto opacity-50" />
           </button>
 
           <button
             onClick={() => { setIsInviteModalOpen(true); setIsSidebarOpen(false); }}
-            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-muted-foreground hover:bg-secondary/50 hover:text-foreground transition-colors group"
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors text-sm"
           >
-            <Users className="w-5 h-5 group-hover:text-primary transition-colors" />
+            <Users className="w-4 h-4" />
             <span>Team Members</span>
           </button>
 
           <a
             href={getGoogleAuthUrl()}
-            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-muted-foreground hover:bg-secondary/50 hover:text-foreground transition-colors group"
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors text-sm"
           >
-            <Youtube className="w-5 h-5 group-hover:text-red-500 transition-colors" />
+            <Youtube className="w-4 h-4" />
             <span>Integrations</span>
           </a>
 
-          <div className="my-4 border-t border-white/5" />
+          <div className="my-4 border-t border-border" />
 
-          <button className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-muted-foreground hover:bg-secondary/50 hover:text-foreground transition-colors group">
-            <Settings className="w-5 h-5 group-hover:text-foreground transition-colors" />
-            <span>Project Settings</span>
+          <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors text-sm">
+            <Settings className="w-4 h-4" />
+            <span>Settings</span>
           </button>
         </nav>
 
         {/* User Profile */}
-        <div className="p-4 border-t border-white/5">
-          <div className="flex items-center gap-3 p-3 rounded-xl bg-secondary/30 hover:bg-secondary/50 transition-colors border border-white/5">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-orange-600 flex items-center justify-center text-white font-bold shadow-md">
+        <div className="p-4 border-t border-border">
+          <div className="flex items-center gap-3 p-2 rounded-lg bg-secondary/50">
+            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-orange-600 flex items-center justify-center text-white font-bold text-sm">
               {avatarLetter}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold truncate text-foreground">
-                {userData?.name || "Creator"}
-              </p>
-              <p className="text-xs text-muted-foreground truncate opacity-80">
-                {userData?.email}
-              </p>
+              <p className="text-sm font-medium truncate">{userData?.name || "Creator"}</p>
+              <p className="text-[11px] text-muted-foreground truncate">{userData?.email}</p>
             </div>
             <ThemeToggle />
-            <button
-              onClick={handleLogout}
-              className="p-2 text-muted-foreground hover:text-red-500 transition-colors"
-              title="Logout"
-            >
+            <button onClick={handleLogout} className="p-1.5 text-muted-foreground hover:text-red-500 transition-colors" title="Logout">
               <LogOut className="w-4 h-4" />
             </button>
           </div>
@@ -278,133 +314,168 @@ export default function CreatorDashboard() {
       </motion.aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 h-screen overflow-y-auto relative bg-background/50 selection:bg-primary/20">
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[100px] pointer-events-none -z-10" />
-
+      <main className="flex-1 h-screen overflow-y-auto bg-background">
         {/* Top Navbar */}
-        <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-xl border-b border-border/50 px-6 py-4 flex items-center justify-between">
+        <header className="sticky top-0 z-30 bg-background/95 backdrop-blur-sm border-b border-border px-4 md:px-6 py-3 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <button
               onClick={() => setIsSidebarOpen(true)}
               className="lg:hidden p-2 -ml-2 rounded-lg hover:bg-secondary text-muted-foreground"
             >
-              <Menu className="w-6 h-6" />
+              <Menu className="w-5 h-5" />
             </button>
             <div>
-              <h1 className="text-xl font-bold hidden sm:block tracking-tight">Overview</h1>
+              <h1 className="text-lg font-semibold">Dashboard</h1>
               <p className="text-xs text-muted-foreground hidden sm:block">Welcome back, {userData?.name}</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-secondary/30 border border-white/5 text-xs font-medium text-muted-foreground mr-2">
-              <div className={`w-2 h-2 rounded-full ${videos.some(v => v.status === 'pending') ? 'bg-yellow-500 animate-pulse' : 'bg-emerald-500'}`} />
-              {videos.filter(v => v.status === 'pending').length} Actions Required
-            </div>
+          <div className="flex items-center gap-2">
+            {videos.filter(v => v.status === 'pending').length > 0 && (
+              <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs font-medium text-amber-600 dark:text-amber-400">
+                <div className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+                {videos.filter(v => v.status === 'pending').length} pending
+              </div>
+            )}
             <button
               onClick={() => setIsInviteModalOpen(true)}
-              className="btn-primary flex items-center gap-2 py-2 px-4 shadow-lg shadow-primary/20 hover:shadow-primary/30 rounded-xl transition-transform hover:scale-105"
+              className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg font-medium text-sm hover:opacity-90 transition-opacity"
             >
               <Plus className="w-4 h-4" />
-              <span className="hidden sm:inline font-medium">Invite Editor</span>
+              <span className="hidden sm:inline">Invite Editor</span>
             </button>
           </div>
         </header>
 
-        <div className="p-6 lg:p-10 max-w-[1600px] mx-auto">
-          {/* Stats Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-            {stats.map((stat) => (
-              <div key={stat.label} className={cn("glass-card p-6 border relative overflow-hidden group hover:border-white/10 transition-colors", stat.border)}>
-                <div className={cn("absolute top-0 left-0 w-1 h-full", stat.bar)} />
-                <div className={cn("absolute inset-0 opacity-[0.03] group-hover:opacity-[0.06] transition-opacity", stat.bar.replace('bg-', 'bg-'))} />
-
-                <div className="flex items-center justify-between mb-4 relative z-10">
-                  <div
-                    className={cn("w-12 h-12 rounded-2xl flex items-center justify-center border", stat.bg, stat.border.replace('border-', 'border-opacity-50 '))}
-                  >
-                    <stat.icon className={cn("w-6 h-6", stat.style)} />
-                  </div>
-                  <TrendingUp className="w-4 h-4 text-muted-foreground opacity-30 group-hover:opacity-50 transition-opacity" />
+        <div className="p-4 md:p-6 lg:p-8 max-w-7xl mx-auto">
+          {/* Demo Mode Banner */}
+          {isDemo && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-6 p-4 rounded-xl bg-gradient-to-r from-indigo-500/10 to-violet-500/10 border border-indigo-500/20 flex items-center justify-between gap-4"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-lg bg-indigo-500/20 flex items-center justify-center">
+                  <Eye className="w-4 h-4 text-indigo-500" />
                 </div>
-                <div className="space-y-1 relative z-10">
-                  <p className="text-4xl font-bold tracking-tight text-foreground">
-                    {stat.value}
-                  </p>
-                  <p className="text-sm text-muted-foreground font-medium uppercase tracking-wide text-[10px]">{stat.label}</p>
+                <div>
+                  <p className="text-sm font-medium text-foreground">Recruiter Demo Mode</p>
+                  <p className="text-xs text-muted-foreground">You're viewing a preview of the Creator Dashboard. Some features are simulated.</p>
                 </div>
               </div>
+              <button
+                onClick={handleLogout}
+                className="px-3 py-1.5 text-xs font-medium bg-background border border-border rounded-lg hover:bg-secondary transition-colors"
+              >
+                Exit Demo
+              </button>
+            </motion.div>
+          )}
+
+          {/* Stats Grid */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+            className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-8"
+          >
+            {stats.map((stat, i) => (
+              <motion.div
+                key={stat.label}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.05 }}
+                className={cn(
+                  "bg-card border rounded-xl p-4 md:p-5 hover:shadow-md transition-all duration-200 cursor-default",
+                  stat.border
+                )}
+              >
+                <div className="flex items-center justify-between mb-3">
+                  <div className={cn("w-10 h-10 rounded-lg flex items-center justify-center", stat.bg)}>
+                    <stat.icon className={cn("w-5 h-5", stat.color)} />
+                  </div>
+                </div>
+                <p className="text-2xl md:text-3xl font-bold">{stat.value}</p>
+                <p className="text-xs text-muted-foreground mt-1">{stat.label}</p>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
 
           {/* Filters & Search */}
-          <div className="flex flex-col md:flex-row items-center gap-4 mb-8">
-            <div className="relative w-full md:w-96 group">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground group-focus-within:text-foreground transition-colors" />
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="flex flex-col md:flex-row items-stretch md:items-center gap-3 mb-6"
+          >
+            <div className="relative flex-1 max-w-md">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <input
                 type="text"
                 placeholder="Search videos..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-secondary/30 border border-border focus:border-primary/50 text-foreground rounded-xl pl-12 pr-4 py-3 outline-none transition-all focus:bg-background shadow-sm"
+                className="w-full bg-secondary/50 border border-border focus:border-primary/50 rounded-lg pl-10 pr-4 py-2.5 text-sm outline-none transition-colors focus:bg-background"
               />
             </div>
 
-            <div className="flex gap-2 w-full md:w-auto overflow-x-auto pb-1 md:pb-0 hide-scrollbar scroll-smooth">
+            <div className="flex gap-2 overflow-x-auto pb-1 md:pb-0">
               <button
                 onClick={() => setActiveTab("pending")}
                 className={cn(
-                  "px-6 py-3 rounded-xl text-sm font-medium transition-all whitespace-nowrap border flex items-center gap-2",
+                  "px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap",
                   activeTab === "pending"
-                    ? "bg-primary text-white border-primary shadow-lg shadow-primary/25"
-                    : "bg-background border-border text-muted-foreground hover:bg-secondary hover:text-foreground"
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-secondary text-muted-foreground hover:text-foreground"
                 )}
               >
-                Pending Review
-                {videos.filter(v => v.status === 'pending').length > 0 &&
-                  <span className="bg-white/20 text-white px-1.5 py-0.5 rounded text-[10px]">{videos.filter(v => v.status === 'pending').length}</span>
-                }
+                Pending
               </button>
               <button
                 onClick={() => setActiveTab("all")}
                 className={cn(
-                  "px-6 py-3 rounded-xl text-sm font-medium transition-all whitespace-nowrap border",
+                  "px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap",
                   activeTab === "all"
-                    ? "bg-primary text-white border-primary shadow-lg shadow-primary/25"
-                    : "bg-background border-border text-muted-foreground hover:bg-secondary hover:text-foreground"
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-secondary text-muted-foreground hover:text-foreground"
                 )}
               >
                 All Videos
               </button>
-
               <button
                 onClick={fetchVideos}
-                className="ml-auto p-3 rounded-xl bg-secondary/30 border border-border text-muted-foreground hover:text-primary hover:bg-secondary hover:border-primary/30 transition-all"
+                className="p-2 rounded-lg bg-secondary text-muted-foreground hover:text-foreground transition-colors"
               >
-                <RefreshCw className={cn("w-5 h-5", isLoading && "animate-spin")} />
+                <RefreshCw className={cn("w-4 h-4", isLoading && "animate-spin")} />
               </button>
             </div>
-          </div>
+          </motion.div>
 
           {/* Videos Grid */}
           {isLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="glass-card rounded-[2rem] overflow-hidden animate-pulse border border-white/5">
-                  <div className="aspect-video bg-secondary/50" />
-                  <div className="p-6 space-y-4">
-                    <div className="h-6 bg-secondary/50 rounded-lg w-3/4" />
-                    <div className="h-4 bg-secondary/30 rounded-lg w-full" />
+                <div key={i} className="bg-card border border-border rounded-xl overflow-hidden">
+                  <div className="aspect-video bg-secondary animate-pulse" />
+                  <div className="p-4 space-y-3">
+                    <div className="h-5 bg-secondary rounded animate-pulse w-3/4" />
+                    <div className="h-4 bg-secondary/70 rounded animate-pulse" />
                     <div className="flex gap-2 mt-4">
-                      <div className="h-10 w-full bg-secondary/40 rounded-lg" />
-                      <div className="h-10 w-full bg-secondary/40 rounded-lg" />
+                      <div className="h-9 flex-1 bg-secondary rounded animate-pulse" />
+                      <div className="h-9 flex-1 bg-secondary rounded animate-pulse" />
                     </div>
                   </div>
                 </div>
               ))}
             </div>
           ) : filteredVideos.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
+              className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"
+            >
               {filteredVideos.map((video) => (
                 <VideoCard
                   key={video._id}
@@ -415,26 +486,30 @@ export default function CreatorDashboard() {
                   isLoading={actionLoading === video._id}
                 />
               ))}
-            </div>
+            </motion.div>
           ) : (
-            <div className="text-center py-24 bg-gradient-to-b from-secondary/10 to-transparent border border-dashed border-white/10 rounded-[3rem]">
-              <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-secondary/20 flex items-center justify-center border border-white/5">
-                <VideoIcon className="w-10 h-10 text-muted-foreground/50" />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="text-center py-16 bg-card border border-dashed border-border rounded-2xl"
+            >
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-secondary flex items-center justify-center">
+                <VideoIcon className="w-7 h-7 text-muted-foreground" />
               </div>
-              <h3 className="text-2xl font-bold text-foreground mb-3">No videos found</h3>
-              <p className="text-muted-foreground mb-8 max-w-sm mx-auto leading-relaxed">
+              <h3 className="text-lg font-semibold mb-2">No videos found</h3>
+              <p className="text-muted-foreground text-sm mb-6 max-w-sm mx-auto">
                 {activeTab === 'pending'
                   ? "You're all caught up! No pending reviews at the moment."
-                  : "Try adjusting your search filters to find what you're looking for."}
+                  : "Try adjusting your search filters."}
               </p>
               <button
                 onClick={() => setIsInviteModalOpen(true)}
-                className="btn-primary inline-flex items-center gap-2 px-8 py-3.5 rounded-xl font-semibold shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all hover:scale-105"
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-primary-foreground rounded-lg font-medium text-sm hover:opacity-90 transition-opacity"
               >
-                <Plus className="w-5 h-5" />
+                <Plus className="w-4 h-4" />
                 Invite Editor
               </button>
-            </div>
+            </motion.div>
           )}
         </div>
       </main>
@@ -448,7 +523,7 @@ export default function CreatorDashboard() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsInviteModalOpen(false)}
-              className="absolute inset-0 bg-black/60 backdrop-blur-md"
+              className="absolute inset-0 bg-black/50 backdrop-blur-sm"
             />
 
             <motion.div
@@ -456,31 +531,40 @@ export default function CreatorDashboard() {
               animate={{ scale: 1, y: 0, opacity: 1 }}
               exit={{ scale: 0.95, y: 20, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
-              className="relative w-full max-w-lg glass-card rounded-[2rem] overflow-hidden shadow-2xl border border-white/10 dark:border-white/5 bg-[#0f0f10] text-foreground"
+              className="relative w-full max-w-md bg-card border border-border rounded-2xl overflow-hidden shadow-xl"
             >
-              <div className="p-8 pb-6 text-center border-b border-white/5 bg-gradient-to-b from-white/5 to-transparent">
-                <div className="w-20 h-20 mx-auto mb-5 rounded-3xl bg-primary/10 flex items-center justify-center text-primary shadow-xl shadow-primary/10 border border-primary/20">
-                  <Users className="w-10 h-10" />
+              {/* Header */}
+              <div className="p-5 border-b border-border flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                    <Users className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-semibold">Invite Editor</h2>
+                    <p className="text-xs text-muted-foreground">Send a secure invite link</p>
+                  </div>
                 </div>
-                <h2 className="text-3xl font-bold mb-2 tracking-tight">Invite Collaborator</h2>
-                <p className="text-muted-foreground text-sm max-w-xs mx-auto">
-                  Send a secure invite link to your editor to start collaborating.
-                </p>
+                <button
+                  onClick={() => setIsInviteModalOpen(false)}
+                  className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                </button>
               </div>
 
-              <div className="p-8">
+              <div className="p-5">
                 {!inviteLink ? (
-                  <div className="space-y-6">
-                    <div className="space-y-3">
-                      <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">Editor's Email</label>
-                      <div className="relative group">
-                        <Mail className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Editor's Email</label>
+                      <div className="relative">
+                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                         <input
                           type="email"
                           value={inviteEmail}
                           onChange={(e) => setInviteEmail(e.target.value)}
                           placeholder="name@example.com"
-                          className="w-full bg-secondary/30 border border-white/5 focus:border-primary/50 rounded-2xl pl-14 pr-6 py-4 outline-none transition-all focus:bg-secondary/50 text-lg font-medium placeholder:text-muted-foreground/30"
+                          className="w-full bg-secondary/50 border border-border focus:border-primary/50 rounded-lg pl-10 pr-4 py-3 outline-none transition-colors focus:bg-background"
                         />
                       </div>
                     </div>
@@ -488,58 +572,56 @@ export default function CreatorDashboard() {
                     <button
                       onClick={handleInviteEditor}
                       disabled={!inviteEmail || isInviting}
-                      className="w-full btn-primary py-4 rounded-xl flex items-center justify-center gap-3 mt-4 text-lg font-bold shadow-xl shadow-primary/20 hover:shadow-primary/40 transition-all hover:scale-[1.02]"
+                      className="w-full py-3 bg-primary text-primary-foreground rounded-lg font-medium flex items-center justify-center gap-2 hover:opacity-90 transition-opacity disabled:opacity-50"
                     >
                       {isInviting ? (
                         <>
-                          <Loader2 className="w-5 h-5 animate-spin" />
+                          <Loader2 className="w-4 h-4 animate-spin" />
                           Generating...
                         </>
                       ) : (
                         <>
-                          Send Invite <ChevronRight className="w-5 h-5 ml-1" />
+                          Send Invite
+                          <ChevronRight className="w-4 h-4" />
                         </>
                       )}
                     </button>
                   </div>
                 ) : (
-                  <div className="space-y-6">
-                    <div className="p-6 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-center relative overflow-hidden">
-                      <div className="absolute inset-0 bg-emerald-500/5 animate-pulse" />
-                      <div className="inline-flex items-center gap-3 text-emerald-500 font-bold mb-2 text-lg relative z-10">
-                        <CheckCircle className="w-6 h-6" />
+                  <div className="space-y-4">
+                    <div className="p-4 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-center">
+                      <div className="flex items-center justify-center gap-2 text-emerald-600 dark:text-emerald-400 font-medium mb-1">
+                        <CheckCircle className="w-4 h-4" />
                         Invite Generated!
                       </div>
-                      <p className="text-sm text-emerald-500/80 relative z-10">Use the link below to onboard your team.</p>
+                      <p className="text-xs text-muted-foreground">Share this link with your editor</p>
                     </div>
 
                     <div className="space-y-2">
-                      <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">Invite Link</label>
-                      <div className="relative group">
+                      <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Invite Link</label>
+                      <div className="relative">
                         <input
                           type="text"
                           value={inviteLink}
                           readOnly
-                          className="w-full bg-secondary/50 border border-white/10 text-foreground font-mono text-sm rounded-xl pl-5 pr-28 py-4 outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                          className="w-full bg-secondary/50 border border-border rounded-lg pl-3 pr-20 py-3 text-sm font-mono outline-none"
                         />
-                        <div className="absolute right-2 top-1/2 -translate-y-1/2">
-                          <button
-                            onClick={copyInviteLink}
-                            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-background border border-white/10 hover:bg-white/5 transition-colors text-xs font-bold"
-                          >
-                            {isCopied ? (
-                              <>
-                                <Check className="w-3.5 h-3.5 text-emerald-500" />
-                                Copied
-                              </>
-                            ) : (
-                              <>
-                                <Copy className="w-3.5 h-3.5" />
-                                Copy
-                              </>
-                            )}
-                          </button>
-                        </div>
+                        <button
+                          onClick={copyInviteLink}
+                          className="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-1.5 bg-background border border-border rounded text-xs font-medium flex items-center gap-1 hover:bg-secondary transition-colors"
+                        >
+                          {isCopied ? (
+                            <>
+                              <Check className="w-3 h-3 text-emerald-500" />
+                              Copied
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="w-3 h-3" />
+                              Copy
+                            </>
+                          )}
+                        </button>
                       </div>
                     </div>
 
@@ -549,9 +631,9 @@ export default function CreatorDashboard() {
                         setInviteEmail("");
                         setIsInviteModalOpen(false);
                       }}
-                      className="w-full py-4 rounded-xl border border-white/10 hover:bg-white/5 transition-colors font-semibold text-muted-foreground hover:text-foreground"
+                      className="w-full py-3 bg-secondary text-foreground rounded-lg font-medium hover:bg-secondary/80 transition-colors"
                     >
-                      Close Window
+                      Done
                     </button>
                   </div>
                 )}

@@ -15,11 +15,12 @@ import {
   Loader2,
   X,
   LogOut,
-  LayoutDashboard
+  LayoutDashboard,
+  Eye
 } from "lucide-react";
 import VideoCard from "@/components/VideoCard";
 import { videoAPI } from "@/lib/api";
-import { isAuthenticated, getUserData, logout } from "@/lib/auth";
+import { isAuthenticated, getUserData, logout, isDemoUser } from "@/lib/auth";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { MWareXLogo } from "@/components/mwarex-logo";
 import { cn } from "@/lib/utils";
@@ -39,7 +40,9 @@ export default function EditorDashboard() {
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [uploadLoading, setUploadLoading] = useState(false);
   const [creatorId, setCreatorId] = useState<string>("");
-  const [userData, setUserData] = useState<{ id?: string; name?: string; email?: string } | null>(null);
+  const [userData, setUserData] = useState<{ id?: string; name?: string; email?: string; isDemo?: boolean } | null>(null);
+  const [pageLoaded, setPageLoaded] = useState(false);
+  const [isDemo, setIsDemo] = useState(false);
 
   // Form State
   const [title, setTitle] = useState("");
@@ -48,24 +51,37 @@ export default function EditorDashboard() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    // Client-side fix for hydration mismatches
     const data = getUserData();
     if (!isAuthenticated()) {
       router.push("/auth/signin");
       return;
     }
     setUserData(data);
+    setIsDemo(data?.isDemo === true);
 
-    // Set associated creator info
     if (data?.creatorId) {
       setCreatorId(data.creatorId);
     }
 
-    fetchVideos();
+    // Only fetch videos if not a demo user
+    if (!data?.isDemo) {
+      fetchVideos();
+    } else {
+      setIsLoading(false);
+    }
+
+    // Page load animation
+    setTimeout(() => setPageLoaded(true), 100);
   }, [router]);
 
 
   const fetchVideos = async () => {
+    // Don't fetch if demo user
+    if (isDemoUser()) {
+      setIsLoading(false);
+      return;
+    }
+
     setIsLoading(true);
     try {
       const response = await videoAPI.getPending();
@@ -120,30 +136,69 @@ export default function EditorDashboard() {
     router.push("/");
   };
 
-  return (
-    <div className="min-h-screen bg-background text-foreground transition-colors duration-300 font-sans selection:bg-primary/20">
-      {/* Background Decor */}
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[100px] pointer-events-none -z-10" />
-      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-blue-500/5 rounded-full blur-[100px] pointer-events-none -z-10" />
+  const stats = [
+    {
+      label: "Awaiting Review",
+      value: videos.filter((v) => v.status === "pending").length,
+      icon: Clock,
+      color: "text-amber-500",
+      bg: "bg-amber-500/10",
+      border: "border-amber-500/20",
+    },
+    {
+      label: "Approved",
+      value: videos.filter((v) => v.status === "approved" || v.status === "uploaded").length,
+      icon: CheckCircle,
+      color: "text-emerald-500",
+      bg: "bg-emerald-500/10",
+      border: "border-emerald-500/20",
+    },
+    {
+      label: "Rejected",
+      value: videos.filter((v) => v.status === "rejected").length,
+      icon: XCircle,
+      color: "text-red-500",
+      bg: "bg-red-500/10",
+      border: "border-red-500/20",
+    },
+  ];
 
+  // Initial page loader
+  if (!pageLoaded) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="flex flex-col items-center gap-4"
+        >
+          <MWareXLogo showText={false} size="lg" />
+          <div className="flex items-center gap-2">
+            <Loader2 className="w-4 h-4 animate-spin text-primary" />
+            <span className="text-sm text-muted-foreground">Loading workspace...</span>
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-background text-foreground transition-colors duration-300 font-sans">
       {/* Header */}
-      <header className="sticky top-0 z-40 bg-background/80 backdrop-blur-xl border-b border-border/50 supports-[backdrop-filter]:bg-background/60">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-6">
-            <div className="flex items-center gap-3">
-              <MWareXLogo showText={false} className="scale-110" />
-              <span className="text-xl font-bold tracking-tight hidden md:block">MWareX</span>
-            </div>
-            <div className="h-6 w-px bg-border/50 hidden md:block" />
-            <div className="flex items-center gap-2">
-              <div className="p-1.5 bg-secondary/50 rounded-lg">
-                <LayoutDashboard className="w-4 h-4 text-muted-foreground" />
+      <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border">
+        <div className="max-w-6xl mx-auto px-4 md:px-6 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <MWareXLogo showText={true} size="md" />
+            <div className="h-5 w-px bg-border hidden md:block" />
+            <div className="hidden md:flex items-center gap-2">
+              <div className="p-1.5 bg-secondary rounded-lg">
+                <LayoutDashboard className="w-3.5 h-3.5 text-muted-foreground" />
               </div>
               <div>
                 <h1 className="text-sm font-semibold leading-none">Editor Workspace</h1>
                 {userData && (
                   <p className="text-[10px] text-muted-foreground mt-0.5 flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)] animate-pulse" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                     {userData.name}
                   </p>
                 )}
@@ -151,221 +206,205 @@ export default function EditorDashboard() {
             </div>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <ThemeToggle />
             <button
               onClick={handleLogout}
-              className="p-2.5 rounded-full hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors border border-transparent hover:border-border"
+              className="p-2 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
               title="Log out"
             >
               <LogOut className="w-4 h-4" />
             </button>
             <button
               onClick={() => setIsUploadModalOpen(true)}
-              className="btn-primary flex items-center gap-2 py-2.5 px-5 shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all rounded-xl"
+              className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg font-medium text-sm hover:opacity-90 transition-opacity"
             >
               <Plus className="w-4 h-4" />
-              <span className="hidden sm:inline font-medium">New Submission</span>
+              <span className="hidden sm:inline">New Submission</span>
             </button>
           </div>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-6 py-12">
+      <main className="max-w-6xl mx-auto px-4 md:px-6 py-8">
         {/* Stats Row */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-          {/* Pending */}
-          <div className="glass-card p-6 border border-white/5 relative overflow-hidden group">
-            <div className="absolute inset-0 bg-yellow-500/5 group-hover:bg-yellow-500/10 transition-colors" />
-            <div className="absolute top-0 left-0 w-1 h-full bg-yellow-500" />
-            <div className="relative z-10 flex flex-col justify-between h-full min-h-[100px]">
-              <div className="flex justify-between items-start mb-4">
-                <span className="text-xs font-bold text-yellow-500 tracking-wider uppercase">Awaiting Review</span>
-                <div className="p-2 bg-yellow-500/10 rounded-lg">
-                  <Clock className="w-5 h-5 text-yellow-500" />
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8"
+        >
+          {stats.map((stat, i) => (
+            <motion.div
+              key={stat.label}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.05 }}
+              className={cn(
+                "bg-card border rounded-xl p-5 hover:shadow-md transition-all duration-200",
+                stat.border
+              )}
+            >
+              <div className="flex items-center justify-between mb-3">
+                <span className={cn("text-xs font-semibold uppercase tracking-wider", stat.color)}>
+                  {stat.label}
+                </span>
+                <div className={cn("w-9 h-9 rounded-lg flex items-center justify-center", stat.bg)}>
+                  <stat.icon className={cn("w-4 h-4", stat.color)} />
                 </div>
               </div>
-              <p className="text-4xl font-bold leading-none text-foreground">
-                {videos.filter((v) => v.status === "pending").length}
-              </p>
-            </div>
-          </div>
-
-          {/* Approved */}
-          <div className="glass-card p-6 border border-white/5 relative overflow-hidden group">
-            <div className="absolute inset-0 bg-emerald-500/5 group-hover:bg-emerald-500/10 transition-colors" />
-            <div className="absolute top-0 left-0 w-1 h-full bg-emerald-500" />
-            <div className="relative z-10 flex flex-col justify-between h-full min-h-[100px]">
-              <div className="flex justify-between items-start mb-4">
-                <span className="text-xs font-bold text-emerald-500 tracking-wider uppercase">Approved</span>
-                <div className="p-2 bg-emerald-500/10 rounded-lg">
-                  <CheckCircle className="w-5 h-5 text-emerald-500" />
-                </div>
-              </div>
-              <p className="text-4xl font-bold leading-none text-foreground">
-                {videos.filter((v) => v.status === "approved" || v.status === "uploaded").length}
-              </p>
-            </div>
-          </div>
-
-          {/* Rejected */}
-          <div className="glass-card p-6 border border-white/5 relative overflow-hidden group">
-            <div className="absolute inset-0 bg-red-500/5 group-hover:bg-red-500/10 transition-colors" />
-            <div className="absolute top-0 left-0 w-1 h-full bg-red-500" />
-            <div className="relative z-10 flex flex-col justify-between h-full min-h-[100px]">
-              <div className="flex justify-between items-start mb-4">
-                <span className="text-xs font-bold text-red-500 tracking-wider uppercase">Rejected</span>
-                <div className="p-2 bg-red-500/10 rounded-lg">
-                  <XCircle className="w-5 h-5 text-red-500" />
-                </div>
-              </div>
-              <p className="text-4xl font-bold leading-none text-foreground">
-                {videos.filter((v) => v.status === "rejected").length}
-              </p>
-            </div>
-          </div>
-        </div>
+              <p className="text-3xl font-bold">{stat.value}</p>
+            </motion.div>
+          ))}
+        </motion.div>
 
         {/* Content Section */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="space-y-1">
-            <h2 className="text-2xl font-bold tracking-tight">Recent Submissions</h2>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="flex items-center justify-between mb-6"
+        >
+          <div>
+            <h2 className="text-lg font-semibold">Recent Submissions</h2>
             <p className="text-sm text-muted-foreground">Manage and track your video delivery status.</p>
           </div>
           <button
             onClick={fetchVideos}
-            className="text-muted-foreground hover:text-primary transition-colors p-2.5 rounded-full hover:bg-secondary border border-transparent hover:border-border"
+            className="p-2 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
           >
-            <RefreshCw
-              className={`w-5 h-5 ${isLoading ? "animate-spin" : ""}`}
-            />
+            <RefreshCw className={cn("w-4 h-4", isLoading && "animate-spin")} />
           </button>
-        </div>
+        </motion.div>
 
         {isLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {[1, 2, 3].map((i) => (
-              <div
-                key={i}
-                className="glass-card rounded-2xl aspect-video animate-pulse bg-secondary/50 border border-white/5"
-              />
+              <div key={i} className="bg-card border border-border rounded-xl overflow-hidden">
+                <div className="aspect-video bg-secondary animate-pulse" />
+                <div className="p-4 space-y-3">
+                  <div className="h-5 bg-secondary rounded animate-pulse w-3/4" />
+                  <div className="h-4 bg-secondary/70 rounded animate-pulse" />
+                </div>
+              </div>
             ))}
           </div>
         ) : videos.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+          >
             {videos.map((video) => (
               <VideoCard key={video._id} video={video} />
             ))}
-          </div>
+          </motion.div>
         ) : (
-          <div className="text-center py-20 border border-dashed border-border/50 rounded-3xl bg-secondary/5 relative overflow-hidden">
-
-            {/* Subtle animated pattern */}
-            <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle, #888 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
-
-            <div className="relative z-10">
-              <div className="w-20 h-20 bg-gradient-to-br from-secondary to-background rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl border border-white/10">
-                <FileVideo className="w-8 h-8 text-primary/80" />
-              </div>
-              <h3 className="text-lg font-semibold text-foreground mb-2">
-                No videos submitted yet
-              </h3>
-              <p className="text-muted-foreground mb-8 max-w-sm mx-auto">Start your workflow by uploading your first draft for review.</p>
-              <button
-                onClick={() => setIsUploadModalOpen(true)}
-                className="btn-outline border-primary/20 hover:border-primary/50 text-primary hover:bg-primary/5 px-8 py-3 rounded-xl transition-all"
-              >
-                Upload your first video
-              </button>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="text-center py-16 bg-card border border-dashed border-border rounded-2xl"
+          >
+            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-secondary flex items-center justify-center">
+              <FileVideo className="w-7 h-7 text-muted-foreground" />
             </div>
-          </div>
+            <h3 className="text-lg font-semibold mb-2">No videos submitted yet</h3>
+            <p className="text-muted-foreground text-sm mb-6 max-w-sm mx-auto">
+              Start your workflow by uploading your first draft for review.
+            </p>
+            <button
+              onClick={() => setIsUploadModalOpen(true)}
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-primary-foreground rounded-lg font-medium text-sm hover:opacity-90 transition-opacity"
+            >
+              <Upload className="w-4 h-4" />
+              Upload your first video
+            </button>
+          </motion.div>
         )}
       </main>
 
-      {/* Upload Modal - Premium Redesign */}
+      {/* Upload Modal */}
       <AnimatePresence>
         {isUploadModalOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            {/* Backdrop */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsUploadModalOpen(false)}
-              className="absolute inset-0 bg-black/60 backdrop-blur-md"
+              className="absolute inset-0 bg-black/50 backdrop-blur-sm"
             />
 
-            {/* Modal Content */}
             <motion.div
               initial={{ scale: 0.95, y: 20, opacity: 0 }}
               animate={{ scale: 1, y: 0, opacity: 1 }}
               exit={{ scale: 0.95, y: 20, opacity: 0 }}
-              className="relative w-full max-w-xl glass-card rounded-[2rem] overflow-hidden shadow-2xl border border-white/10 dark:border-white/5 bg-[#0f0f10] text-foreground"
+              className="relative w-full max-w-lg bg-card border border-border rounded-2xl overflow-hidden shadow-xl"
             >
-              <div className="p-8 border-b border-white/5 bg-gradient-to-r from-secondary/20 to-transparent flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20 shadow-lg shadow-primary/10">
-                    <Upload className="w-6 h-6 text-primary" />
+              {/* Header */}
+              <div className="p-5 border-b border-border flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                    <Upload className="w-5 h-5" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold tracking-tight">Submit New Draft</h3>
-                    <p className="text-sm text-muted-foreground">Send raw footage or edits to creator</p>
+                    <h3 className="text-lg font-semibold">Submit New Draft</h3>
+                    <p className="text-xs text-muted-foreground">Send footage to creator for review</p>
                   </div>
                 </div>
                 <button
                   onClick={() => setIsUploadModalOpen(false)}
-                  className="p-2 rounded-full hover:bg-white/5 text-muted-foreground hover:text-foreground transition-colors"
+                  className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground transition-colors"
                 >
-                  <X className="w-5 h-5" />
+                  <X className="w-4 h-4" />
                 </button>
               </div>
 
-              <form onSubmit={handleUpload} className="p-8 space-y-6">
+              <form onSubmit={handleUpload} className="p-5 space-y-5">
                 {error && (
                   <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 text-sm flex items-center gap-3"
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-500 text-sm flex items-center gap-2"
                   >
-                    <AlertCircle className="w-5 h-5 flex-shrink-0" />
+                    <AlertCircle className="w-4 h-4 flex-shrink-0" />
                     {error}
                   </motion.div>
                 )}
 
-                <div className="grid gap-6">
-                  <div className="space-y-2">
-                    <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground ml-1">
-                      Video Title
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={title}
-                      onChange={(e) => setTitle(e.target.value)}
-                      className="w-full bg-secondary/30 border border-white/5 focus:border-primary/50 rounded-xl px-5 py-4 outline-none transition-all focus:bg-secondary/50 placeholder:text-muted-foreground/40 text-lg font-medium"
-                      placeholder="E.g. My Amazing Travel Vlog - v1"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground ml-1">
-                      Description / Notes
-                    </label>
-                    <textarea
-                      rows={3}
-                      value={description}
-                      onChange={(e) => setDescription(e.target.value)}
-                      className="w-full bg-secondary/30 border border-white/5 focus:border-primary/50 rounded-xl px-5 py-4 outline-none transition-all resize-none focus:bg-secondary/50 placeholder:text-muted-foreground/40"
-                      placeholder="Add notes for the creator about this draft..."
-                    />
-                  </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    Video Title
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    className="w-full bg-secondary/50 border border-border focus:border-primary/50 rounded-lg px-4 py-3 outline-none transition-colors focus:bg-background"
+                    placeholder="E.g. My Amazing Travel Vlog - v1"
+                  />
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground ml-1">
+                  <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    Description / Notes
+                  </label>
+                  <textarea
+                    rows={3}
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    className="w-full bg-secondary/50 border border-border focus:border-primary/50 rounded-lg px-4 py-3 outline-none transition-colors resize-none focus:bg-background"
+                    placeholder="Add notes for the creator about this draft..."
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Video File
                   </label>
-                  <div className="relative border-2 border-dashed border-white/10 hover:border-primary/30 rounded-2xl p-10 text-center transition-all group bg-secondary/5 hover:bg-secondary/10 cursor-pointer overflow-hidden">
+                  <div className="relative border-2 border-dashed border-border hover:border-primary/30 rounded-xl p-8 text-center transition-colors cursor-pointer bg-secondary/20 hover:bg-secondary/30">
                     <input
                       type="file"
                       accept="video/*"
@@ -374,41 +413,35 @@ export default function EditorDashboard() {
                       className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
                     />
 
-                    {/* Hover Pulse Effect */}
-                    <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
-
-                    <div className="relative z-0">
-                      <div className="w-16 h-16 bg-background rounded-full flex items-center justify-center mx-auto mb-4 shadow-xl border border-white/5 group-hover:scale-110 transition-transform duration-300">
-                        <FileVideo className="w-8 h-8 text-primary group-hover:text-primary/80 transition-colors" />
-                      </div>
-                      <p className="text-lg text-foreground font-semibold mb-1 group-hover:text-primary transition-colors">
-                        {file ? file.name : "Click to browse or drag file"}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        MP4, MOV, or WEBM (Max 2GB)
-                      </p>
+                    <div className="w-12 h-12 bg-background rounded-full flex items-center justify-center mx-auto mb-3 border border-border">
+                      <FileVideo className="w-5 h-5 text-primary" />
                     </div>
+                    <p className="text-sm font-medium mb-1">
+                      {file ? file.name : "Click to browse or drag file"}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      MP4, MOV, or WEBM (Max 2GB)
+                    </p>
                   </div>
                 </div>
 
-                <div className="pt-4">
-                  <button
-                    disabled={uploadLoading}
-                    className="w-full btn-primary py-4 rounded-xl flex items-center justify-center gap-3 shadow-xl shadow-primary/20 hover:shadow-primary/40 transition-all font-bold text-lg hover:scale-[1.01] active:scale-[0.99]"
-                  >
-                    {uploadLoading ? (
-                      <>
-                        <Loader2 className="w-5 h-5 animate-spin" />
-                        Uploading...
-                      </>
-                    ) : (
-                      <>
-                        <Upload className="w-5 h-5" />
-                        Upload Submission
-                      </>
-                    )}
-                  </button>
-                </div>
+                <button
+                  type="submit"
+                  disabled={uploadLoading}
+                  className="w-full py-3 bg-primary text-primary-foreground rounded-lg font-medium flex items-center justify-center gap-2 hover:opacity-90 transition-opacity disabled:opacity-50"
+                >
+                  {uploadLoading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Uploading...
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="w-4 h-4" />
+                      Upload Submission
+                    </>
+                  )}
+                </button>
               </form>
             </motion.div>
           </div>

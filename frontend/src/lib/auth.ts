@@ -41,18 +41,31 @@ export const setUserData = (data: {
   name?: string;
   id?: string;
   creatorId?: string;
+  isDemo?: boolean;
 }) => {
   if (typeof window !== "undefined") {
     localStorage.setItem("userData", JSON.stringify(data));
   }
 };
 
-export const getUserData = () => {
+export const getUserData = (): {
+  email?: string;
+  name?: string;
+  id?: string;
+  creatorId?: string;
+  isDemo?: boolean;
+} | null => {
   if (typeof window !== "undefined") {
     const data = localStorage.getItem("userData");
     return data ? JSON.parse(data) : null;
   }
   return null;
+};
+
+// Check if current session is a demo/recruiter session
+export const isDemoUser = (): boolean => {
+  const userData = getUserData();
+  return userData?.isDemo === true;
 };
 
 export const logout = () => {
