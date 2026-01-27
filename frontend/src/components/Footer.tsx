@@ -30,7 +30,6 @@ export default function Footer() {
   const socialLinks = [
     { icon: Github, href: 'https://github.com/samay-hash', label: 'GitHub' },
     { icon: Linkedin, href: 'https://www.linkedin.com/in/samaysamrat/', label: 'LinkedIn' },
-    { icon: Twitter, href: 'https://x.com/ChemistGamer1', label: 'Twitter' },
     { icon: Youtube, href: 'https://www.youtube.com/@futxsamay', label: 'YouTube' },
     { icon: Mail, href: 'mailto:samay3076@gmail.com', label: 'Email' },
   ];

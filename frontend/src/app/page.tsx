@@ -10,7 +10,7 @@ import { HowItWorks } from "@/components/how-it-works";
 import { PricingSection } from "@/components/pricing-section";
 import { ProductPreview } from "@/components/product-preview";
 import { Testimonials } from "@/components/testimonials";
-import { Layers, ArrowRight, Github, Twitter, Linkedin, Sparkles } from "lucide-react";
+import { Layers, ArrowRight, Github, Twitter, Linkedin, Sparkles, Youtube } from "lucide-react";
 
 export default function LandingPage() {
   return (
@@ -276,9 +276,15 @@ export default function LandingPage() {
                 The secure operating system for modern YouTube creators and editing teams.
               </p>
               <div className="flex gap-3">
-                <SocialLink icon={<Github className="w-4 h-4" />} href="https://github.com/samay-hash" />
-                <SocialLink icon={<Linkedin className="w-4 h-4" />} href="https://linkedin.com" />
-                <SocialLink icon={<Twitter className="w-4 h-4" />} href="https://twitter.com" />
+                <a href="https://github.com/samay-hash" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-secondary border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-accent hover:border-primary/30 transition-all">
+                  <Github className="w-4 h-4" />
+                </a>
+                <a href="https://www.linkedin.com/in/samaysamrat/" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-secondary border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-accent hover:border-primary/30 transition-all">
+                  <Linkedin className="w-4 h-4" />
+                </a>
+                <a href="https://www.youtube.com/@futxsamay" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-secondary border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-accent hover:border-primary/30 transition-all">
+                  <Youtube className="w-4 h-4" />
+                </a>
               </div>
             </div>
 
@@ -286,9 +292,9 @@ export default function LandingPage() {
             <div>
               <h4 className="font-semibold text-foreground mb-4 text-sm">Product</h4>
               <ul className="space-y-2.5 text-muted-foreground text-sm">
-                <FooterLink href="#features">Features</FooterLink>
-                <FooterLink href="#pricing">Pricing</FooterLink>
-                <FooterLink href="#workflow">How It Works</FooterLink>
+                <li><Link href="#features" className="hover:text-foreground transition-colors">Features</Link></li>
+                <li><Link href="#pricing" className="hover:text-foreground transition-colors">Pricing</Link></li>
+                <li><Link href="#workflow" className="hover:text-foreground transition-colors">How It Works</Link></li>
               </ul>
             </div>
 
@@ -296,9 +302,9 @@ export default function LandingPage() {
             <div>
               <h4 className="font-semibold text-foreground mb-4 text-sm">Resources</h4>
               <ul className="space-y-2.5 text-muted-foreground text-sm">
-                <FooterLink href="#">Documentation</FooterLink>
-                <FooterLink href="#">API Reference</FooterLink>
-                <FooterLink href="#">Support</FooterLink>
+                <li><Link href="#" className="hover:text-foreground transition-colors">Documentation</Link></li>
+                <li><Link href="#" className="hover:text-foreground transition-colors">API Reference</Link></li>
+                <li><Link href="#" className="hover:text-foreground transition-colors">Support</Link></li>
               </ul>
             </div>
 
@@ -306,8 +312,8 @@ export default function LandingPage() {
             <div>
               <h4 className="font-semibold text-foreground mb-4 text-sm">Legal</h4>
               <ul className="space-y-2.5 text-muted-foreground text-sm">
-                <FooterLink href="/privacy-policy">Privacy Policy</FooterLink>
-                <FooterLink href="/terms">Terms of Service</FooterLink>
+                <li><Link href="/privacy-policy" className="hover:text-foreground transition-colors">Privacy Policy</Link></li>
+                <li><Link href="/terms" className="hover:text-foreground transition-colors">Terms of Service</Link></li>
               </ul>
             </div>
           </div>
