@@ -27,7 +27,7 @@ try {
 const PLANS = {
     pro: {
         name: "Pro",
-        amount: 29900, //299
+        amount: 1100, //11
         features: ["Unlimited projects", "Priority support", "Advanced AI tools"],
     },
     team: {

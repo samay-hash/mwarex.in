@@ -29,11 +29,17 @@ router.post("/invite", creatorAuth, async (req, res) => {
     });
 
     if (process.env.EMAIL_USER && process.env.EMAIL_PASS && email) {
-      sendInviteEmail(email, inviteLink, creatorName)
-        .then(() => console.log("Email sent successfully to:", email))
-        .catch((emailErr) => console.error("Email sending failed (non-blocking):", emailErr.message));
+      console.log("Environment variables present. Sending email...");
+      // We'll await this just for debugging to ensure we catch the error 
+      // (In production high-scale you might queue this, but for now we need to see the error)
+      try {
+        await sendInviteEmail(email, inviteLink, creatorName);
+        console.log("Email sent successfully to:", email);
+      } catch (emailErr) {
+        console.error("FULL EMAIL ERROR:", emailErr);
+      }
     } else {
-      console.log("Email not configured or recipient missing. Link-only mode.");
+      console.log(`Email skip. User: ${!!process.env.EMAIL_USER}, Pass: ${!!process.env.EMAIL_PASS}, To: ${email}`);
     }
 
   } catch (err) {

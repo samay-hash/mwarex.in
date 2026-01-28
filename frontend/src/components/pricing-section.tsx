@@ -39,8 +39,8 @@ const pricingPlans = [
     },
     {
         name: "Pro",
-        price: "299",
-        priceInr: "299",
+        price: "11",
+        priceInr: "11",
         planId: "pro",
         description: "Best for Creators working with multiple editors",
         features: [

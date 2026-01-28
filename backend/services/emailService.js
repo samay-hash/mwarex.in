@@ -40,7 +40,15 @@ const sendInviteEmail = async (toEmail, inviteLink, creatorName) => {
     `,
   };
 
-  await transporter.sendMail(mailOptions);
+  console.log(`Attempting to send email to ${toEmail} from ${process.env.EMAIL_USER}...`);
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    console.log("Email sent info:", info.response);
+    return info;
+  } catch (error) {
+    console.error("Transporter Send Error:", error);
+    throw error;
+  }
 };
 
 module.exports = { sendInviteEmail };
