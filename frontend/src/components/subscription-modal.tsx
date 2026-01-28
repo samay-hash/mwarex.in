@@ -17,7 +17,7 @@ const plans = [
     {
         id: "pro",
         name: "Pro Plan",
-        price: 799,
+        price: 299,
         description: "For creators who want to scale faster.",
         features: [
             "Unlimited Projects",
@@ -34,7 +34,7 @@ const plans = [
     {
         id: "team",
         name: "Team Plan",
-        price: 1999,
+        price: 999,
         description: "Perfect for agencies and studios.",
         features: [
             "Everything in Pro",

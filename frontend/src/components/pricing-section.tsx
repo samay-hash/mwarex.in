@@ -39,8 +39,8 @@ const pricingPlans = [
     },
     {
         name: "Pro",
-        price: "799",
-        priceInr: "799",
+        price: "299",
+        priceInr: "299",
         planId: "pro",
         description: "Best for Creators working with multiple editors",
         features: [
@@ -60,8 +60,8 @@ const pricingPlans = [
     },
     {
         name: "Team",
-        price: "1999",
-        priceInr: "1999",
+        price: "999",
+        priceInr: "999",
         planId: "team",
         description: "Best for YouTube studios, agencies & large channels",
         features: [

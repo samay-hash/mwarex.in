@@ -27,12 +27,12 @@ try {
 const PLANS = {
     pro: {
         name: "Pro",
-        amount: 79900, // ₹799
+        amount: 29900, //299
         features: ["Unlimited projects", "Priority support", "Advanced AI tools"],
     },
     team: {
         name: "Team",
-        amount: 199900, // ₹1999
+        amount: 99900, // ₹1999
         features: ["Everything in Pro", "Team collaboration", "Custom integrations"],
     },
 };
