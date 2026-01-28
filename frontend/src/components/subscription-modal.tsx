@@ -34,7 +34,7 @@ const plans = [
     {
         id: "team",
         name: "Team Plan",
-        price: 999,
+        price: 899,
         description: "Perfect for agencies and studios.",
         features: [
             "Everything in Pro",

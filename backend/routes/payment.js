@@ -32,7 +32,7 @@ const PLANS = {
     },
     team: {
         name: "Team",
-        amount: 99900, // ₹1999
+        amount: 89900, // ₹899
         features: ["Everything in Pro", "Team collaboration", "Custom integrations"],
     },
 };
