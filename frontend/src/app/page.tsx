@@ -279,8 +279,8 @@ export default function LandingPage() {
                 <a href="https://github.com/samay-hash" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-secondary border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-accent hover:border-primary/30 transition-all">
                   <Github className="w-4 h-4" />
                 </a>
-                <a href="https://www.linkedin.com/in/samaysamrat/" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-secondary border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-accent hover:border-primary/30 transition-all">
-                  <Linkedin className="w-4 h-4" />
+                <a href="https://x.com/ChemistGamer1" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-secondary border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-accent hover:border-primary/30 transition-all">
+                  <Twitter className="w-4 h-4" />
                 </a>
                 <a href="https://www.youtube.com/@futxsamay" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-secondary border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-accent hover:border-primary/30 transition-all">
                   <Youtube className="w-4 h-4" />

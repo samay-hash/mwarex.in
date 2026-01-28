@@ -2,8 +2,6 @@ const router = require("express").Router();
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const userAuth = require("../middlewares/userMiddleware");
 
-// Initialize Gemini
-// Ensure GEMINI_API_KEY is in .env
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "dummy_key");
 
 // Helper to get model
