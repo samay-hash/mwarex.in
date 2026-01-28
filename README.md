@@ -172,7 +172,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
   <a href="https://github.com/samay-hash">
     <img src="https://img.shields.io/github/followers/samay-hash?style=social" alt="GitHub Followers" />
   </a>
-  <a href="https://twitter.com/your_handle">
+  <a href="https://x.com/ChemistGamer1">
     <img src="https://img.shields.io/twitter/follow/your_handle?style=social" alt="Twitter Follow" />
   </a>
 
