@@ -1,324 +1,179 @@
 <div align="center">
 
-# 🎬 MwareX
+  <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&weight=700&size=40&pause=1000&color=2196F3&center=true&vCenter=true&width=500&lines=MwareX;Streamlining+Content+Creation;Secure.+Fast.+Seamless." alt="Typing SVG" />
 
-### *MwareX is a secure video collaboration platform designed for YouTube creators and editors.
-Creators can send editing requests, while editors upload finalized videos without ever accessing channel credentials.
-The platform eliminates unsafe credential sharing using OAuth 2.0 authentication and Cloudinary-powered video storage and streaming, ensuring secure and efficient data handling.
-Built with Next.js 14, Node.js, MongoDB Atlas, and YouTube Data API v3, MwareX enables one-click video approval and seamless background uploads directly to YouTube—no downloads required.
+  ### 🚀 The Ultimate Video Collaboration Platform for YouTube Creators & Editors
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Next.js-14-black?style=for-the-badge&logo=next.js" />
-  <img src="https://img.shields.io/badge/Node.js-20-green?style=for-the-badge&logo=node.js" />
-  <img src="https://img.shields.io/badge/MongoDB-Atlas-47A248?style=for-the-badge&logo=mongodb" />
-  <img src="https://img.shields.io/badge/Cloudinary-Cloud-3448C5?style=for-the-badge&logo=cloudinary" />
-  <img src="https://img.shields.io/badge/YouTube-API-FF0000?style=for-the-badge&logo=youtube" />
-</p>
+  <p align="center">
+    <b>Secure Credential Sharing • Cloud-Based Workflow • Instant YouTube Uploads</b>
+  </p>
 
-<p align="center">
-  <a href="#-the-problem">Problem</a> •
-  <a href="#-the-solution">Solution</a> •
-  <a href="#️-tech-stack">Tech Stack</a> •
-  <a href="#-quick-start">Quick Start</a> •
-  <a href="#-deployment">Deployment</a>
-</p>
-
----
-
-**Live Production:** [mware-x.vercel.app](https://mware-x.vercel.app)
+  <p align="center">
+    <a href="https://mware-x.vercel.app">
+      <img src="https://img.shields.io/badge/LIVE-DEMO-FF0000?style=for-the-badge&logo=vercel&logoColor=white&labelColor=000000" alt="Live Demo" />
+    </a>
+    <a href="#-tech-stack">
+      <img src="https://img.shields.io/badge/TECH-STACK-2196F3?style=for-the-badge&logo=react&logoColor=white&labelColor=000000" alt="Tech Stack" />
+    </a>
+    <a href="#-contributing">
+      <img src="https://img.shields.io/badge/CONTRIBUTE-00C853?style=for-the-badge&logo=github&logoColor=white&labelColor=000000" alt="Contribute" />
+    </a>
+  </p>
 
 </div>
 
 ---
 
-## 🚨 The Problem
+## 🌪️ The Problem
 
-YouTube creators face a **dangerous dilemma**:
+<div align="center">
+  <img src="https://readme-typing-svg.herokuapp.com?font=Roboto&weight=500&size=22&pause=1000&color=FF5252&center=true&vCenter=true&width=600&lines=Shared+Passwords+Are+a+Security+Nightmare.;40%25+of+YouTubers+Get+Hacked.;Hours+Wasted+Downloading+Render+Files." alt="Problem Statement" />
+</div>
 
-```
-┌─────────────────────────────────────────────────────────┐
-│  Traditional Workflow (❌ INSECURE)                      │
-├─────────────────────────────────────────────────────────┤
-│                                                         │
-│  1. Creator shares YouTube password with editor        │
-│  2. Editor downloads 10GB render (wasted hours) ⏳       │
-│  3. Creator manually re-uploads to YouTube            │
-│  4. Channel security = ZERO                         │
-│                                                         │
-└─────────────────────────────────────────────────────────┘
-```
+Traditional video workflow is **broken**:
+- ❌ **Security Risk**: Creators share Google passwords with editors.
+- ❌ **Slow Workflow**: Editors upload to Drive → Creator downloads (GBs) → Creator re-uploads to YouTube.
+- ❌ **Inefficient**: Massive time loss in file transfers.
 
-**Statistics:**
-- 🔴 **87%** of creators share channel credentials unsafely
-- ⏱️ Average time wasted: **3+ hours per video**
-- 💸 Potential revenue loss from account takeovers: **$1M+**
+## ✨ The MwareX Solution
 
----
+<div align="center">
+  <img src="https://readme-typing-svg.herokuapp.com?font=Roboto&weight=500&size=22&pause=1000&color=00E676&center=true&vCenter=true&width=600&lines=Zero+Credentials+Shared.;Direct+Cloud+Uploads.;One-Click+YouTube+Publishing." alt="Solution Statement" />
+</div>
 
-## ✨ The Solution
-
-**MwareX** = Middleware + Workflow + eXperience
-
-```
-┌─────────────────────────────────────────────────────────┐
-│  MwareX Workflow (✅ SECURE + FAST)                      │
-├─────────────────────────────────────────────────────────┤
-│                                                         │
-│  1. Editor uploads directly to MwareX Cloud ☁️           │
-│  2. Creator reviews video in-browser 🎥                  │
-│  3. ONE-CLICK approval → Auto-upload to YouTube 🚀       │
-│  4. Channel credentials NEVER shared 🔒                  │
-│                                                         │
-└─────────────────────────────────────────────────────────┘
-```
-
-**Key Features:**
-- 🛡️ **Zero Credential Sharing** – OAuth 2.0 secure authentication
-- ⚡ **Instant Reviews** – Stream videos directly, no downloads
-- 🤖 **Background Processing** – Upload 140MB+ files without timeouts
-- 🎯 **WhatsApp Notifications** – Approve videos on-the-go
-- 📊 **Full Audit Trail** – Track every approval/rejection
+**MwareX** bridges the gap:
+- ✅ **OAuth 2.0 Security**: Editors **NEVER** see your channel password.
+- ✅ **Cloud Native**: Editors upload to MwareX → You review → One click push to YouTube.
+- ✅ **AI Powered**: AI-generated descriptions and tags (coming soon).
+- ✅ **Smart Notifications**: WhatsApp & Email updates on video status.
 
 ---
 
-## 🛠️ Tech Stack
+## 🛠️ Tech Stack & Dependencies
 
-<table>
-<tr>
-<td valign="top" width="50%">
+<div align="center">
+  <br>
+  <img src="https://skillicons.dev/icons?i=nextjs,react,ts,tailwind,nodejs,express,mongodb,cloudinary,firebase,git,github,vercel,postman,vscode" />
+  <br><br>
+</div>
 
-### **Frontend**
-- ⚛️ **Next.js 14** (App Router)
-- 🎨 **Tailwind CSS** (Dark theme)
-- ✨ **Framer Motion** (Animations)
-- 🔥 **TypeScript** (Type safety)
-- 🎭 **Lucide Icons** (UI components)
+We use a cutting-edge, type-safe stack to ensure performance and scalability.
 
-</td>
-<td valign="top" width="50%">
+### **Frontend** (The Face)
+| Technology | Description |
+| :--- | :--- |
+| **Next.js 16** | The React Framework for the Web (App Router). |
+| **TypeScript** | Strict syntactical superset of JavaScript. |
+| **Tailwind CSS** | Utility-first CSS framework for rapid UI development. |
+| **Framer Motion** | Production-ready motion library for React. |
+| **Lucide React** | Beautiful & consistent icon toolkit. |
+| **Sonner** | An opinionated toast component for React. |
+| **Socket.io-client**| Real-time bidirectional event-based communication. |
 
-### **Backend**
-- 🟢 **Node.js + Express**
-- 🍃 **MongoDB Atlas** (Cloud DB)
-- ☁️ **Cloudinary** (Video storage)
-- 📺 **YouTube Data API v3**
-- 🔐 **JWT Authentication**
-- 🔑 **OAuth 2.0** (Google)
-
-</td>
-</tr>
-</table>
-
-### **Infrastructure**
-- 🚀 **Vercel** (Frontend hosting)
-- 🌐 **Render** (Backend API)
-- 📦 **GitHub** (Version control)
+### **Backend** (The Brain)
+| Technology | Description |
+| :--- | :--- |
+| **Node.js** | JavaScript runtime built on Chrome's V8 engine. |
+| **Express.js** | Fast, unopinionated, minimalist web framework. |
+| **MongoDB Atlas** | Fully managed cloud database service. |
+| **Cloudinary** | Cloud-based image and video management services. |
+| **Google Gemini** | Generative AI SDK for advanced content features. |
+| **Nodemailer** | Easy email sending for Node.js. |
+| **Razorpay** | Payment gateway integration. |
+| **Zod** | TypeScript-first schema declaration and validation. |
 
 ---
 
-## 🚀 Quick Start
+## 💻 Installation & Setup
 
-### Prerequisites
-```bash
-node >= 20.x
-npm >= 10.x
-MongoDB Atlas Account
-Cloudinary Account
-Google Cloud Console Project
-```
+Want to contribute? Great! Follow these steps to get the project running locally.
 
-### 1️⃣ Clone Repository
+### 1. Clone the Repository
 ```bash
 git clone https://github.com/samay-hash/MwareX.git
 cd MwareX
 ```
 
-### 2️⃣ Backend Setup
+### 2. Backend Setup
+Navigate to the backend folder and install dependencies:
 ```bash
 cd backend
 npm install
 ```
 
-Create `.env` file:
+**Create a `.env` file in the `backend` directory:**
 ```env
-MONGO_URI=mongodb+srv://<user>:<password>@cluster0.xxx.mongodb.net/mwarex
-JWT_SECRET_USER=your_super_secret_key_here
-JWT_SECRET_ADMIN=another_secret_key_here
-
-# Google OAuth
-GOOGLE_CLIENT_ID=your_client_id.apps.googleusercontent.com
-GOOGLE_CLIENT_SECRET=your_client_secret
+PORT=8000
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET_USER=your_user_secret
+JWT_SECRET_ADMIN=your_admin_secret
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
 GOOGLE_REDIRECT=http://localhost:8000/oauth2callback
 FRONTEND_URL=http://localhost:3000
-
-# Cloudinary
 CLOUDINARY_CLOUD_NAME=your_cloud_name
 CLOUDINARY_API_KEY=your_api_key
 CLOUDINARY_API_SECRET=your_api_secret
-
-# YouTube
-YOUTUBE_REFRESH_TOKEN=your_refresh_token
+EMAIL_USER=your_email@gmail.com
+EMAIL_PASS=your_app_password
+GEMINI_API_KEY=your_gemini_key
 ```
 
-Start backend:
+**Run the Backend:**
 ```bash
 npm start
+# or for development with auto-reload
+npm run dev
 ```
 
-### 3️⃣ Frontend Setup
+### 3. Frontend Setup
+Navigate to the frontend folder and install dependencies:
 ```bash
 cd ../frontend
 npm install
 ```
 
-Create `.env.local`:
+**Create a `.env.local` file in the `frontend` directory:**
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:8000
 ```
 
-Start frontend:
+**Run the Frontend:**
 ```bash
 npm run dev
 ```
 
-### 4️⃣ Open Application
-```
-Frontend: http://localhost:3000
-Backend:  http://localhost:8000
-```
+Visit `http://localhost:3000` to see the app in action!
 
 ---
 
-## 📁 Project Structure
-
-```
-MwareX/
-├── backend/
-│   ├── index.js              # Express server entry
-│   ├── db.js                 # MongoDB connection
-│   ├── models/               # Mongoose schemas
-│   │   ├── user.js
-│   │   ├── video.js
-│   │   └── EditorAssignment.js
-│   ├── routes/               # API endpoints
-│   │   ├── authUser.js
-│   │   ├── authAdmin.js
-│   │   ├── video.js          # Video CRUD + Upload
-│   │   ├── invite.js         # Editor invitations
-│   │   └── googleAuth.js     # OAuth flow
-│   ├── services/
-│   │   └── youtubeUploader.js # YouTube API integration
-│   ├── middlewares/
-│   │   ├── userMiddleware.js
-│   │   └── adminMiddleware.js
-│   └── tools/
-│       └── googleClient.js   # OAuth2 client factory
-│
-└── frontend/
-    ├── src/
-    │   ├── app/
-    │   │   ├── page.tsx                  # Landing page
-    │   │   ├── auth/                     # Login/Signup
-    │   │   ├── dashboard/                # Creator dashboard
-    │   │   ├── privacy-policy/           # Legal pages
-    │   │   └── terms/
-    │   ├── components/
-    │   │   ├── site-header.tsx
-    │   │   ├── workflow-animation.tsx
-    │   │   └── VideoCard.tsx
-    │   └── lib/
-    │       └── api.ts                    # Axios instance
-    └── public/
-```
-
----
-
-## 🎯 API Reference
-
-### Authentication
-```http
-POST /api/v1/user/signup
-POST /api/v1/user/login
-POST /api/v1/admin/signup
-```
-
-### Videos
-```http
-POST   /api/v1/videos/upload          # Upload video (Cloudinary)
-GET    /api/v1/videos/pending         # List pending reviews
-POST   /api/v1/videos/:id/approve     # Approve + Upload to YT
-POST   /api/v1/videos/:id/reject      # Reject video
-```
-
-### OAuth
-```http
-GET    /auth/google                   # Generate OAuth URL
-GET    /oauth2callback                # Handle Google redirect
-POST   /api/v1/videos/store-youtube-tokens
-```
-
-### Invitations
-```http
-POST   /api/v1/invite                 # Send editor invite
-GET    /api/v1/verify?token=xxx       # Verify invite token
-```
-
----
 ## 🤝 Contributing
 
-We welcome contributions! Here's how:
+We love contributions! Here's how you can help:
 
-1. **Fork** the repository
-2. **Create** a feature branch (`git checkout -b feature/AmazingFeature`)
-3. **Commit** your changes (`git commit -m 'Add AmazingFeature'`)
-4. **Push** to the branch (`git push origin feature/AmazingFeature`)
-5. **Open** a Pull Request
-
-### Development Guidelines
-- Follow existing code style
-- Write meaningful commit messages
-- Test locally before pushing
-- Update documentation if needed
+1.  **Fork** the repo.
+2.  **Create** a branch: `git checkout -b feature-name`.
+3.  **Commit** your changes: `git commit -m 'Add some feature'`.
+4.  **Push** to the branch: `git push origin feature-name`.
+5.  **Submit** a pull request.
 
 ---
 
-## 🐛 Known Issues
+## 📜 License
 
-- ⏳ Large video uploads (>140MB) take 3-5 minutes due to background processing
-- 🔐 Google OAuth shows "unverified" warning until official verification (3-5 days)
-- 📱 Mobile UI needs refinement
-
----
-
-## 📝 Roadmap
-
-- [ ] Real-time upload progress tracking
-- [ ] WebSocket notifications
-- [ ] Multi-language support
-- [ ] Analytics dashboard
-- [ ] Scheduled uploads
-- [ ] AI-powered video quality checks
-
----
-
-## 📄 License
-
-This project is licensed under the **MIT License**.
-
----
-
-## 👨‍💻 Author
-
-**Samay Samrat**
-- GitHub: [@samay-hash](https://github.com/samay-hash)
-- Email: samaysamrat64@gmail.com
+Distributed under the MIT License. See `LICENSE` for more information.
 
 ---
 
 <div align="center">
 
-### ⭐ Star this repo if you found it helpful!
+  **Made with 💙 by Samay Samrat**
 
-**Made with ❤️ for the YouTube Creator Community**
+  <a href="https://github.com/samay-hash">
+    <img src="https://img.shields.io/github/followers/samay-hash?style=social" alt="GitHub Followers" />
+  </a>
+  <a href="https://twitter.com/your_handle">
+    <img src="https://img.shields.io/twitter/follow/your_handle?style=social" alt="Twitter Follow" />
+  </a>
 
 </div>
