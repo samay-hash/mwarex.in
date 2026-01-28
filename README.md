@@ -167,7 +167,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 <div align="center">
 
-  **Made with 💙 by Samay Samrat**
+  **Made with 💙 by Samay**
 
   <a href="https://github.com/samay-hash">
     <img src="https://img.shields.io/github/followers/samay-hash?style=social" alt="GitHub Followers" />
