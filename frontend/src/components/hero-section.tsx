@@ -23,9 +23,9 @@ export function HeroSection() {
 
     return (
         <section className="relative min-h-screen flex items-center overflow-hidden pt-20 lg:pt-0">
-            {/* Premium Net/Mesh Background - Using CSS animations for performance */}
-            <div className="absolute inset-0 -z-10">
-                {/* Static Grid Pattern */}
+            {/* Premium Net/Mesh Background - Optimized for performance */}
+            <div className="absolute inset-0 -z-10 overflow-hidden">
+                {/* Static Grid Pattern - Simplified mask for better mobile performance */}
                 <div
                     className="absolute inset-0 opacity-[0.08] dark:opacity-[0.05]"
                     style={{
@@ -34,15 +34,16 @@ export function HeroSection() {
                             linear-gradient(90deg, rgba(99, 102, 241, 0.4) 1px, transparent 1px)
                         `,
                         backgroundSize: '60px 60px',
-                        maskImage: 'radial-gradient(ellipse at center, black 0%, transparent 70%)',
-                        WebkitMaskImage: 'radial-gradient(ellipse at center, black 0%, transparent 70%)',
+                        maskImage: 'radial-gradient(ellipse at center, black 40%, transparent 80%)',
+                        WebkitMaskImage: 'radial-gradient(ellipse at center, black 40%, transparent 80%)',
                     }}
                 />
 
-                {/* Gradient Orbs - Static, no animation */}
-                <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-to-br from-violet-500/10 to-indigo-500/10 rounded-full blur-[120px] translate-x-1/3 -translate-y-1/4" />
-                <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-gradient-to-tr from-blue-500/10 to-cyan-500/10 rounded-full blur-[100px] -translate-x-1/4 translate-y-1/4" />
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-radial from-primary/5 to-transparent rounded-full" />
+                {/* Gradient Orbs - Reduced blur on mobile, enabled hardware acceleration */}
+                <div className="absolute top-0 right-0 w-[300px] md:w-[600px] h-[300px] md:h-[600px] bg-gradient-to-br from-violet-500/10 to-indigo-500/10 rounded-full blur-[60px] md:blur-[120px] translate-x-1/3 -translate-y-1/4 will-change-transform" />
+                <div className="absolute bottom-0 left-0 w-[250px] md:w-[500px] h-[250px] md:h-[500px] bg-gradient-to-tr from-blue-500/10 to-cyan-500/10 rounded-full blur-[50px] md:blur-[100px] -translate-x-1/4 translate-y-1/4 will-change-transform" />
+                {/* Central orb removed on mobile to save resources, added back on desktop */}
+                <div className="hidden md:block absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-radial from-primary/5 to-transparent rounded-full will-change-transform" />
             </div>
 
             <div className="max-w-7xl mx-auto px-6 w-full z-10">

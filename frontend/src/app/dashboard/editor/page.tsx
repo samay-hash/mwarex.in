@@ -19,6 +19,7 @@ import {
   Eye,
   Sparkles,
   Settings,
+  ArrowRight,
 } from "lucide-react";
 import VideoCard from "@/components/VideoCard";
 import { videoAPI, aiAPI } from "@/lib/api";
@@ -360,159 +361,129 @@ export default function EditorDashboard() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsUploadModalOpen(false)}
-              className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
             />
 
             <motion.div
-              initial={{ scale: 0.95, y: 20, opacity: 0 }}
+              initial={{ scale: 0.9, y: 30, opacity: 0 }}
               animate={{ scale: 1, y: 0, opacity: 1 }}
-              exit={{ scale: 0.95, y: 20, opacity: 0 }}
-              className="relative w-full max-w-lg bg-card border border-border rounded-2xl overflow-hidden shadow-xl"
+              exit={{ scale: 0.9, y: 30, opacity: 0 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              className="relative w-full max-w-md bg-card border border-border rounded-xl overflow-hidden shadow-2xl"
             >
-              {/* Header */}
-              <div className="p-5 border-b border-border flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
-                    <Upload className="w-5 h-5" />
+              {/* Compact Header */}
+              <div className="px-4 py-3 border-b border-border flex items-center justify-between bg-secondary/20">
+                <div className="flex items-center gap-2">
+                  <div className="bg-primary/10 p-1.5 rounded-md text-primary">
+                    <Upload className="w-4 h-4" />
                   </div>
-                  <div>
-                    <h3 className="text-lg font-semibold">Submit New Draft</h3>
-                    <p className="text-xs text-muted-foreground">Send footage to creator for review</p>
-                  </div>
+                  <span className="font-semibold text-sm">New Submission</span>
                 </div>
                 <button
                   onClick={() => setIsUploadModalOpen(false)}
-                  className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground transition-colors"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
                 >
                   <X className="w-4 h-4" />
                 </button>
               </div>
 
-              <form onSubmit={handleUpload} className="p-5 space-y-5">
+              <form onSubmit={handleUpload} className="p-4 space-y-4 max-h-[85vh] overflow-y-auto custom-scrollbar">
                 {error && (
                   <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-500 text-sm flex items-center gap-2"
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    className="p-2.5 rounded-md bg-red-500/10 border border-red-500/20 text-red-500 text-xs flex items-center gap-2"
                   >
-                    <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                    <AlertCircle className="w-3 h-3 flex-shrink-0" />
                     {error}
                   </motion.div>
                 )}
 
-                <div className="space-y-2">
-                  <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Video Title
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    className="w-full bg-secondary/50 border border-border focus:border-primary/50 rounded-lg px-4 py-3 outline-none transition-colors focus:bg-background"
-                    placeholder="E.g. My Amazing Travel Vlog - v1"
-                  />
+                {/* Compact Inputs */}
+                <div className="space-y-3">
+                  <div>
+                    <input
+                      type="text"
+                      required
+                      value={title}
+                      onChange={(e) => setTitle(e.target.value)}
+                      className="w-full bg-secondary/30 border border-border focus:border-primary/50 rounded-lg px-3 py-2 text-sm outline-none transition-all focus:bg-background placeholder:text-muted-foreground/70"
+                      placeholder="Video Title"
+                    />
+                  </div>
+                  <div>
+                    <textarea
+                      rows={2}
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                      className="w-full bg-secondary/30 border border-border focus:border-primary/50 rounded-lg px-3 py-2 text-sm outline-none transition-all resize-none focus:bg-background placeholder:text-muted-foreground/70"
+                      placeholder="Add brief notes..."
+                    />
+                  </div>
                 </div>
 
-                <div className="space-y-2">
-                  <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Description / Notes
-                  </label>
-                  <textarea
-                    rows={3}
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    className="w-full bg-secondary/50 border border-border focus:border-primary/50 rounded-lg px-4 py-3 outline-none transition-colors resize-none focus:bg-background"
-                    placeholder="Add notes for the creator about this draft..."
-                  />
-                </div>
-
-                {/* AI Thumbnail Generator */}
-                <div className="space-y-3 p-4 border border-border rounded-xl bg-secondary/10">
+                {/* Compact AI Thumbnail */}
+                <div className="border border-border rounded-lg p-3 bg-secondary/5 space-y-2">
                   <div className="flex items-center justify-between">
-                    <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+                    <label className="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
                       <Sparkles className="w-3 h-3 text-primary" />
-                      AI Thumbnail Generator
+                      Thumbnail
                     </label>
                     {selectedThumbnail && (
-                      <button
-                        type="button"
-                        onClick={() => setSelectedThumbnail("")}
-                        className="text-xs text-red-500 hover:underline"
-                      >
-                        Remove Selected
-                      </button>
+                      <button type="button" onClick={() => setSelectedThumbnail("")} className="text-[10px] text-red-400 hover:text-red-500">Clear</button>
                     )}
                   </div>
 
                   {!selectedThumbnail ? (
-                    <div className="space-y-3">
-                      <div className="flex gap-2">
-                        <input
-                          type="text"
-                          value={thumbnailPrompt}
-                          onChange={(e) => setThumbnailPrompt(e.target.value)}
-                          placeholder="Describe the thumbnail..."
-                          className="flex-1 bg-secondary/50 border border-border focus:border-primary/50 rounded-lg px-3 py-2 text-sm outline-none transition-colors"
-                        />
-                        <button
-                          type="button"
-                          onClick={async () => {
-                            if (!thumbnailPrompt) return;
-                            setIsGeneratingThumbnail(true);
-                            try {
-                              const res = await aiAPI.generateThumbnails({ topic: thumbnailPrompt });
-                              setGeneratedThumbnails(res.data.thumbnails.map((t: any) => t.url));
-                            } catch (err) {
-                              console.error(err);
-                            } finally {
-                              setIsGeneratingThumbnail(false);
-                            }
-                          }}
-                          disabled={isGeneratingThumbnail || !thumbnailPrompt}
-                          className="px-4 py-2 bg-primary/10 text-primary border border-primary/20 rounded-lg text-xs font-medium hover:bg-primary/20 transition-colors disabled:opacity-50"
-                        >
-                          {isGeneratingThumbnail ? (
-                            <Loader2 className="w-3 h-3 animate-spin" />
-                          ) : (
-                            "Generate"
-                          )}
-                        </button>
-                      </div>
-
-                      {generatedThumbnails.length > 0 && (
-                        <div className="grid grid-cols-4 gap-2">
-                          {generatedThumbnails.map((url, i) => (
-                            <div
-                              key={i}
-                              onClick={() => setSelectedThumbnail(url)}
-                              className="aspect-video relative rounded-md overflow-hidden cursor-pointer border-2 border-transparent hover:border-primary transition-colors group"
-                            >
-                              <img src={url} alt={`Generated ${i}`} className="w-full h-full object-cover" />
-                              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-medium">
-                                Select
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      )}
+                    <div className="flex gap-2">
+                      <input
+                        value={thumbnailPrompt}
+                        onChange={(e) => setThumbnailPrompt(e.target.value)}
+                        placeholder="AI Prompt..."
+                        className="flex-1 bg-background border border-border rounded-md px-2 py-1.5 text-xs outline-none focus:border-primary/50"
+                      />
+                      <button
+                        type="button"
+                        disabled={isGeneratingThumbnail || !thumbnailPrompt}
+                        onClick={async () => {
+                          if (!thumbnailPrompt) return;
+                          setIsGeneratingThumbnail(true);
+                          try {
+                            const res = await aiAPI.generateThumbnails({ topic: thumbnailPrompt });
+                            setGeneratedThumbnails(res.data.thumbnails.map((t: any) => t.url));
+                          } catch (err) { console.error(err); } finally { setIsGeneratingThumbnail(false); }
+                        }}
+                        className="px-3 bg-primary/10 text-primary border border-primary/20 rounded-md text-xs hover:bg-primary/20 transition-colors disabled:opacity-50"
+                      >
+                        {isGeneratingThumbnail ? <Loader2 className="w-3 h-3 animate-spin" /> : "Generate"}
+                      </button>
                     </div>
                   ) : (
-                    <div className="relative aspect-video w-full rounded-lg overflow-hidden border border-border">
-                      <img src={selectedThumbnail} alt="Selected Thumbnail" className="w-full h-full object-cover" />
-                      <div className="absolute bottom-2 right-2 px-2 py-1 bg-black/60 backdrop-blur rounded text-white text-[10px] font-medium flex items-center gap-1">
-                        <CheckCircle className="w-3 h-3 text-emerald-500" />
-                        Selected
+                    <div className="relative h-20 w-36 rounded-md overflow-hidden border border-border mx-auto group">
+                      <img src={selectedThumbnail} className="h-full w-full object-cover" />
+                      <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        <CheckCircle className="w-4 h-4 text-emerald-400" />
                       </div>
+                    </div>
+                  )}
+
+                  {generatedThumbnails.length > 0 && !selectedThumbnail && (
+                    <div className="grid grid-cols-4 gap-1.5 mt-2">
+                      {generatedThumbnails.slice(0, 4).map((url, i) => (
+                        <div key={i} onClick={() => setSelectedThumbnail(url)} className="aspect-video rounded overflow-hidden cursor-pointer border hover:border-primary">
+                          <img src={url} className="w-full h-full object-cover" />
+                        </div>
+                      ))}
                     </div>
                   )}
                 </div>
 
-                <div className="space-y-2">
-                  <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Video File
-                  </label>
-                  <div className="relative border-2 border-dashed border-border hover:border-primary/30 rounded-xl p-8 text-center transition-colors cursor-pointer bg-secondary/20 hover:bg-secondary/30">
+                {/* Compact Upload Box */}
+                <div className="relative group">
+                  <div className={cn(
+                    "relative border-2 border-dashed border-border rounded-lg p-4 text-center transition-all cursor-pointer bg-secondary/10 group-hover:border-primary/40 group-hover:bg-secondary/20",
+                    file ? "border-emerald-500/30 bg-emerald-500/5" : ""
+                  )}>
                     <input
                       type="file"
                       accept="video/*"
@@ -520,33 +491,45 @@ export default function EditorDashboard() {
                       onChange={(e) => setFile(e.target.files?.[0] || null)}
                       className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
                     />
-
-                    <div className="w-12 h-12 bg-background rounded-full flex items-center justify-center mx-auto mb-3 border border-border">
-                      <FileVideo className="w-5 h-5 text-primary" />
+                    <div className="flex flex-col items-center justify-center gap-2">
+                      {file ? (
+                        <>
+                          <div className="w-8 h-8 rounded-full bg-emerald-500/10 flex items-center justify-center">
+                            <FileVideo className="w-4 h-4 text-emerald-500" />
+                          </div>
+                          <div className="text-xs truncate max-w-[200px] font-medium text-emerald-600 dark:text-emerald-400">
+                            {file.name}
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <Upload className="w-4 h-4 text-primary" />
+                          </div>
+                          <div className="space-y-0.5">
+                            <p className="text-xs font-medium">Click to upload video</p>
+                            <p className="text-[10px] text-muted-foreground">MP4, MOV (Max 2GB)</p>
+                          </div>
+                        </>
+                      )}
                     </div>
-                    <p className="text-sm font-medium mb-1">
-                      {file ? file.name : "Click to browse or drag file"}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      MP4, MOV, or WEBM (Max 2GB)
-                    </p>
                   </div>
                 </div>
 
                 <button
                   type="submit"
                   disabled={uploadLoading}
-                  className="w-full py-3 bg-primary text-primary-foreground rounded-lg font-medium flex items-center justify-center gap-2 hover:opacity-90 transition-opacity disabled:opacity-50"
+                  className="w-full py-2.5 bg-primary text-primary-foreground rounded-lg font-medium text-sm flex items-center justify-center gap-2 hover:opacity-90 transition-all shadow-lg shadow-primary/20 active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed"
                 >
                   {uploadLoading ? (
                     <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
                       Uploading...
                     </>
                   ) : (
                     <>
-                      <Upload className="w-4 h-4" />
-                      Upload Submission
+                      Upload
+                      <ArrowRight className="w-3.5 h-3.5" />
                     </>
                   )}
                 </button>
