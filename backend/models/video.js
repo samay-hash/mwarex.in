@@ -21,6 +21,7 @@ const videoSchema = new mongoose.Schema({
     enum: ["pending", "approved", "rejected", "uploaded", "processing", "upload_failed"],
     default: "pending",
   },
+  rejectionReason: String,
 
   // Messaging / Feedback
   comments: [{

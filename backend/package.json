@@ -27,6 +27,7 @@
     "multer-storage-cloudinary": "^4.0.0",
     "nodemailer": "^7.0.12",
     "openai": "^6.16.0",
+    "razorpay": "^2.9.6",
     "socket.io": "^4.8.3",
     "zod": "^3.23.8"
   }

@@ -14,11 +14,16 @@ import {
     Shield,
     Loader2,
     Bot,
-    Mail
+    Mail,
+    CreditCard,
+    Lock,
+    Sparkles
 } from "lucide-react";
 import { getUserData, logout } from "@/lib/auth";
 import { useRouter } from "next/navigation";
-import { videoAPI, userAPI } from "@/lib/api";
+import { videoAPI, userAPI, paymentAPI } from "@/lib/api";
+import { SubscriptionModal } from "@/components/subscription-modal";
+import { cn } from "@/lib/utils";
 
 export default function SettingsPage() {
     const router = useRouter();
@@ -26,6 +31,8 @@ export default function SettingsPage() {
     const [isYoutubeConnected, setIsYoutubeConnected] = useState(false);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
+    const [subscription, setSubscription] = useState<any>(null);
+    const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
 
     // Settings State
     const [settings, setSettings] = useState({
@@ -46,6 +53,12 @@ export default function SettingsPage() {
                 const res = await userAPI.getSettings();
                 if (res.data.settings) {
                     setSettings(prev => ({ ...prev, ...res.data.settings }));
+                }
+
+                // Fetch subscription status
+                const subRes = await paymentAPI.getSubscription();
+                if (subRes.data.success) {
+                    setSubscription(subRes.data.subscription);
                 }
             } catch (error) {
                 console.error("Failed to fetch settings", error);
@@ -91,6 +104,16 @@ export default function SettingsPage() {
         setSettings(prev => ({ ...prev, [key]: value }));
     };
 
+    // Helper to check if feature is locked
+    const isLocked = (feature: string) => {
+        const plan = subscription?.plan || 'free';
+        if (plan === 'free') {
+            // Lock advanced features for free users
+            return ['aiThumbnailGen', 'pushNotifications'].includes(feature);
+        }
+        return false;
+    };
+
     if (loading) {
         return (
             <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
@@ -121,6 +144,50 @@ export default function SettingsPage() {
                 </header>
 
                 <div className="space-y-6">
+
+                    {/* Subscription Section - NEW */}
+                    <section className="glass p-8 rounded-3xl border border-white/5 relative overflow-hidden group">
+                        <div className="absolute top-0 right-0 p-32 bg-indigo-600/5 rounded-full blur-3xl pointer-events-none" />
+
+                        <div className="flex items-center justify-between mb-6">
+                            <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                                <CreditCard className="w-5 h-5 text-indigo-400" />
+                                Subscription Plan
+                            </h2>
+                            <div className={cn(
+                                "px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide border",
+                                subscription?.plan === 'pro' || subscription?.plan === 'team'
+                                    ? "bg-indigo-500/10 text-indigo-400 border-indigo-500/20"
+                                    : "bg-gray-500/10 text-gray-400 border-gray-500/20"
+                            )}>
+                                {subscription?.plan || 'Free'} Plan
+                            </div>
+                        </div>
+
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-gray-400 text-sm mb-1">Current Status</p>
+                                <p className="text-white font-medium capitalize">{subscription?.status || 'Active'}</p>
+                            </div>
+
+                            {subscription?.plan === 'free' ? (
+                                <button
+                                    onClick={() => setIsUpgradeModalOpen(true)}
+                                    className="px-6 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-xl font-semibold shadow-lg shadow-indigo-500/20 flex items-center gap-2 transition-all hover:scale-105"
+                                >
+                                    <Sparkles className="w-4 h-4" />
+                                    Upgrade to Pro
+                                </button>
+                            ) : (
+                                <button
+                                    onClick={() => alert("Manage subscription coming soon!")} // Placeholder
+                                    className="px-4 py-2 bg-white/5 hover:bg-white/10 text-white rounded-xl font-medium transition-colors"
+                                >
+                                    Manage Subscription
+                                </button>
+                            )}
+                        </div>
+                    </section>
 
                     {/* Profile Section */}
                     <section className="glass p-8 rounded-3xl border border-white/5">
@@ -157,6 +224,7 @@ export default function SettingsPage() {
                             AI Preferences
                         </h2>
                         <div className="space-y-6">
+                            {/* Auto Suggest - Free */}
                             <div className="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/5 hover:border-purple-500/30 transition-colors">
                                 <div>
                                     <h3 className="text-white font-medium mb-1">Auto-Suggest Video Ideas</h3>
@@ -173,20 +241,43 @@ export default function SettingsPage() {
                                 </label>
                             </div>
 
-                            <div className="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/5 hover:border-purple-500/30 transition-colors">
-                                <div>
-                                    <h3 className="text-white font-medium mb-1">Auto-Generate Thumbnails</h3>
+                            {/* Thumbnail Gen - LOCKED */}
+                            <div className={cn(
+                                "flex items-center justify-between p-4 bg-white/5 rounded-xl border transition-colors relative overflow-hidden",
+                                isLocked('aiThumbnailGen')
+                                    ? "border-amber-500/20 opacity-80"
+                                    : "border-white/5 hover:border-purple-500/30"
+                            )}>
+                                <div className="relative z-10">
+                                    <h3 className="text-white font-medium mb-1 flex items-center gap-2">
+                                        Auto-Generate Thumbnails
+                                        {isLocked('aiThumbnailGen') && (
+                                            <span className="px-2 py-0.5 bg-amber-500/10 text-amber-400 text-[10px] font-bold uppercase rounded-full border border-amber-500/20 flex items-center gap-1">
+                                                <Lock className="w-3 h-3" /> Pro
+                                            </span>
+                                        )}
+                                    </h3>
                                     <p className="text-sm text-gray-400">Create AI thumbnails for confirmed video ideas.</p>
                                 </div>
-                                <label className="relative inline-flex items-center cursor-pointer">
-                                    <input
-                                        type="checkbox"
-                                        checked={settings.aiThumbnailGen}
-                                        onChange={() => toggleSetting('aiThumbnailGen')}
-                                        className="sr-only peer"
-                                    />
-                                    <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
-                                </label>
+
+                                {isLocked('aiThumbnailGen') ? (
+                                    <button
+                                        onClick={() => setIsUpgradeModalOpen(true)}
+                                        className="relative z-10 px-3 py-1.5 bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 text-xs font-bold rounded-lg border border-amber-500/20 transition-colors"
+                                    >
+                                        Unlock
+                                    </button>
+                                ) : (
+                                    <label className="relative inline-flex items-center cursor-pointer">
+                                        <input
+                                            type="checkbox"
+                                            checked={settings.aiThumbnailGen}
+                                            onChange={() => toggleSetting('aiThumbnailGen')}
+                                            className="sr-only peer"
+                                        />
+                                        <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+                                    </label>
+                                )}
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -247,30 +338,43 @@ export default function SettingsPage() {
                                 </label>
                             </div>
 
+                            {/* Push Notifications - LOCKED */}
                             <div className="flex items-center justify-between p-4 px-0 border-b border-white/5 last:border-0">
                                 <div className="flex items-center gap-3">
                                     <div className="p-2 rounded-lg bg-yellow-500/10 text-yellow-400">
                                         <Bell className="w-5 h-5" />
                                     </div>
                                     <div>
-                                        <h3 className="text-white font-medium">Push Notifications</h3>
+                                        <h3 className="text-white font-medium flex items-center gap-2">
+                                            Push Notifications
+                                            {isLocked('pushNotifications') && <Lock className="w-3 h-3 text-amber-400" />}
+                                        </h3>
                                         <p className="text-xs text-gray-400">Get real-time alerts for video approvals.</p>
                                     </div>
                                 </div>
-                                <label className="relative inline-flex items-center cursor-pointer">
-                                    <input
-                                        type="checkbox"
-                                        checked={settings.pushNotifications}
-                                        onChange={() => toggleSetting('pushNotifications')}
-                                        className="sr-only peer"
-                                    />
-                                    <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-yellow-600"></div>
-                                </label>
+                                {isLocked('pushNotifications') ? (
+                                    <button
+                                        onClick={() => setIsUpgradeModalOpen(true)}
+                                        className="text-xs font-bold text-amber-400 hover:text-amber-300 transition-colors"
+                                    >
+                                        UPGRADE
+                                    </button>
+                                ) : (
+                                    <label className="relative inline-flex items-center cursor-pointer">
+                                        <input
+                                            type="checkbox"
+                                            checked={settings.pushNotifications}
+                                            onChange={() => toggleSetting('pushNotifications')}
+                                            className="sr-only peer"
+                                        />
+                                        <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-yellow-600"></div>
+                                    </label>
+                                )}
                             </div>
                         </div>
                     </section>
 
-                    {/* Integrations Section */}
+                    {/* ... Integrations & Account Actions Sections unchanged ... */}
                     <section className="glass p-8 rounded-3xl border border-white/5 relative overflow-hidden">
                         <div className="absolute top-0 right-0 p-32 bg-red-600/5 rounded-full blur-3xl pointer-events-none" />
 
@@ -317,8 +421,6 @@ export default function SettingsPage() {
                                 )}
                             </div>
                         </div>
-
-                        {/* Removed the extra note below since it's included in the card now */}
                     </section>
 
                     {/* Account Actions */}
@@ -338,6 +440,13 @@ export default function SettingsPage() {
 
                 </div>
             </div>
+
+            {/* Subscription Modal */}
+            <SubscriptionModal
+                isOpen={isUpgradeModalOpen}
+                onClose={() => setIsUpgradeModalOpen(false)}
+                currentPlan={subscription?.plan || 'free'}
+            />
         </div>
     );
 }

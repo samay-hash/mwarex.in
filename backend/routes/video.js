@@ -124,6 +124,9 @@ router.post("/:id/reject", userAuth, async (req, res) => {
     return res.status(404).json({ message: "not found" });
   }
   video.status = "rejected";
+  if (req.body.reason) {
+    video.rejectionReason = req.body.reason;
+  }
   await video.save();
 
   res.json({ message: "Video Rejected" });

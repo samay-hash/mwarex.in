@@ -2,14 +2,25 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Check, Zap, Crown, Shield } from "lucide-react";
+import { Check, Zap, Crown, Shield, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { paymentAPI, RAZORPAY_KEY_ID } from "@/lib/api";
+import { isAuthenticated } from "@/lib/auth";
+import { useRouter } from "next/navigation";
+
+declare global {
+    interface Window {
+        Razorpay: any;
+    }
+}
 
 const pricingPlans = [
     {
         name: "Free",
         price: "0",
+        priceInr: "0",
+        planId: "free",
         description: "Best for Individual creators working with 1 editor",
         features: [
             "Secure editor uploads",
@@ -27,8 +38,10 @@ const pricingPlans = [
         iconColor: "text-emerald-500",
     },
     {
-        name: "Standard",
-        price: "45.00",
+        name: "Pro",
+        price: "799",
+        priceInr: "799",
+        planId: "pro",
         description: "Best for Creators working with multiple editors",
         features: [
             "One-tap approval (mobile & desktop)",
@@ -36,27 +49,31 @@ const pricingPlans = [
             "Version control for edits",
             "Automatic revenue split calculation",
             "Collaboration tools",
+            "Priority support",
         ],
         icon: Zap,
-        buttonText: "Get Started",
+        buttonText: "Upgrade Now",
         popular: true,
         gradient: "from-indigo-500/20 to-violet-500/20",
         iconBg: "bg-primary/10",
         iconColor: "text-primary",
     },
     {
-        name: "Business",
-        price: "99.00",
+        name: "Team",
+        price: "1999",
+        priceInr: "1999",
+        planId: "team",
         description: "Best for YouTube studios, agencies & large channels",
         features: [
             "Multiple creators & editors",
             "Advanced approval workflows",
             "Sponsorship tracking",
             "Secure archive vault",
-            "Priority support"
+            "24/7 Priority support",
+            "Custom integrations"
         ],
         icon: Crown,
-        buttonText: "Get Started",
+        buttonText: "Contact Sales",
         popular: false,
         gradient: "from-amber-500/20 to-orange-500/20",
         iconBg: "bg-amber-500/10",
@@ -65,11 +82,117 @@ const pricingPlans = [
 ];
 
 export function PricingSection() {
+    const router = useRouter();
     const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">("monthly");
     const [hoveredPlan, setHoveredPlan] = useState<string | null>(null);
+    const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
 
-    const handleSelectPlan = (planName: string) => {
-        toast.success(`You selected ${planName} plan. (Backend integration coming soon)`);
+    // Load Razorpay script
+    const loadRazorpayScript = (): Promise<boolean> => {
+        return new Promise((resolve) => {
+            if (window.Razorpay) {
+                resolve(true);
+                return;
+            }
+            const script = document.createElement("script");
+            script.src = "https://checkout.razorpay.com/v1/checkout.js";
+            script.onload = () => resolve(true);
+            script.onerror = () => resolve(false);
+            document.body.appendChild(script);
+        });
+    };
+
+    const handleSelectPlan = async (plan: typeof pricingPlans[0]) => {
+        // Free plan - just redirect to signup
+        if (plan.planId === "free") {
+            router.push("/auth/signup");
+            return;
+        }
+
+        // Check authentication
+        if (!isAuthenticated()) {
+            toast.error("Please sign in to upgrade your plan");
+            router.push("/auth/signin");
+            return;
+        }
+
+        setLoadingPlan(plan.planId);
+
+        try {
+            // Load Razorpay script
+            const scriptLoaded = await loadRazorpayScript();
+            if (!scriptLoaded) {
+                toast.error("Failed to load payment gateway. Please try again.");
+                setLoadingPlan(null);
+                return;
+            }
+
+            // Create order on backend
+            const { data } = await paymentAPI.createOrder(plan.planId);
+
+            if (!data.success) {
+                toast.error(data.message || "Failed to create order");
+                setLoadingPlan(null);
+                return;
+            }
+
+            // Configure Razorpay options
+            const options = {
+                key: RAZORPAY_KEY_ID,
+                amount: data.order.amount,
+                currency: data.order.currency,
+                name: "MWareX",
+                description: `${plan.name} Plan - Monthly Subscription`,
+                order_id: data.order.id,
+                handler: async function (response: any) {
+                    try {
+                        // Verify payment on backend
+                        const verifyData = await paymentAPI.verifyPayment({
+                            razorpay_order_id: response.razorpay_order_id,
+                            razorpay_payment_id: response.razorpay_payment_id,
+                            razorpay_signature: response.razorpay_signature,
+                        });
+
+                        if (verifyData.data.success) {
+                            toast.success(`🎉 Successfully upgraded to ${plan.name} plan!`);
+                            // Redirect to dashboard
+                            router.push("/dashboard/creator");
+                        } else {
+                            toast.error("Payment verification failed. Contact support.");
+                        }
+                    } catch (error) {
+                        console.error("Verification error:", error);
+                        toast.error("Payment verification failed. Please contact support.");
+                    }
+                    setLoadingPlan(null);
+                },
+                prefill: {
+                    name: "",
+                    email: "",
+                },
+                notes: {
+                    plan: plan.planId,
+                },
+                theme: {
+                    color: "#6366f1",
+                    backdrop_color: "rgba(0, 0, 0, 0.7)",
+                },
+                modal: {
+                    ondismiss: function () {
+                        setLoadingPlan(null);
+                        toast.info("Payment cancelled");
+                    },
+                },
+            };
+
+            const razorpay = new window.Razorpay(options);
+            razorpay.open();
+
+        } catch (error: any) {
+            console.error("Payment error:", error);
+            toast.error(error?.response?.data?.message || "Failed to initiate payment. Please try again.");
+            setLoadingPlan(null);
+        }
     };
 
     // Animation variants
@@ -233,6 +356,10 @@ export function PricingSection() {
                     {pricingPlans.map((plan, index) => {
                         const isPopular = plan.popular;
                         const isHovered = hoveredPlan === plan.name;
+                        const isLoading = loadingPlan === plan.planId;
+                        const displayPrice = billingCycle === "yearly"
+                            ? Math.round(parseInt(plan.priceInr) * 0.8)
+                            : parseInt(plan.priceInr);
 
                         return (
                             <motion.div
@@ -316,7 +443,7 @@ export function PricingSection() {
                                                     viewport={{ once: true }}
                                                     className="text-4xl lg:text-5xl font-bold text-foreground"
                                                 >
-                                                    ${billingCycle === "yearly" ? (parseFloat(plan.price) * 0.8).toFixed(0) : plan.price}
+                                                    ₹{displayPrice}
                                                 </motion.span>
                                                 <span className="text-muted-foreground text-sm font-medium">/mo</span>
                                             </div>
@@ -327,16 +454,26 @@ export function PricingSection() {
                                     <motion.button
                                         whileHover={{ scale: 1.02 }}
                                         whileTap={{ scale: 0.98 }}
-                                        onClick={() => handleSelectPlan(plan.name)}
+                                        onClick={() => handleSelectPlan(plan)}
+                                        disabled={isLoading || loadingPlan !== null}
                                         className={cn(
-                                            "w-full py-3.5 rounded-xl font-semibold text-sm transition-all duration-300 mb-8 border relative overflow-hidden",
+                                            "w-full py-3.5 rounded-xl font-semibold text-sm transition-all duration-300 mb-8 border relative overflow-hidden disabled:opacity-70 disabled:cursor-not-allowed",
                                             isPopular
                                                 ? "bg-primary text-primary-foreground hover:opacity-90 border-transparent shadow-lg shadow-primary/25"
                                                 : "bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary border-border"
                                         )}
                                     >
-                                        <span className="relative z-10">{plan.buttonText}</span>
-                                        {isPopular && (
+                                        <span className="relative z-10 flex items-center justify-center gap-2">
+                                            {isLoading ? (
+                                                <>
+                                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                                    Processing...
+                                                </>
+                                            ) : (
+                                                plan.buttonText
+                                            )}
+                                        </span>
+                                        {isPopular && !isLoading && (
                                             <motion.div
                                                 className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
                                                 animate={{ x: ["-100%", "100%"] }}
@@ -394,6 +531,18 @@ export function PricingSection() {
                             </motion.div>
                         );
                     })}
+                </motion.div>
+
+                {/* Secure Payment Badge */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.5 }}
+                    className="mt-16 flex items-center gap-3 text-sm text-muted-foreground"
+                >
+                    <Shield className="w-5 h-5 text-emerald-500" />
+                    <span>Secure payments powered by <strong className="text-foreground">Razorpay</strong></span>
                 </motion.div>
             </div>
         </section>

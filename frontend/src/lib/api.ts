@@ -53,7 +53,7 @@ export const videoAPI = {
 
   approve: (id: string) => api.post(`/api/v1/videos/${id}/approve`),
 
-  reject: (id: string) => api.post(`/api/v1/videos/${id}/reject`),
+  reject: (id: string, reason?: string) => api.post(`/api/v1/videos/${id}/reject`, { reason }),
 
   storeYouTubeTokens: (data: { accessToken: string; refreshToken?: string }) =>
     api.post("/api/v1/videos/store-youtube-tokens", data),
@@ -95,5 +95,23 @@ export const inviteAPI = {
 
 // Google OAuth
 export const getGoogleAuthUrl = () => `${API_BASE_URL}/auth/google`;
+
+// Payment APIs
+export const paymentAPI = {
+  createOrder: (plan: string) => api.post("/api/v1/payment/create-order", { plan }),
+
+  verifyPayment: (data: {
+    razorpay_order_id: string;
+    razorpay_payment_id: string;
+    razorpay_signature: string
+  }) => api.post("/api/v1/payment/verify", data),
+
+  getSubscription: () => api.get("/api/v1/payment/subscription"),
+
+  getPaymentHistory: () => api.get("/api/v1/payment/history"),
+};
+
+// Razorpay Key for frontend
+export const RAZORPAY_KEY_ID = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_live_S9APuUYcsOCve3";
 
 export default api;

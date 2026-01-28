@@ -26,6 +26,13 @@ const userSchema = new mongoose.Schema({
     emailNotifications: { type: Boolean, default: true },
     pushNotifications: { type: Boolean, default: false }
   },
+  subscription: {
+    plan: { type: String, enum: ['free', 'pro', 'team'], default: 'free' },
+    status: { type: String, enum: ['active', 'expired', 'cancelled'], default: 'active' },
+    startDate: { type: Date, default: null },
+    endDate: { type: Date, default: null },
+    paymentId: { type: String, default: null },
+  },
 });
 
 const userModel = mongoose.model("User", userSchema);

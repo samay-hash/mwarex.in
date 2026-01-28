@@ -11,6 +11,7 @@ const aiRoutes = require("./routes/ai");
 const editorRoutes = require("./routes/editor");
 const inviteRoutes = require("./routes/invite");
 const settingsRoutes = require("./routes/settings");
+const paymentRoutes = require("./routes/payment");
 
 const { google } = require("googleapis");
 const googleAuthRoutes = require("./routes/googleAuth");
@@ -81,6 +82,7 @@ app.use("/api/v1/videos", videoRoutes);
 app.use("/api/v1/ai", aiRoutes);
 app.use("/api/editor", editorRoutes);
 app.use("/api/v1", inviteRoutes);
+app.use("/api/v1/payment", paymentRoutes);
 app.use("/auth", googleAuthRoutes);
 
 app.get("/oauth2callback", async (req, res) => {

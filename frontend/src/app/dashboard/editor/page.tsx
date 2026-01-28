@@ -20,12 +20,16 @@ import {
   Sparkles,
   Settings,
   ArrowRight,
+  Lock,
+  DollarSign,
+  Wand2
 } from "lucide-react";
 import VideoCard from "@/components/VideoCard";
-import { videoAPI, aiAPI } from "@/lib/api";
+import { videoAPI, aiAPI, paymentAPI } from "@/lib/api";
 import { isAuthenticated, getUserData, logout, isDemoUser } from "@/lib/auth";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { MWareXLogo } from "@/components/mwarex-logo";
+import { SubscriptionModal } from "@/components/subscription-modal";
 import { cn } from "@/lib/utils";
 
 interface Video {
@@ -34,6 +38,7 @@ interface Video {
   description: string;
   fileUrl: string;
   status: "pending" | "approved" | "rejected" | "uploaded" | "processing";
+  rejectionReason?: string;
 }
 
 export default function EditorDashboard() {
@@ -46,6 +51,8 @@ export default function EditorDashboard() {
   const [userData, setUserData] = useState<{ id?: string; name?: string; email?: string; isDemo?: boolean } | null>(null);
   const [pageLoaded, setPageLoaded] = useState(false);
   const [isDemo, setIsDemo] = useState(false);
+  const [subscription, setSubscription] = useState<any>(null);
+  const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
 
   // Form State
   const [title, setTitle] = useState("");
@@ -77,6 +84,13 @@ export default function EditorDashboard() {
       fetchVideos();
     } else {
       setIsLoading(false);
+    }
+
+    // Fetch subscription
+    if (!data?.isDemo) {
+      paymentAPI.getSubscription()
+        .then(res => setSubscription(res.data.subscription))
+        .catch(console.error);
     }
 
     // Page load animation
@@ -175,6 +189,8 @@ export default function EditorDashboard() {
       border: "border-red-500/20",
     },
   ];
+
+  const isRevenueLocked = subscription?.plan === "free" && !isDemo;
 
   // Initial page loader
   if (!pageLoaded) {
@@ -284,6 +300,112 @@ export default function EditorDashboard() {
               <p className="text-3xl font-bold">{stat.value}</p>
             </motion.div>
           ))}
+
+          {/* Revenue Split Card (Locked) */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.25 }}
+            onClick={() => isRevenueLocked && setIsUpgradeModalOpen(true)}
+            className={cn(
+              "bg-card border rounded-xl p-5 transition-all duration-200 relative group",
+              isRevenueLocked
+                ? "cursor-pointer border-indigo-500/30 hover:shadow-lg hover:shadow-indigo-500/10"
+                : "cursor-default border-indigo-500/20"
+            )}
+          >
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-xs font-semibold uppercase tracking-wider text-indigo-500">
+                My Revenue Look
+              </span>
+              <div className="flex items-center gap-2">
+                <div className="group/info relative" onClick={(e) => e.stopPropagation()}>
+                  <Eye className="w-4 h-4 text-muted-foreground/50 hover:text-indigo-500 transition-colors cursor-pointer" />
+                  <div className="absolute right-0 top-6 w-48 p-2 bg-popover border border-border rounded-lg shadow-lg text-[10px] text-muted-foreground opacity-0 group-hover/info:opacity-100 pointer-events-none transition-opacity z-10">
+                    Editor and creator can get instant payment after approve to youtube and all.
+                  </div>
+                </div>
+                <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-indigo-500/10">
+                  <DollarSign className="w-4 h-4 text-indigo-500" />
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between">
+              {isRevenueLocked ? (
+                <p className="text-3xl font-bold blur-sm select-none">$650.00</p>
+              ) : (
+                <p className="text-3xl font-bold">$0.00</p>
+              )}
+
+              {isRevenueLocked && (
+                <div className="bg-amber-500/10 text-amber-500 p-1.5 rounded-full">
+                  <Lock className="w-3 h-3" />
+                </div>
+              )}
+            </div>
+
+            {isRevenueLocked && (
+              <div className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-[1px] opacity-0 group-hover:opacity-100 transition-opacity rounded-xl">
+                <span className="bg-indigo-600 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg">
+                  Unlock
+                </span>
+              </div>
+            )}
+          </motion.div>
+
+          {/* Editing Tools Card (Locked) */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            onClick={() => isRevenueLocked && setIsUpgradeModalOpen(true)}
+            className={cn(
+              "bg-card border rounded-xl p-5 transition-all duration-200 relative group",
+              isRevenueLocked
+                ? "cursor-pointer border-violet-500/30 hover:shadow-lg hover:shadow-violet-500/10"
+                : "cursor-default border-violet-500/20"
+            )}
+          >
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-xs font-semibold uppercase tracking-wider text-violet-500">
+                Editing Tools
+              </span>
+              <div className="flex items-center gap-2">
+                <div className="group/info relative" onClick={(e) => e.stopPropagation()}>
+                  <Eye className="w-4 h-4 text-muted-foreground/50 hover:text-violet-500 transition-colors cursor-pointer" />
+                  <div className="absolute right-0 top-6 w-48 p-2 bg-popover border border-border rounded-lg shadow-lg text-[10px] text-muted-foreground opacity-0 group-hover/info:opacity-100 pointer-events-none transition-opacity z-10">
+                    You will get access to premium editing platform for edit your videos and all.
+                  </div>
+                </div>
+                <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-violet-500/10">
+                  <Wand2 className="w-4 h-4 text-violet-500" />
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between">
+              {isRevenueLocked ? (
+                <p className="text-xl font-bold blur-sm select-none">Premium Access</p>
+              ) : (
+                <p className="text-xl font-bold">Access Granted</p>
+              )}
+
+              {isRevenueLocked && (
+                <div className="bg-amber-500/10 text-amber-500 p-1.5 rounded-full">
+                  <Lock className="w-3 h-3" />
+                </div>
+              )}
+            </div>
+
+            {isRevenueLocked && (
+              <div className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-[1px] opacity-0 group-hover:opacity-100 transition-opacity rounded-xl">
+                <span className="bg-violet-600 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg">
+                  Unlock
+                </span>
+              </div>
+            )}
+          </motion.div>
         </motion.div>
 
         {/* Content Section */}
@@ -538,6 +660,12 @@ export default function EditorDashboard() {
           </div>
         )}
       </AnimatePresence>
-    </div>
+
+      <SubscriptionModal
+        isOpen={isUpgradeModalOpen}
+        onClose={() => setIsUpgradeModalOpen(false)}
+        currentPlan={subscription?.plan || "free"}
+      />
+    </div >
   );
 }

@@ -25,13 +25,19 @@ import {
   X,
   Sun,
   Moon,
-  Eye
+  Eye,
+  Lock,
+  DollarSign,
+  Wand2,
+  MessageSquare,
+  Send
 } from "lucide-react";
 import VideoCard from "@/components/VideoCard";
-import { videoAPI, inviteAPI, getGoogleAuthUrl } from "@/lib/api";
+import { videoAPI, inviteAPI, getGoogleAuthUrl, paymentAPI } from "@/lib/api";
 import { isAuthenticated, getUserData, logout, isDemoUser } from "@/lib/auth";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { MWareXLogo } from "@/components/mwarex-logo";
+import { SubscriptionModal } from "@/components/subscription-modal";
 import { cn } from "@/lib/utils";
 
 interface Video {
@@ -41,6 +47,7 @@ interface Video {
   fileUrl: string;
   status: "pending" | "approved" | "rejected" | "uploaded";
   youtubeId?: string;
+  rejectionReason?: string;
 }
 
 export default function CreatorDashboard() {
@@ -60,6 +67,15 @@ export default function CreatorDashboard() {
   const [userData, setUserData] = useState<{ name?: string; email?: string; isDemo?: boolean } | null>(null);
   const [pageLoaded, setPageLoaded] = useState(false);
   const [isDemo, setIsDemo] = useState(false);
+  const [subscription, setSubscription] = useState<any>(null);
+  const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
+
+  // Rejection Modal State
+  const [rejectModal, setRejectModal] = useState<{ isOpen: boolean; videoId: string | null }>({
+    isOpen: false,
+    videoId: null,
+  });
+  const [rejectionReason, setRejectionReason] = useState("");
 
   useEffect(() => {
     const data = getUserData();
@@ -80,6 +96,13 @@ export default function CreatorDashboard() {
 
     const letter = data?.name?.[0] || data?.email?.[0] || "U";
     setAvatarLetter(letter);
+
+    // Fetch subscription
+    if (!data?.isDemo) {
+      paymentAPI.getSubscription()
+        .then(res => setSubscription(res.data.subscription))
+        .catch(console.error);
+    }
 
     // Page load animation
     setTimeout(() => setPageLoaded(true), 100);
@@ -115,19 +138,30 @@ export default function CreatorDashboard() {
     }
   };
 
-  const handleReject = async (id: string) => {
+  const handleReject = (id: string) => {
+    setRejectModal({ isOpen: true, videoId: id });
+    setRejectionReason("");
+  };
+
+  const submitReject = async () => {
+    if (!rejectModal.videoId) return;
+
+    const id = rejectModal.videoId;
     setActionLoading(id);
+    setRejectModal({ isOpen: false, videoId: null });
+
     try {
-      await videoAPI.reject(id);
+      await videoAPI.reject(id, rejectionReason);
       setVideos(
         videos.map((v) =>
-          v._id === id ? { ...v, status: "rejected" as const } : v
+          v._id === id ? { ...v, status: "rejected" as const, rejectionReason } : v
         )
       );
     } catch (error) {
       console.error("Failed to reject video:", error);
     } finally {
       setActionLoading(null);
+      setRejectionReason("");
     }
   };
 
@@ -212,6 +246,8 @@ export default function CreatorDashboard() {
     ],
     [videos]
   );
+
+  const isRevenueLocked = subscription?.plan === "free" && !isDemo;
 
   // Initial page loader
   if (!pageLoaded) {
@@ -403,6 +439,101 @@ export default function CreatorDashboard() {
                 <p className="text-xs text-muted-foreground mt-1">{stat.label}</p>
               </motion.div>
             ))}
+
+
+            {/* Revenue Split Card (Locked) */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.25 }}
+              onClick={() => isRevenueLocked && setIsUpgradeModalOpen(true)}
+              className={cn(
+                "bg-card border rounded-xl p-4 md:p-5 transition-all duration-200 relative group",
+                isRevenueLocked
+                  ? "cursor-pointer border-indigo-500/30 hover:shadow-lg hover:shadow-indigo-500/10"
+                  : "cursor-default border-indigo-500/20"
+              )}
+            >
+              <div className="flex items-center justify-between mb-3">
+                <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-indigo-500/10">
+                  <DollarSign className="w-5 h-5 text-indigo-500" />
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="group/info relative" onClick={(e) => e.stopPropagation()}>
+                    <Eye className="w-4 h-4 text-muted-foreground/50 hover:text-indigo-500 transition-colors cursor-pointer" />
+                    <div className="absolute right-0 top-6 w-48 p-2 bg-popover border border-border rounded-lg shadow-lg text-[10px] text-muted-foreground opacity-0 group-hover/info:opacity-100 pointer-events-none transition-opacity z-10">
+                      Editor and creator can get instant payment after approve to youtube and all.
+                    </div>
+                  </div>
+                  {isRevenueLocked && (
+                    <div className="bg-amber-500/10 text-amber-500 p-1.5 rounded-full">
+                      <Lock className="w-3 h-3" />
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {isRevenueLocked ? (
+                <>
+                  <p className="text-2xl md:text-3xl font-bold blur-sm select-none">$1,250.00</p>
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-[1px] opacity-0 group-hover:opacity-100 transition-opacity rounded-xl">
+                    <span className="bg-indigo-600 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg">
+                      Unlock Revenue
+                    </span>
+                  </div>
+                </>
+              ) : (
+                <p className="text-2xl md:text-3xl font-bold">$0.00</p>
+              )}
+              <p className="text-xs text-muted-foreground mt-1">Estimated Revenue</p>
+            </motion.div>
+
+            {/* Editing Tools Card (Locked) */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              onClick={() => isRevenueLocked && setIsUpgradeModalOpen(true)}
+              className={cn(
+                "bg-card border rounded-xl p-4 md:p-5 transition-all duration-200 relative group",
+                isRevenueLocked
+                  ? "cursor-pointer border-violet-500/30 hover:shadow-lg hover:shadow-violet-500/10"
+                  : "cursor-default border-violet-500/20"
+              )}
+            >
+              <div className="flex items-center justify-between mb-3">
+                <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-violet-500/10">
+                  <Wand2 className="w-5 h-5 text-violet-500" />
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="group/info relative" onClick={(e) => e.stopPropagation()}>
+                    <Eye className="w-4 h-4 text-muted-foreground/50 hover:text-violet-500 transition-colors cursor-pointer" />
+                    <div className="absolute right-0 top-6 w-48 p-2 bg-popover border border-border rounded-lg shadow-lg text-[10px] text-muted-foreground opacity-0 group-hover/info:opacity-100 pointer-events-none transition-opacity z-10">
+                      You will get access to premium editing platform for edit your videos and all.
+                    </div>
+                  </div>
+                  {isRevenueLocked && (
+                    <div className="bg-amber-500/10 text-amber-500 p-1.5 rounded-full">
+                      <Lock className="w-3 h-3" />
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {isRevenueLocked ? (
+                <>
+                  <p className="text-xl md:text-2xl font-bold blur-sm select-none">Premium Access</p>
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-[1px] opacity-0 group-hover:opacity-100 transition-opacity rounded-xl">
+                    <span className="bg-violet-600 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg">
+                      Unlock Tools
+                    </span>
+                  </div>
+                </>
+              ) : (
+                <p className="text-xl md:text-2xl font-bold">Access Granted</p>
+              )}
+              <p className="text-xs text-muted-foreground mt-1">Editing Tools</p>
+            </motion.div>
           </motion.div>
 
           {/* Filters & Search */}
@@ -645,6 +776,68 @@ export default function CreatorDashboard() {
           </div>
         )}
       </AnimatePresence>
+
+      <AnimatePresence>
+        {rejectModal.isOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setRejectModal({ isOpen: false, videoId: null })}
+              className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ scale: 0.95, y: 20, opacity: 0 }}
+              animate={{ scale: 1, y: 0, opacity: 1 }}
+              exit={{ scale: 0.95, y: 20, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="relative w-full max-w-sm bg-card border border-border rounded-xl shadow-xl overflow-hidden"
+            >
+              <div className="p-4 border-b border-border flex items-center gap-3">
+                <div className="bg-red-500/10 p-2 rounded-lg">
+                  <MessageSquare className="w-5 h-5 text-red-500" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-sm">Reason for Rejection</h3>
+                  <p className="text-xs text-muted-foreground">This note will be sent to the editor.</p>
+                </div>
+              </div>
+              <div className="p-4 space-y-4">
+                <textarea
+                  autoFocus
+                  value={rejectionReason}
+                  onChange={(e) => setRejectionReason(e.target.value)}
+                  placeholder="E.g. The audio is out of sync, please fix..."
+                  className="w-full h-32 bg-secondary/30 border border-border rounded-lg p-3 text-sm focus:border-red-500/50 focus:ring-1 focus:ring-red-500/20 outline-none resize-none placeholder:text-muted-foreground/50"
+                />
+                <div className="flex gap-2 justify-end">
+                  <button
+                    onClick={() => setRejectModal({ isOpen: false, videoId: null })}
+                    className="px-4 py-2 text-xs font-medium bg-secondary text-foreground rounded-lg hover:bg-secondary/80 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={submitReject}
+                    disabled={!rejectionReason.trim()}
+                    className="px-4 py-2 text-xs font-medium bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                  >
+                    Reject Video
+                    <Send className="w-3 h-3" />
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      <SubscriptionModal
+        isOpen={isUpgradeModalOpen}
+        onClose={() => setIsUpgradeModalOpen(false)}
+        currentPlan={subscription?.plan || "free"}
+      />
     </div>
   );
 }

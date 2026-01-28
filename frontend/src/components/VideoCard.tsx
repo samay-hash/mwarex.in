@@ -12,7 +12,9 @@ import {
   ExternalLink,
   AlertTriangle,
   FileVideo,
-  Loader2
+  Loader2,
+  MessageSquare,
+  Quote
 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
@@ -27,6 +29,7 @@ interface VideoCardProps {
     creatorId?: string;
     editorId?: string;
     youtubeId?: string;
+    rejectionReason?: string;
   };
   onApprove?: (id: string) => void;
   onReject?: (id: string) => void;
@@ -101,11 +104,27 @@ export default function VideoCard({
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       layout
-      className="glass-card rounded-2xl overflow-hidden card-hover group flex flex-col h-full border border-border/40 hover:border-border/80 bg-card transition-all duration-300 shadow-sm hover:shadow-lg"
+      className="glass-card rounded-2xl overflow-visible card-hover group flex flex-col h-full border border-border/40 hover:border-border/80 bg-card transition-all duration-300 shadow-sm hover:shadow-lg relative"
     >
+      {/* Rejection Note - "Hanging" effect */}
+      {video.status === "rejected" && video.rejectionReason && (
+        <div className="absolute -top-4 -right-4 z-30 max-w-[250px] animate-in fade-in zoom-in duration-300 group-hover:scale-105 transition-transform">
+          <div className="relative bg-red-50 dark:bg-red-950/90 text-red-900 dark:text-red-100 text-xs p-3 rounded-tr-xl rounded-bl-xl rounded-tl-xl shadow-xl border border-red-200 dark:border-red-900">
+            <div className="absolute -bottom-1.5 right-0 w-3 h-3 bg-red-50 dark:bg-red-950/90 border-r border-b border-red-200 dark:border-red-900 rotate-45 transform origin-center"></div>
+            <div className="flex gap-2">
+              <Quote className="w-4 h-4 text-red-400 rotate-180 flex-shrink-0" />
+              <div>
+                <span className="font-bold block text-[10px] uppercase tracking-wider text-red-500 mb-0.5">Feedback</span>
+                <p className="italic leading-snug">"{video.rejectionReason}"</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Thumbnail / Video Preview Area */}
       <div
-        className="relative aspect-video bg-muted/30 overflow-hidden cursor-pointer group/thumb"
+        className="relative aspect-video bg-muted/30 overflow-hidden cursor-pointer group/thumb rounded-t-2xl"
         onClick={() => {
           // Navigate to studio workspace
           window.location.href = `/dashboard/video/${video._id}`;
