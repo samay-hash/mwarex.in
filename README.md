@@ -140,6 +140,6 @@ MwareX/
   </a>
 
   <br><br>
-  <p><i>Licensed under MIT. Made with 💙 by Samay Samrat.</i></p>
+  <p><i>Licensed under MIT. Made with 💙 by Samay </i></p>
 
 </div>
