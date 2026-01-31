@@ -174,8 +174,6 @@ Distributed under the MIT License. See `LICENSE` for more information.
   </a>
   <a href="https://x.com/ChemistGamer1">
     <img src="https://img.shields.io/twitter/my/Twitter?style=social" alt="Twitter Follow" /> 
-   
-    <!-- <h1>Twitter</h1> -->
   </a>
 
 </div>
