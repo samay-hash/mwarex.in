@@ -10,7 +10,8 @@ import { HowItWorks } from "@/components/how-it-works";
 import { PricingSection } from "@/components/pricing-section";
 import { ProductPreview } from "@/components/product-preview";
 import { Testimonials } from "@/components/testimonials";
-import { Layers, ArrowRight, Github, Twitter, Linkedin, Sparkles, Youtube } from "lucide-react";
+import { Layers, ArrowRight, Github, Twitter, Linkedin, Sparkles, Youtube, Play } from "lucide-react";
+import { MWareXLogo } from '@/components/mwarex-logo';
 
 export default function LandingPage() {
   return (
@@ -266,11 +267,8 @@ export default function LandingPage() {
           <div className="grid grid-cols-1 md:grid-cols-5 gap-8 md:gap-12">
             {/* Brand */}
             <div className="col-span-1 md:col-span-2">
-              <div className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-8 flex items-center justify-center bg-primary rounded-lg">
-                  <Layers className="w-4 h-4 text-primary-foreground" />
-                </div>
-                <span className="text-lg font-bold text-foreground">MWareX.</span>
+              <div className="mb-4">
+                <MWareXLogo showText={true} size="md" href="/" />
               </div>
               <p className="text-muted-foreground text-sm max-w-xs mb-4">
                 The secure operating system for modern YouTube creators and editing teams.

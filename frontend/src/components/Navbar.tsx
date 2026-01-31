@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, Play, LogOut, User, Settings, ChevronDown, Bell, Check } from 'lucide-react';
+import { MWareXLogo } from '@/components/mwarex-logo';
 import { isAuthenticated, getUserRole, getUserData, logout } from '@/lib/auth';
 
 export default function Navbar() {
@@ -51,16 +52,8 @@ export default function Navbar() {
           }`}
       >
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 group">
-            <div className="relative w-10 h-10">
-              <div className="absolute inset-0 bg-red-600 rounded-xl blur opacity-40 group-hover:opacity-60 transition-opacity" />
-              <div className="relative w-full h-full bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform shadow-lg">
-                <Play className="w-5 h-5 text-white fill-white ml-0.5" />
-              </div>
-            </div>
-            <span className="text-xl font-bold tracking-tight text-white group-hover:text-red-500 transition-colors duration-300">
-              Fut<span className="text-red-500 group-hover:text-white transition-colors duration-300">Tube</span>
-            </span>
+          <Link href="/" className="z-10 hover:scale-105 transition-transform duration-300">
+            <MWareXLogo />
           </Link>
 
           {/* Desktop Nav */}
