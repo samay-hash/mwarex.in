@@ -51,4 +51,16 @@ const sendInviteEmail = async (toEmail, inviteLink, creatorName) => {
   }
 };
 
-module.exports = { sendInviteEmail };
+const verifyConnection = async () => {
+  try {
+    const success = await transporter.verify();
+    if (success) {
+      console.log("✅ SMTP Connection Verified (Ready to send emails)");
+    }
+  } catch (error) {
+    console.error("❌ SMTP Connection Failed:", error);
+    console.error("   Hint: Check EMAIL_USER, EMAIL_PASS, and ensure App Password is used.");
+  }
+};
+
+module.exports = { sendInviteEmail, verifyConnection };

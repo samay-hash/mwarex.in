@@ -21,7 +21,7 @@ import {
 } from "lucide-react";
 import { getUserData, logout } from "@/lib/auth";
 import { useRouter } from "next/navigation";
-import { videoAPI, userAPI, paymentAPI } from "@/lib/api";
+import { videoAPI, userAPI, paymentAPI, getGoogleAuthUrl } from "@/lib/api";
 import { SubscriptionModal } from "@/components/subscription-modal";
 import { cn } from "@/lib/utils";
 
@@ -71,7 +71,7 @@ export default function SettingsPage() {
     }, []);
 
     const handleConnectYouTube = () => {
-        window.location.href = "http://localhost:5000/auth/google";
+        window.location.href = getGoogleAuthUrl();
     };
 
     const handleLogout = () => {

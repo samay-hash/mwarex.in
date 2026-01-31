@@ -12,6 +12,7 @@ const editorRoutes = require("./routes/editor");
 const inviteRoutes = require("./routes/invite");
 const settingsRoutes = require("./routes/settings");
 const paymentRoutes = require("./routes/payment");
+const { verifyConnection } = require("./services/emailService");
 
 const { google } = require("googleapis");
 const googleAuthRoutes = require("./routes/googleAuth");
@@ -76,6 +77,7 @@ app.use(express.json());
 app.use("/uploads", express.static("uploads"));
 
 connectDB();
+verifyConnection();
 
 app.use("/api/v1/user", settingsRoutes);
 app.use("/api/v1/user", userRoutes);
