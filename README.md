@@ -1,188 +1,142 @@
 <div align="center">
 
-  <img src="https://readme-typing-svg.herokuapp.com?font=Inter&weight=700&size=40&pause=1000&color=FF0000&center=true&vCenter=true&width=600&lines=MwareX;The+OS+for+Modern+Creators" alt="Typing SVG" />
-
-  ### 🚀 The Ultimate Video Collaboration Platform for YouTube Creators & Editors
-
-  <p align="center">
-    <b>Secure Credential Sharing • Cloud-Based Workflow • Instant YouTube Uploads</b>
-  </p>
+  <!-- Dynamic Gradient Title -->
+  <a href="https://mwarex.in">
+    <img src="https://readme-typing-svg.herokuapp.com?font=Orbitron&weight=900&size=50&pause=1000&color=FFFFFF&background=00000000&center=true&vCenter=true&width=600&lines=MwareX;Enterprise+Video+OS;For+Creators" alt="MwareX" />
+  </a>
 
   <p align="center">
-    <a href="https://mwarex.in">
-      <img src="https://img.shields.io/badge/LIVE_SITE-FF0000?style=for-the-badge&logo=youtube&logoColor=white&labelColor=000000" alt="Live Site" />
-    </a>
-    <a href="#-tech-stack">
-      <img src="https://img.shields.io/badge/TECH_STACK-2196F3?style=for-the-badge&logo=react&logoColor=white&labelColor=000000" alt="Tech Stack" />
-    </a>
-    <a href="#-contributing">
-      <img src="https://img.shields.io/badge/CONTRIBUTE-00C853?style=for-the-badge&logo=github&logoColor=white&labelColor=000000" alt="Contribute" />
-    </a>
+    <img src="https://img.shields.io/badge/v1.0.0-Beta-blueviolet?style=for-the-badge&labelColor=black" />
+    <img src="https://img.shields.io/badge/Next.js-16-000000?style=for-the-badge&logo=nextdotjs&logoColor=white" />
+    <img src="https://img.shields.io/badge/Status-Production-success?style=for-the-badge&labelColor=black" />
   </p>
+
+  <h3 align="center">The Secure Operating System for Modern YouTube Teams</h3>
 
 </div>
 
 ---
 
-## 💡 I Built Something That YouTubers Actually Need
+## ⚡ The Mission: Fixing the "Creator's Bottleneck"
 
-Most YouTube creators don’t have a secure or efficient way to work with editors. This forces them to waste hours on uploads, downloads — and in some cases, even share their Google account passwords just to get videos published.
+> *"Most YouTube creators don’t have a secure or efficient way to work with editors. This forces them to waste hours on uploads, downloads — and in some cases, even share their Google account passwords just to get videos published."*
 
-### 🔴 The Reality (The Vicious Cycle)
-Here’s the reality I’ve seen after talking to multiple creators:
-1.  **Editor finishes the video** 🎬
-2.  Uploads it to Google Drive ☁️
-3.  Creator waits for upload to finish ⏳
-4.  Downloads 3–5 GB files locally ⬇️
-5.  Re-uploads the same file to YouTube ⬆️
-6.  **Hours wasted. Every. Single. Time.** 🛑
+### ❌ The Old Way (Broken & Insecure)
+We analyzed the workflow of top creators. Here is the painful reality:
+1.  **Hours Wasted**: Editor uploads to Drive ➔ Creator Downloads (5GB+) ➔ Creator Re-uploads to YouTube.
+2.  **Security Risks**: Sharing Google Password with editors just so they can upload? **Never again.**
+3.  **Chaos**: "Final_v3_REAL_FINAL.mp4" lost in WhatsApp chats.
 
-### ✅ The MwareX Solution
-So I built **MwareX** — a platform that fixes this entire process. Think of it as the missing bridge between creators and editors.
-
-With MwareX:
-- **Editors upload videos directly to the cloud** ☁️
-- **Creators connect their YouTube channel with one click** 🔗
-- **Creators review & approve videos instantly** 👀
-- **Approved videos go straight to the connected YouTube channel** 🚀
-- **No Google passwords shared. Ever.** 🔒
+### ✅ The MwareX Way (Streamlined)
+**MwareX** creates a secure bridge between your editing team and your YouTube channel.
+- **Editors** upload directly to your secure MwareX cloud. ☁️
+- **You (The Creator)** get a push notification to review the video. �
+- **One Click Approval**: The video is instantly pushed to YouTube via secure OAuth. 🚀
+- **Zero Privacy Compromise**: Editors never see your YouTube credentials. �️
 
 ---
 
-## 🛠️ Tech Stack & Dependencies
+## 🛠️ The Tech Ecosystem
 
-We use a cutting-edge, type-safe stack designed for performance, security, and scalability.
+We leveraged a high-performance stack to ensure speed, security, and scalability.
 
-### **Frontend** (The Face)
-| Technology | Description |
-| :--- | :--- |
-| **Next.js 16** | The React Framework for the Web (App Router). |
-| **TypeScript** | Strict syntactical superset of JavaScript. |
-| **Tailwind CSS** | Utility-first CSS framework for rapid UI development. |
-| **Framer Motion** | Production-ready motion library for animations. |
-| **Lucide React** | Beautiful & consistent icon toolkit. |
-| **Socket.io-client**| Real-time bidirectional communication. |
+<div align="center">
 
-### **Backend** (The Brain)
-| Technology | Description |
-| :--- | :--- |
-| **Node.js** | JavaScript runtime built on Chrome's V8 engine. |
-| **Express.js** | Fast, unopinionated, minimalist web framework. |
-| **MongoDB Atlas** | Fully managed cloud database service. |
-| **Cloudinary** | Enterprise-grade video management service. |
-| **Google OAuth 2.0** | Secure authentication & YouTube Data API integration. |
-| **Nodemailer** | Secure email transport setup with SMTP. |
+| **Frontend Core** | **Backend Engine** | **Cloud & AI** |
+|:---:|:---:|:---:|
+| <img height="50" src="https://skillicons.dev/icons?i=nextjs,ts,tailwind,framer" /> | <img height="50" src="https://skillicons.dev/icons?i=nodejs,express,mongodb,postman" /> | <img height="50" src="https://skillicons.dev/icons?i=gcp,cloudinary,vercel,git" /> |
+| **Next.js 16 • TypeScript • Framer Motion** | **Node.js • Express • MongoDB Atlas** | **Google OAuth • Cloudinary • Vercel** |
+
+</div>
+
+### 🏗️ Architecture Highlights
+- **Real-time Engine**: Built with `Socket.io` for live status updates on video processing.
+- **Secure Auth**: Implemented secure `HTTP-Only` cookies with `JWT` and Google OAuth 2.0.
+- **Cloud Native**: Zero local storage dependency; all assets are processed in the cloud (Cloudinary/S3).
+- **Type Safety**: End-to-end type safety using `TypeScript` and `Zod` schemas.
 
 ---
 
-## 📂 Codebase Hierarchy
+## 📂 Codebase Navigation
 
-For developers interested in the architecture, here is the high-level structure of the project:
+A quick guide for developers exploring the source code:
 
 ```bash
 MwareX/
-├── backend/                  # Node.js & Express Server
-│   ├── index.js              # Entry point
-│   ├── models/               # MongoDB Mongoose Models (User, Video, etc.)
-│   ├── routes/               # API Routes (Auth, Video, Editor, etc.)
-│   ├── services/             # Business Logic (Email, YouTube Uploads)
-│   ├── middlewares/          # Auth & file handling middlewares
-│   └── uploads/              # Temp storage for video processing
+├── 📱 frontend/              # Next.js 16 (App Router)
+│   ├── src/app/              # Pages & Layouts
+│   ├── src/components/       # Reusable UI (Radix + Lucide)
+│   ├── src/lib/              # API Clients & Auth Utilities
+│   └── public/               # Static Assets
 │
-├── frontend/                 # Next.js 16 Client
-│   ├── src/
-│   │   ├── app/              # Next.js App Router Pages
-│   │   ├── components/       # Reusable UI Components
-│   │   ├── lib/              # Utilities (API, Auth)
-│   │   └── hooks/            # Custom React Hooks
-│   ├── public/               # Static Assets
-│   └── tailwind.config.js    # Styling Configuration
+├── ⚙️ backend/               # Node.js Microservice
+│   ├── models/               # MongoDB Schemas (Mongoose)
+│   ├── routes/               # REST API Endpoints
+│   ├── services/             # Core Logic (YouTube Uploads, Email)
+│   └── middlewares/          # Security Layers (CORS, Auth)
 │
-└── README.md                 # Project Documentation
+└── 📄 README.md             # You are here
 ```
 
 ---
 
-## 🤝 How to Contribute
+## 🚀 Getting Started
 
-We welcome contributions from the community! If you'd like to improve MwareX, follow these steps:
+Ready to deploy your own instance?
 
-1.  **Fork the Repository**: Click the "Fork" button at the top right of this page.
-2.  **Clone Your Fork**:
-    ```bash
-    git clone https://github.com/your-username/MwareX.git
-    cd MwareX
-    ```
-3.  **Create a Branch**:
-    ```bash
-    git checkout -b feature/amazing-feature
-    ```
-4.  **Make Changes**: Implement your feature or fix a bug.
-5.  **Commit Changes**:
-    ```bash
-    git commit -m "feat: Add amazing feature"
-    ```
-6.  **Push to Branch**:
-    ```bash
-    git push origin feature/amazing-feature
-    ```
-7.  **Open a Pull Request**: Submit your PR on the main repository!
-
----
-
-## 💻 Installation & Setup
-
-### 1. Backend Setup
+### 1. Clone & Setup
 ```bash
-cd backend
-npm install
+git clone https://github.com/samay-hash/MwareX.git
+cd MwareX
 ```
-Create a `.env` file in `backend/` with the following keys:
+
+### 2. Backend Configuration
+Create a `.env` file in `/backend` with your credentials:
 ```env
 PORT=8000
-MONGO_URI=your_mongodb_uri
+MONGO_URI=mongodb+srv://...
 FRONTEND_URL=http://localhost:3000
-GOOGLE_CLIENT_ID=your_client_id
-GOOGLE_CLIENT_SECRET=your_client_secret
+# Google Cloud Console Credentials
+GOOGLE_CLIENT_ID=...
+GOOGLE_CLIENT_SECRET=...
 GOOGLE_REDIRECT=http://localhost:8000/oauth2callback
-CLOUDINARY_CLOUD_NAME=your_cloud_name
-CLOUDINARY_API_KEY=your_key
-CLOUDINARY_API_SECRET=your_secret
-EMAIL_USER=your_email@gmail.com
-EMAIL_PASS=your_app_password
+# Cloudinary & Email
+CLOUDINARY_CLOUD_NAME=...
+CLOUDINARY_API_KEY=...
+EMAIL_USER=...
+EMAIL_PASS=...
 ```
-Run the server:
 ```bash
-npm run dev
+cd backend && npm install && npm run dev
 ```
 
-### 2. Frontend Setup
-```bash
-cd frontend
-npm install
-```
-Create a `.env.local` file in `frontend/`:
+### 3. Frontend Configuration
+Create a `.env.local` file in `/frontend`:
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:8000
 ```
-Run the client:
 ```bash
-npm run dev
+cd frontend && npm install && npm run dev
 ```
 
 ---
 
 <div align="center">
 
-  <h3>Let's Collaborate!</h3>
-  <p>Found a bug? Have a feature idea? Just want to say hi?</p>
+  ### 🔗 Connect With Me
+  <p>I build tools that solve real problems.</p>
 
   <a href="https://github.com/samay-hash">
-    <img src="https://img.shields.io/github/followers/samay-hash?style=social&label=Follow%20@samay-hash" alt="GitHub" />
+    <img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white" />
   </a>
   <a href="https://x.com/ChemistGamer1">
-    <img src="https://img.shields.io/twitter/follow/ChemistGamer1?style=social&label=Follow%20@ChemistGamer1" alt="Twitter" />
+    <img src="https://img.shields.io/badge/Twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white" />
+  </a>
+  <a href="mailto:samay3076@gmail.com">
+    <img src="https://img.shields.io/badge/Email-D14836?style=for-the-badge&logo=gmail&logoColor=white" />
   </a>
 
-  <p>Made with ❤️ by <b>Samay</b></p>
+  <br><br>
+  <p><i>Licensed under MIT. Made with 💙 by Samay Samrat.</i></p>
+
 </div>
