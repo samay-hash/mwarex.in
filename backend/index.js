@@ -27,6 +27,8 @@ console.log("CORS Origin Allowed:", frontend);
 
 const allowedOrigins = [
   frontend,
+  "https://mwarex.in",
+  "https://www.mwarex.in",
   "http://localhost:3000",
   "http://127.0.0.1:3000",
   "http://localhost:5173",
@@ -100,7 +102,10 @@ app.get("/oauth2callback", async (req, res) => {
     console.log("TOKENS ===>", tokens);
 
     // Redirect to frontend callback with tokens (frontend should handle storing securely)
-    const frontend = process.env.FRONTEND_URL ?? "http://localhost:3000";
+    // Use the state parameter if it exists (it contains the origin), otherwise fallback
+    const origin = req.query.state;
+    const frontend = origin || process.env.FRONTEND_URL || "https://www.mwarex.in";
+
     const params = new URLSearchParams();
 
     if (tokens.access_token) params.append("access_token", tokens.access_token);

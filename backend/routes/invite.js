@@ -15,7 +15,7 @@ router.post("/invite", creatorAuth, async (req, res) => {
       editorEmail: email,
       inviteToken: token,
     });
-    const frontendUrl = (process.env.FRONTEND_URL || "https://mware-x.vercel.app").replace(/\/$/, "");
+    const frontendUrl = (process.env.FRONTEND_URL || "https://www.mwarex.in").replace(/\/$/, "");
     const inviteLink = `${frontendUrl}/join?token=${token}`;
 
     const creator = await userModel.findById(req.userId);

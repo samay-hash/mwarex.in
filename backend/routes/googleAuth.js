@@ -9,9 +9,12 @@ router.get("/google", (req, res) => {
       process.env.GOOGLE_REDIRECT
     );
 
+    const { origin } = req.query;
+
     const url = oauth2Client.generateAuthUrl({
       access_type: "offline",
       prompt: "consent",
+      state: origin, // Pass the origin in the state
       scope: [
         "https://www.googleapis.com/auth/userinfo.profile",
         "https://www.googleapis.com/auth/userinfo.email",

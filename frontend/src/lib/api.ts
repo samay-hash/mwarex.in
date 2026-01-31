@@ -94,7 +94,10 @@ export const inviteAPI = {
 };
 
 // Google OAuth
-export const getGoogleAuthUrl = () => `${API_BASE_URL}/auth/google`;
+export const getGoogleAuthUrl = () => {
+  const origin = typeof window !== "undefined" ? window.location.origin : "";
+  return `${API_BASE_URL}/auth/google?origin=${encodeURIComponent(origin)}`;
+};
 
 // Payment APIs
 export const paymentAPI = {
