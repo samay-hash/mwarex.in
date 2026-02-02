@@ -17,7 +17,6 @@ import { LandingPageOnboarding } from "@/components/onboarding";
 export default function LandingPage() {
   return (
     <div className="min-h-screen text-foreground selection:bg-primary/30 font-sans">
-      <LandingPageOnboarding />
       <SiteHeader />
 
       <main>
