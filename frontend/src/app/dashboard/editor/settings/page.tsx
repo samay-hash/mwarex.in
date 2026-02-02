@@ -108,9 +108,15 @@ export default function EditorSettingsPage() {
     }
 
     return (
-        <div className="min-h-screen bg-background text-foreground">
+        <div
+            style={{ willChange: "transform", transform: "translateZ(0)" }}
+            className="min-h-screen bg-background text-foreground"
+        >
             {/* ... Header ... */}
-            <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border">
+            <header
+                style={{ willChange: "transform", transform: "translateZ(0)" }}
+                className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border"
+            >
                 <div className="max-w-4xl mx-auto px-4 md:px-6 py-3 flex items-center justify-between">
                     <div className="flex items-center gap-4">
                         <button

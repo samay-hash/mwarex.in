@@ -123,7 +123,10 @@ export default function SettingsPage() {
     }
 
     return (
-        <div className="min-h-screen bg-[#0a0a0a] p-6 lg:p-12">
+        <div
+            style={{ willChange: "transform", transform: "translateZ(0)" }}
+            className="min-h-screen bg-[#0a0a0a] p-6 lg:p-12"
+        >
             <div className="max-w-4xl mx-auto">
                 <header className="mb-8 flex justify-between items-center">
                     <div>
