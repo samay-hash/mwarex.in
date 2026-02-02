@@ -26,7 +26,7 @@ export default function LandingPage() {
         <section className="py-12 border-y border-border bg-secondary/30">
           <div className="max-w-7xl mx-auto px-6 text-center">
             <p className="text-sm font-semibold text-muted-foreground uppercase tracking-widest mb-8">
-              Empowering creators worldwide
+              Trusted by the best.
             </p>
             <div className="flex flex-wrap justify-center items-center gap-12 md:gap-24 opacity-60 hover:opacity-100 transition-all duration-500">
               {/* Simple text logos for now since we don't have SVGs, styled to look like logos */}
@@ -163,7 +163,7 @@ export default function LandingPage() {
               transition={{ duration: 0.6, delay: 0.1 }}
               className="text-5xl md:text-6xl lg:text-7xl font-bold mb-8 text-foreground leading-[1.1] tracking-tight"
             >
-              Ready to scale your{" "}
+              Ready to scale your
               <br className="hidden sm:block" />
               <span className="relative inline-block mt-2">
                 <span className="relative z-10 text-transparent bg-clip-text bg-gradient-to-r from-primary via-violet-500 to-fuchsia-500">
@@ -180,6 +180,7 @@ export default function LandingPage() {
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-violet-500">?</span>
             </motion.h2>
 
+            {/* Subtitle */}
             {/* Subtitle */}
             <motion.p
               initial={{ opacity: 0, y: 20 }}
