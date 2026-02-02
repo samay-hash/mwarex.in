@@ -12,10 +12,12 @@ import { ProductPreview } from "@/components/product-preview";
 import { Testimonials } from "@/components/testimonials";
 import { Layers, ArrowRight, Github, Twitter, Linkedin, Sparkles, Youtube, Play } from "lucide-react";
 import { MWareXLogo } from '@/components/mwarex-logo';
+import { LandingPageOnboarding } from "@/components/onboarding";
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-background text-foreground selection:bg-primary/30 font-sans">
+    <div className="min-h-screen text-foreground selection:bg-primary/30 font-sans">
+      <LandingPageOnboarding />
       <SiteHeader />
 
       <main>
@@ -49,29 +51,30 @@ export default function LandingPage() {
         <Testimonials />
 
         {/* Enhanced Final CTA Section */}
-        <section className="py-36 md:py-44 relative overflow-hidden bg-background">
+        <section className="py-36 md:py-44 relative overflow-hidden bg-transparent">
           {/* Premium Multi-layer Background Effects */}
           <div className="absolute inset-0 -z-10">
             {/* Primary Central Glow */}
             <motion.div
               animate={{
-                scale: [1, 1.2, 1],
-                opacity: [0.15, 0.25, 0.15],
+                scale: [1, 1.1, 1],
+                opacity: [0.1, 0.2, 0.1],
               }}
               transition={{
                 duration: 8,
                 repeat: Infinity,
                 ease: "easeInOut",
               }}
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/20 rounded-full blur-[180px]"
+              style={{ willChange: "transform, opacity" }}
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/20 rounded-full blur-[120px]"
             />
 
             {/* Secondary Violet Accent */}
             <motion.div
               animate={{
-                scale: [1, 1.3, 1],
-                x: [0, 50, 0],
-                opacity: [0.1, 0.2, 0.1],
+                scale: [1, 1.2, 1],
+                x: [0, 30, 0],
+                opacity: [0.05, 0.15, 0.05],
               }}
               transition={{
                 duration: 10,
@@ -79,15 +82,16 @@ export default function LandingPage() {
                 ease: "easeInOut",
                 delay: 2,
               }}
-              className="absolute top-0 right-0 w-[500px] h-[500px] bg-violet-500/15 rounded-full blur-[150px]"
+              style={{ willChange: "transform, opacity" }}
+              className="absolute top-0 right-0 w-[500px] h-[500px] bg-violet-500/10 rounded-full blur-[100px]"
             />
 
             {/* Tertiary Indigo Accent */}
             <motion.div
               animate={{
-                scale: [1, 1.2, 1],
-                y: [0, -30, 0],
-                opacity: [0.08, 0.15, 0.08],
+                scale: [1, 1.1, 1],
+                y: [0, -20, 0],
+                opacity: [0.05, 0.1, 0.05],
               }}
               transition={{
                 duration: 12,
@@ -95,7 +99,8 @@ export default function LandingPage() {
                 ease: "easeInOut",
                 delay: 4,
               }}
-              className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-indigo-500/15 rounded-full blur-[160px]"
+              style={{ willChange: "transform, opacity" }}
+              className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-indigo-500/10 rounded-full blur-[110px]"
             />
 
             {/* Subtle Grid Pattern */}
@@ -110,24 +115,25 @@ export default function LandingPage() {
               }}
             />
 
-            {/* Floating Particles */}
-            {[...Array(12)].map((_, i) => (
+            {/* Floating Particles - Reduced count and optimized */}
+            {[...Array(8)].map((_, i) => (
               <motion.div
                 key={i}
                 animate={{
-                  y: [0, -30, 0],
-                  opacity: [0.3, 0.8, 0.3],
+                  y: [0, -20, 0],
+                  opacity: [0.2, 0.5, 0.2],
                 }}
                 transition={{
-                  duration: 4 + i * 0.5,
+                  duration: 5 + i * 0.8,
                   repeat: Infinity,
-                  delay: i * 0.3,
+                  delay: i * 0.5,
                 }}
-                className="absolute w-1 h-1 bg-primary/40 rounded-full"
                 style={{
-                  top: `${20 + (i * 7) % 60}%`,
-                  left: `${10 + (i * 13) % 80}%`,
+                  top: `${20 + (i * 10) % 60}%`,
+                  left: `${15 + (i * 15) % 80}%`,
+                  willChange: "transform, opacity"
                 }}
+                className="absolute w-1 h-1 bg-primary/30 rounded-full"
               />
             ))}
           </div>

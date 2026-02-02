@@ -212,7 +212,7 @@ export default function EditorDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground transition-colors duration-300 font-sans">
+    <div className="min-h-screen text-foreground transition-colors duration-300 font-sans">
       {/* Header */}
       <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border">
         <div className="max-w-6xl mx-auto px-4 md:px-6 py-3 flex items-center justify-between">

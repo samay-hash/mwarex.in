@@ -13,6 +13,7 @@ import { authAPI, getGoogleAuthUrl } from "@/lib/api";
 import { setToken, setUserRole, setUserData } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 import { MWareXLogo } from "@/components/mwarex-logo";
+import { SignupPageOnboarding } from "@/components/onboarding";
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -74,6 +75,7 @@ export default function SignUpPage() {
 
   return (
     <main className="min-h-screen w-full flex bg-background text-foreground overflow-hidden font-sans">
+      <SignupPageOnboarding />
       {/* Left Side - Content Section */}
       <div className="w-full lg:w-1/2 flex flex-col justify-center px-8 md:px-16 lg:px-24">
         <motion.div

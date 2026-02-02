@@ -39,6 +39,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { MWareXLogo } from "@/components/mwarex-logo";
 import { SubscriptionModal } from "@/components/subscription-modal";
 import { cn } from "@/lib/utils";
+import { DashboardOnboarding } from "@/components/onboarding";
 
 interface Video {
   _id: string;
@@ -269,7 +270,8 @@ export default function CreatorDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex overflow-hidden font-sans transition-colors duration-300">
+    <div className="min-h-screen text-foreground flex overflow-hidden font-sans transition-colors duration-300">
+      <DashboardOnboarding />
 
       {/* Sidebar Overlay (Mobile) */}
       <AnimatePresence>
@@ -353,7 +355,7 @@ export default function CreatorDashboard() {
       </motion.aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 h-screen overflow-y-auto bg-background">
+      <main className="flex-1 h-screen overflow-y-auto bg-transparent">
         {/* Top Navbar */}
         <header className="sticky top-0 z-30 bg-background/95 backdrop-blur-sm border-b border-border px-4 md:px-6 py-3 flex items-center justify-between">
           <div className="flex items-center gap-4">
