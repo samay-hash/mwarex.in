@@ -673,7 +673,7 @@ export function ThemeToggle({
     <button
       type="button"
       className={cn(
-        "size-10 cursor-pointer rounded-full bg-black p-0 transition-all duration-300 active:scale-95",
+        "size-10 cursor-pointer rounded-full bg-black/90 dark:bg-black/50 backdrop-blur-md border border-white/10 p-0 transition-all duration-300 active:scale-95 hover:scale-105 hover:border-white/30 shadow-lg",
         className,
       )}
       onClick={toggleTheme}

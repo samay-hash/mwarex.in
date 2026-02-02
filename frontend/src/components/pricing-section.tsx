@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { paymentAPI, RAZORPAY_KEY_ID } from "@/lib/api";
 import { isAuthenticated } from "@/lib/auth";
 import { useRouter } from "next/navigation";
+import { PricingCarousel } from "@/components/pricing-carousel";
 
 declare global {
     interface Window {
@@ -345,205 +346,135 @@ export function PricingSection() {
                     </motion.div>
                 </div>
 
-                {/* Pricing Cards */}
-                <motion.div
-                    variants={containerVariants}
-                    initial="hidden"
-                    whileInView="visible"
-                    viewport={{ once: true, margin: "-100px" }}
-                    className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 w-full"
-                >
-                    {pricingPlans.map((plan, index) => {
-                        const isPopular = plan.popular;
-                        const isHovered = hoveredPlan === plan.name;
-                        const isLoading = loadingPlan === plan.planId;
-                        const displayPrice = billingCycle === "yearly"
-                            ? Math.round(parseInt(plan.priceInr) * 0.8)
-                            : parseInt(plan.priceInr);
+                {/* Pricing Cards Carousel */}
+                <div className="w-full">
+                    <PricingCarousel>
+                        {pricingPlans.map((plan, index) => {
+                            const isPopular = plan.popular;
+                            const isHovered = hoveredPlan === plan.name;
+                            const isLoading = loadingPlan === plan.planId;
+                            const displayPrice = billingCycle === "yearly"
+                                ? Math.round(parseInt(plan.priceInr) * 0.8)
+                                : parseInt(plan.priceInr);
 
-                        return (
-                            <motion.div
-                                key={plan.name}
-                                variants={cardVariants}
-                                onMouseEnter={() => setHoveredPlan(plan.name)}
-                                onMouseLeave={() => setHoveredPlan(null)}
-                                className={cn(
-                                    "relative rounded-2xl lg:rounded-3xl transition-all duration-500 flex flex-col h-full group",
-                                    isPopular ? "md:-translate-y-6" : ""
-                                )}
-                            >
-                                {/* Gradient Border Effect */}
-                                <div className={cn(
-                                    "absolute inset-0 rounded-2xl lg:rounded-3xl transition-all duration-500",
-                                    isPopular
-                                        ? "bg-gradient-to-b from-primary/40 via-primary/20 to-transparent p-[1.5px]"
-                                        : "bg-border p-[1px]",
-                                    isHovered && !isPopular && "bg-gradient-to-b from-primary/30 to-transparent"
-                                )}>
-                                    <div className="w-full h-full bg-card rounded-2xl lg:rounded-[22px]" />
-                                </div>
-
-                                {/* Popular Badge */}
-                                {isPopular && (
-                                    <motion.div
-                                        initial={{ opacity: 0, y: -10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ delay: 0.5 }}
-                                        className="absolute -top-4 left-1/2 -translate-x-1/2 z-10"
-                                    >
-                                        <span className="px-4 py-1.5 bg-primary text-primary-foreground text-xs font-bold rounded-full shadow-lg shadow-primary/30">
-                                            Most Popular
-                                        </span>
-                                    </motion.div>
-                                )}
-
-                                {/* Card Content */}
-                                <div className={cn(
-                                    "relative z-10 flex flex-col h-full p-6 lg:p-8",
-                                    isPopular && "pt-8"
-                                )}>
-                                    {/* Header */}
-                                    <div className="mb-6">
-                                        <div className="flex justify-between items-start mb-4">
-                                            <motion.div
-                                                whileHover={{ scale: 1.1, rotate: 5 }}
-                                                transition={{ type: "spring", stiffness: 400 }}
-                                                className={cn(
-                                                    "w-12 h-12 rounded-xl flex items-center justify-center",
-                                                    plan.iconBg
-                                                )}
-                                            >
-                                                <plan.icon className={cn("w-6 h-6", plan.iconColor)} />
-                                            </motion.div>
-                                        </div>
-                                        <h3 className="text-xl lg:text-2xl font-bold text-foreground mb-2">{plan.name}</h3>
-                                        <p className="text-sm text-muted-foreground leading-relaxed min-h-[40px]">
-                                            {plan.description}
-                                        </p>
-                                    </div>
-
-                                    {/* Price */}
-                                    <div className="mb-8">
-                                        {plan.price === "0" ? (
-                                            <div className="flex items-end gap-1">
-                                                <motion.span
-                                                    initial={{ opacity: 0, scale: 0.8 }}
-                                                    whileInView={{ opacity: 1, scale: 1 }}
-                                                    viewport={{ once: true }}
-                                                    className="text-4xl lg:text-5xl font-bold text-foreground"
-                                                >
-                                                    Free
-                                                </motion.span>
-                                            </div>
-                                        ) : (
-                                            <div className="flex items-baseline gap-1">
-                                                <motion.span
-                                                    initial={{ opacity: 0, x: -10 }}
-                                                    whileInView={{ opacity: 1, x: 0 }}
-                                                    viewport={{ once: true }}
-                                                    className="text-4xl lg:text-5xl font-bold text-foreground"
-                                                >
-                                                    ₹{displayPrice}
-                                                </motion.span>
-                                                <span className="text-muted-foreground text-sm font-medium">/mo</span>
-                                            </div>
-                                        )}
-                                    </div>
-
-                                    {/* Button */}
-                                    <motion.button
-                                        whileHover={{ scale: 1.02 }}
-                                        whileTap={{ scale: 0.98 }}
-                                        onClick={() => handleSelectPlan(plan)}
-                                        disabled={isLoading || loadingPlan !== null}
-                                        className={cn(
-                                            "w-full py-3.5 rounded-xl font-semibold text-sm transition-all duration-300 mb-8 border relative overflow-hidden disabled:opacity-70 disabled:cursor-not-allowed",
-                                            isPopular
-                                                ? "bg-primary text-primary-foreground hover:opacity-90 border-transparent shadow-lg shadow-primary/25"
-                                                : "bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary border-border"
-                                        )}
-                                    >
-                                        <span className="relative z-10 flex items-center justify-center gap-2">
-                                            {isLoading ? (
-                                                <>
-                                                    <Loader2 className="w-4 h-4 animate-spin" />
-                                                    Processing...
-                                                </>
-                                            ) : (
-                                                plan.buttonText
-                                            )}
-                                        </span>
-                                        {isPopular && !isLoading && (
-                                            <motion.div
-                                                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
-                                                animate={{ x: ["-100%", "100%"] }}
-                                                transition={{
-                                                    duration: 2,
-                                                    repeat: Infinity,
-                                                    repeatDelay: 3,
-                                                    ease: "easeInOut",
-                                                }}
-                                            />
-                                        )}
-                                    </motion.button>
-
-                                    {/* Divider */}
-                                    <div className="w-full h-px bg-border mb-8" />
-
-                                    {/* Features */}
-                                    <ul className="space-y-4 flex-1">
-                                        {plan.features.map((feature, i) => (
-                                            <motion.li
-                                                key={feature}
-                                                custom={i}
-                                                variants={featureVariants}
-                                                initial="hidden"
-                                                whileInView="visible"
-                                                viewport={{ once: true }}
-                                                className="flex items-start gap-3 text-sm text-muted-foreground"
-                                            >
-                                                <motion.div
-                                                    whileHover={{ scale: 1.2 }}
-                                                    className={cn(
-                                                        "w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5",
-                                                        isPopular ? "bg-primary/10" : "bg-emerald-500/10"
-                                                    )}
-                                                >
-                                                    <Check className={cn(
-                                                        "w-3 h-3",
-                                                        isPopular ? "text-primary" : "text-emerald-500"
-                                                    )} />
-                                                </motion.div>
-                                                <span>{feature}</span>
-                                            </motion.li>
-                                        ))}
-                                    </ul>
-                                </div>
-
-                                {/* Hover Glow Effect */}
+                            return (
                                 <motion.div
+                                    key={plan.name}
+                                    onMouseEnter={() => setHoveredPlan(plan.name)}
+                                    onMouseLeave={() => setHoveredPlan(null)}
                                     className={cn(
-                                        "absolute inset-0 rounded-2xl lg:rounded-3xl opacity-0 transition-opacity duration-500 pointer-events-none",
-                                        `bg-gradient-to-b ${plan.gradient}`
+                                        "relative rounded-3xl transition-all duration-500 flex flex-col h-full group w-full max-w-[380px] bg-card border border-border overflow-hidden",
+                                        isPopular ? "shadow-2xl shadow-primary/20 scale-[1.02]" : "shadow-lg"
                                     )}
-                                    animate={{ opacity: isHovered ? 0.5 : 0 }}
-                                />
-                            </motion.div>
-                        );
-                    })}
-                </motion.div>
+                                >
+                                    {/* Gradient Border Effect */}
+                                    <div className={cn(
+                                        "absolute inset-0 pointer-events-none transition-opacity duration-500 rounded-3xl z-0",
+                                        isPopular
+                                            ? "opacity-100 bg-gradient-to-b from-primary/20 via-transparent to-transparent"
+                                            : "opacity-0"
+                                    )} />
+
+                                    {/* Popular Badge */}
+                                    {isPopular && (
+                                        <div className="absolute top-0 inset-x-0 flex justify-center -translate-y-1/2 z-20">
+                                            <span className="px-4 py-1.5 bg-primary text-primary-foreground text-xs font-bold rounded-full shadow-lg shadow-primary/30 uppercase tracking-widest border-2 border-background">
+                                                Most Popular
+                                            </span>
+                                        </div>
+                                    )}
+
+                                    {/* Card Content */}
+                                    <div className={cn(
+                                        "relative z-10 flex flex-col h-full p-8",
+                                        isPopular && "pt-12"
+                                    )}>
+                                        {/* Header */}
+                                        <div className="mb-8 text-center">
+                                            <div className={cn(
+                                                "w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-inner",
+                                                plan.iconBg
+                                            )}>
+                                                <plan.icon className={cn("w-7 h-7", plan.iconColor)} />
+                                            </div>
+                                            <h3 className="text-2xl font-bold text-foreground mb-2">{plan.name}</h3>
+                                            <p className="text-sm text-muted-foreground leading-relaxed">
+                                                {plan.description}
+                                            </p>
+                                        </div>
+
+                                        {/* Price */}
+                                        <div className="mb-8 text-center bg-secondary/30 rounded-2xl p-4 border border-border/50 backdrop-blur-sm">
+                                            {plan.price === "0" ? (
+                                                <div className="flex items-center justify-center">
+                                                    <span className="text-4xl font-black text-foreground tracking-tight">
+                                                        Free
+                                                    </span>
+                                                </div>
+                                            ) : (
+                                                <div className="flex items-center justify-center items-baseline gap-1">
+                                                    <span className="text-4xl font-black text-foreground tracking-tight">
+                                                        ₹{displayPrice}
+                                                    </span>
+                                                    <span className="text-muted-foreground text-sm font-medium">/mo</span>
+                                                </div>
+                                            )}
+                                            {billingCycle === "yearly" && plan.price !== "0" && (
+                                                <p className="text-xs text-emerald-500 font-medium mt-1">
+                                                    Billed yearly (Save 20%)
+                                                </p>
+                                            )}
+                                        </div>
+
+                                        {/* Features */}
+                                        <ul className="space-y-4 flex-1 mb-8">
+                                            {plan.features.map((feature) => (
+                                                <li key={feature} className="flex items-start gap-3 text-sm text-muted-foreground">
+                                                    <div className={cn(
+                                                        "w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5",
+                                                        isPopular ? "bg-primary/20 text-primary" : "bg-emerald-500/10 text-emerald-500"
+                                                    )}>
+                                                        <Check className="w-3 h-3 stroke-[3]" />
+                                                    </div>
+                                                    <span>{feature}</span>
+                                                </li>
+                                            ))}
+                                        </ul>
+
+                                        {/* Button */}
+                                        <button
+                                            onClick={() => handleSelectPlan(plan)}
+                                            disabled={isLoading || loadingPlan !== null}
+                                            className={cn(
+                                                "w-full py-4 rounded-xl font-bold text-sm transition-all duration-300 relative overflow-hidden group/btn shadow-md hover:shadow-xl active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed",
+                                                isPopular
+                                                    ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                                                    : "bg-background border-2 border-border hover:border-primary/50 text-foreground"
+                                            )}
+                                        >
+                                            <span className="relative z-10 flex items-center justify-center gap-2">
+                                                {isLoading ? (
+                                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                                ) : (
+                                                    <>
+                                                        {plan.buttonText}
+                                                        {isPopular && <Zap className="w-4 h-4 fill-current" />}
+                                                    </>
+                                                )}
+                                            </span>
+                                        </button>
+                                    </div>
+                                </motion.div>
+                            );
+                        })}
+                    </PricingCarousel>
+                </div>
 
                 {/* Secure Payment Badge */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 0.5 }}
-                    className="mt-16 flex items-center gap-3 text-sm text-muted-foreground"
-                >
-                    <Shield className="w-5 h-5 text-emerald-500" />
+                <div className="mt-8 flex items-center gap-3 text-sm text-muted-foreground bg-secondary/50 px-4 py-2 rounded-full border border-border/50 backdrop-blur-md">
+                    <Shield className="w-4 h-4 text-emerald-500" />
                     <span>Secure payments powered by <strong className="text-foreground">Razorpay</strong></span>
-                </motion.div>
+                </div>
             </div>
         </section>
     );

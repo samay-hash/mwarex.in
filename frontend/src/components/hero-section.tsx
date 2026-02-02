@@ -1,25 +1,12 @@
 "use client";
 
-import { useState, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, Play, X } from "lucide-react";
+import { motion } from "framer-motion";
+import { ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { BlurReveal } from "@/components/blur-reveal";
+import { CinematicText } from "@/components/cinematic-text";
+import { HeroVideo } from "@/components/hero-video";
 
 export function HeroSection() {
-    const [isVideoOpen, setIsVideoOpen] = useState(false);
-    const videoRef = useRef<HTMLVideoElement>(null);
-
-    const handleOpenDemo = () => {
-        setIsVideoOpen(true);
-    };
-
-    const handleCloseDemo = () => {
-        setIsVideoOpen(false);
-        if (videoRef.current) {
-            videoRef.current.pause();
-        }
-    };
 
     return (
         <section className="relative min-h-screen flex items-center overflow-hidden pt-20 lg:pt-0">
@@ -47,112 +34,68 @@ export function HeroSection() {
             </div>
 
             <div className="max-w-7xl mx-auto px-6 w-full z-10">
-                {/* Centered Content */}
-                <div className="flex flex-col items-center text-center max-w-4xl mx-auto">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
 
-                    {/* Announcement Badge */}
-                    <motion.div
-                        initial={{ opacity: 0, y: -20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5 }}
-                        className="mb-8"
-                    >
-                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-secondary/80 to-secondary/60 border border-border/50 backdrop-blur-md text-sm text-foreground hover:border-primary/30 transition-all cursor-pointer group">
-                            <span className="flex h-2 w-2 rounded-full bg-green-500"></span>
-                            <span className="font-medium">New: YouTube API 2.0</span>
-                            <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
+                    {/* Left Column: Content */}
+                    <div className="flex flex-col items-start text-left order-2 lg:order-1 relative z-30">
+                        {/* Announcement Badge */}
+                        <motion.div
+                            initial={{ opacity: 0, y: -20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.5 }}
+                            className="mb-6"
+                        >
+                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary/50 border border-border/60 backdrop-blur-sm text-xs font-medium text-muted-foreground hover:bg-secondary/80 hover:border-primary/20 transition-all cursor-pointer group">
+                                <span className="flex h-1.5 w-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></span>
+                                <span className="text-foreground/90">New: YouTube API 2.0</span>
+                                <ArrowRight className="w-3.5 h-3.5 text-muted-foreground group-hover:translate-x-0.5 transition-transform" />
+                            </div>
+                        </motion.div>
+
+                        {/* Main Heading with CinematicText */}
+                        <div className="mb-6 max-w-3xl">
+                            <h1 className="text-5xl lg:text-[5.5rem] font-bold tracking-tighter text-foreground leading-[1.05]">
+                                <CinematicText
+                                    text="Simplify your creator workflow"
+                                    delay={0.2}
+                                    className="justify-start"
+                                />
+                            </h1>
                         </div>
-                    </motion.div>
 
-                    {/* Main Heading with BlurReveal */}
-                    <div className="mb-6">
-                        <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-foreground leading-[1.1]">
-                            <BlurReveal
-                                text="Simplify your creator workflow"
-                                className="inline-block"
-                                delay={0.1}
-                            />
-                        </h1>
-                    </div>
+                        {/* Subtitle */}
+                        <motion.p
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.7, delay: 0.3 }}
+                            className="text-lg text-muted-foreground max-w-lg mb-8 leading-normal font-normal"
+                        >
+                            The professional operating system for creators and editing teams. Align, approve, and publish faster—without the chaos.
+                        </motion.p>
 
-                    {/* Subtitle */}
-                    <motion.p
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.7, delay: 0.3 }}
-                        className="text-lg md:text-xl text-muted-foreground max-w-2xl mb-12 leading-relaxed"
-                    >
-                        The professional operating system for creators and editing teams. Align, approve, and publish faster—without the chaos.
-                    </motion.p>
+                        {/* CTA Buttons */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.5, delay: 0.4 }}
+                            className="flex flex-col sm:flex-row items-center gap-4 mb-12"
+                        >
+                            <Link href="/auth/signup">
+                                <div className="group relative px-8 py-3.5 bg-foreground text-white dark:text-black rounded-full font-medium text-base transition-all hover:bg-foreground/90 active:scale-95 shadow-lg shadow-foreground/10">
+                                    <span className="relative flex items-center justify-center gap-2">
+                                        Start Free Trial
+                                        <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                                    </span>
+                                </div>
+                            </Link>
+                        </motion.div>
 
-                    {/* CTA Buttons or Video Player */}
-                    <AnimatePresence mode="wait">
-                        {!isVideoOpen ? (
-                            <motion.div
-                                key="buttons"
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: -20 }}
-                                transition={{ duration: 0.5 }}
-                                className="flex flex-col sm:flex-row items-center gap-4"
-                            >
-                                <Link href="/auth/signup">
-                                    <div className="group relative px-8 py-4 bg-primary text-primary-foreground rounded-full font-semibold text-lg transition-all hover:scale-105 active:scale-95 shadow-lg shadow-primary/20 overflow-hidden">
-                                        <span className="relative flex items-center justify-center gap-2">
-                                            Start Free Trial
-                                            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                                        </span>
-                                    </div>
-                                </Link>
-
-                                <button
-                                    onClick={handleOpenDemo}
-                                    className="group flex items-center justify-center gap-3 px-8 py-4 rounded-full bg-secondary/50 border border-border text-foreground font-semibold hover:bg-secondary hover:border-primary/30 transition-all"
-                                >
-                                    <div className="w-10 h-10 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                                        <Play className="w-4 h-4 fill-primary text-primary ml-0.5" />
-                                    </div>
-                                    <span>Watch Demo</span>
-                                </button>
-                            </motion.div>
-                        ) : (
-                            <motion.div
-                                key="video"
-                                initial={{ opacity: 0, scale: 0.95 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                exit={{ opacity: 0, scale: 0.95 }}
-                                transition={{ duration: 0.4 }}
-                                className="w-full max-w-4xl relative aspect-video bg-black rounded-2xl overflow-hidden shadow-2xl border border-primary/20 mx-auto"
-                            >
-                                <button
-                                    onClick={handleCloseDemo}
-                                    className="absolute top-4 right-4 z-50 p-2 rounded-full bg-black/50 border border-white/10 text-white hover:bg-white/20 transition-colors backdrop-blur-sm"
-                                >
-                                    <X className="w-5 h-5" />
-                                </button>
-
-                                <video
-                                    ref={videoRef}
-                                    className="w-full h-full object-cover"
-                                    controls
-                                    autoPlay
-                                    playsInline
-                                >
-                                    <source src="/assets/demo-video.mp4" type="video/mp4" />
-                                    {/* Fallback to show error gracefully if video missing */}
-                                    Your browser does not support the video tag.
-                                </video>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
-
-                    {/* Trust Badges - Only show when video is NOT open to reduce clutter */}
-                    {!isVideoOpen && (
+                        {/* Trust Badges */}
                         <motion.div
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ delay: 0.7, duration: 1 }}
-                            className="mt-12 flex items-center gap-4 text-sm text-muted-foreground"
+                            className="flex items-center gap-4 text-sm text-muted-foreground"
                         >
                             <div className="flex -space-x-2">
                                 {[
@@ -169,7 +112,20 @@ export function HeroSection() {
                             </div>
                             <p>Trusted by <span className="text-foreground font-medium">10,000+</span> creators</p>
                         </motion.div>
-                    )}
+                    </div>
+
+                    {/* Right Column: Video Preview */}
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95, x: 20 }}
+                        animate={{ opacity: 1, scale: 1, x: 0 }}
+                        transition={{ duration: 0.8, delay: 0.5 }}
+                        className="w-full relative z-20 order-1 lg:order-2 flex justify-center lg:justify-end"
+                    >
+                        {/* Wrapper to constrain size as requested ("small") */}
+                        <div className="w-full max-w-lg lg:max-w-none xl:max-w-xl 2xl:max-w-2xl transform hover:scale-[1.02] transition-transform duration-500">
+                            <HeroVideo />
+                        </div>
+                    </motion.div>
 
                 </div>
             </div>

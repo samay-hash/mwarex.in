@@ -13,6 +13,7 @@ import { Testimonials } from "@/components/testimonials";
 import { Layers, ArrowRight, Github, Twitter, Linkedin, Sparkles, Youtube, Play } from "lucide-react";
 import { MWareXLogo } from '@/components/mwarex-logo';
 import { LandingPageOnboarding } from "@/components/onboarding";
+import { CrackedButton } from "@/components/cracked-button";
 
 export default function LandingPage() {
   return (
@@ -51,184 +52,118 @@ export default function LandingPage() {
 
         {/* Enhanced Final CTA Section */}
         <section className="py-36 md:py-44 relative overflow-hidden bg-transparent">
-          {/* Premium Multi-layer Background Effects */}
-          <div className="absolute inset-0 -z-10">
-            {/* Primary Central Glow */}
+          {/* Cinematic Background */}
+          <div className="absolute inset-0 -z-10 pointer-events-none">
+            {/* Subtle Moving Light Sweep */}
             <motion.div
-              animate={{
-                scale: [1, 1.1, 1],
-                opacity: [0.1, 0.2, 0.1],
-              }}
-              transition={{
-                duration: 8,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-              style={{ willChange: "transform, opacity", transform: "translateZ(0)" }}
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/20 rounded-full blur-[60px] md:blur-[120px]"
+              animate={{ x: ["-100%", "200%"] }}
+              transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+              className="absolute top-0 left-0 w-1/3 h-full bg-gradient-to-r from-transparent via-white/5 to-transparent skew-x-12 blur-3xl opacity-30"
             />
 
-            {/* Secondary Violet Accent */}
+            {/* Faint Grid Parallax */}
             <motion.div
-              animate={{
-                scale: [1, 1.2, 1],
-                x: [0, 30, 0],
-                opacity: [0.05, 0.15, 0.05],
-              }}
-              transition={{
-                duration: 10,
-                repeat: Infinity,
-                ease: "easeInOut",
-                delay: 2,
-              }}
-              style={{ willChange: "transform, opacity", transform: "translateZ(0)" }}
-              className="absolute top-0 right-0 w-[500px] h-[500px] bg-violet-500/10 rounded-full blur-[50px] md:blur-[100px]"
-            />
-
-            {/* Tertiary Indigo Accent */}
-            <motion.div
-              animate={{
-                scale: [1, 1.1, 1],
-                y: [0, -20, 0],
-                opacity: [0.05, 0.1, 0.05],
-              }}
-              transition={{
-                duration: 12,
-                repeat: Infinity,
-                ease: "easeInOut",
-                delay: 4,
-              }}
-              style={{ willChange: "transform, opacity", transform: "translateZ(0)" }}
-              className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-indigo-500/10 rounded-full blur-[55px] md:blur-[110px]"
-            />
-
-            {/* Subtle Grid Pattern */}
-            <div
-              className="absolute inset-0 opacity-[0.02]"
+              initial={{ y: 0 }}
+              whileInView={{ y: -50 }}
+              transition={{ duration: 2, ease: "easeOut" }}
+              className="absolute inset-0 opacity-[0.03]"
               style={{
-                backgroundImage: `
-                  linear-gradient(var(--foreground) 1px, transparent 1px),
-                  linear-gradient(90deg, var(--foreground) 1px, transparent 1px)
-                `,
-                backgroundSize: '80px 80px',
+                backgroundImage: `linear-gradient(var(--foreground) 1px, transparent 1px), linear-gradient(90deg, var(--foreground) 1px, transparent 1px)`,
+                backgroundSize: '100px 100px'
               }}
             />
-
-            {/* Floating Particles - Reduced count and optimized */}
-            {[...Array(8)].map((_, i) => (
-              <motion.div
-                key={i}
-                animate={{
-                  y: [0, -20, 0],
-                  opacity: [0.2, 0.5, 0.2],
-                }}
-                transition={{
-                  duration: 5 + i * 0.8,
-                  repeat: Infinity,
-                  delay: i * 0.5,
-                }}
-                style={{
-                  top: `${20 + (i * 10) % 60}%`,
-                  left: `${15 + (i * 15) % 80}%`,
-                  willChange: "transform, opacity"
-                }}
-                className="absolute w-1 h-1 bg-primary/30 rounded-full"
-              />
-            ))}
           </div>
 
           <div className="max-w-5xl mx-auto px-6 text-center relative z-10">
             {/* Badge */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, y: 10, filter: "blur(5px)" }}
+              whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
               viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary/5 border border-primary/10 backdrop-blur-sm mb-10"
             >
-              <motion.div
-                animate={{ rotate: [0, 360] }}
-                transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-              >
-                <Sparkles className="w-4 h-4 text-primary" />
-              </motion.div>
-              <span className="text-primary font-semibold text-sm">Join 10,000+ Creators</span>
+              <Sparkles className="w-4 h-4 text-primary animate-pulse" />
+              <span className="text-primary font-semibold text-sm tracking-wide">Join 10,000+ Creators</span>
             </motion.div>
 
-            {/* Main Heading - Improved sizing and styling */}
-            <motion.h2
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              className="text-5xl md:text-6xl lg:text-7xl font-bold mb-8 text-foreground leading-[1.1] tracking-tight"
-            >
-              Ready to scale your
-              <br className="hidden sm:block" />
-              <span className="relative inline-block mt-2">
-                <span className="relative z-10 text-transparent bg-clip-text bg-gradient-to-r from-primary via-violet-500 to-fuchsia-500">
-                  YouTube Empire
-                </span>
-                <motion.span
-                  initial={{ scaleX: 0 }}
-                  whileInView={{ scaleX: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.8, duration: 0.6 }}
-                  className="absolute bottom-2 left-0 w-full h-4 bg-primary/15 -z-0 origin-left rounded-sm"
-                />
-              </span>
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-violet-500">?</span>
-            </motion.h2>
+            {/* Cinematic Text Reveal Header */}
+            {/* Cinematic Text Reveal Header */}
+            <h2 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-8 text-foreground leading-[1.1] tracking-tight">
+              <motion.span
+                initial={{ y: 20, opacity: 0, filter: "blur(10px)" }}
+                whileInView={{ y: 0, opacity: 1, filter: "blur(0px)" }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8, ease: "easeOut" }}
+                className="block"
+              >
+                Ready to scale your
+              </motion.span>
 
-            {/* Subtitle */}
-            {/* Subtitle */}
+              <div className="mt-2">
+                <motion.span
+                  initial={{ scale: 0.9, opacity: 0, filter: "blur(10px)" }}
+                  whileInView={{ scale: 1, opacity: 1, filter: "blur(0px)" }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+                  className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-primary via-violet-500 to-indigo-500 pb-2"
+                >
+                  YouTube Empire
+                  {/* Subtle underline grow */}
+                  <motion.span
+                    initial={{ scaleX: 0 }}
+                    whileInView={{ scaleX: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.6, duration: 0.8, ease: "circOut" }}
+                    className="absolute bottom-0 left-0 w-full h-[3px] bg-gradient-to-r from-transparent via-primary/50 to-transparent"
+                  />
+                </motion.span>
+                <motion.span
+                  initial={{ opacity: 0, x: -10 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.6, duration: 0.5 }}
+                >
+                  ?
+                </motion.span>
+              </div>
+            </h2>
+
+            {/* Subtitle - Fade In */}
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto mb-12"
+              transition={{ duration: 1, delay: 0.4, ease: "easeOut" }}
+              className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto mb-12 font-light"
             >
               The professional operating system for creators and editing teams. Start your free trial today.
             </motion.p>
 
-            {/* CTA Buttons - Improved design */}
+            {/* CTA Buttons - Magnetic Pull Effect */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.3 }}
+              transition={{ duration: 0.8, delay: 0.5, ease: "backOut" }}
               className="flex flex-col sm:flex-row items-center justify-center gap-4 md:gap-6"
             >
               <Link href="/auth/signup">
-                <motion.button
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="group relative px-10 md:px-12 py-5 bg-primary text-primary-foreground rounded-full font-bold text-base md:text-lg transition-all shadow-2xl shadow-primary/30 overflow-hidden"
+                <CrackedButton
+                  className="px-10 md:px-12 py-5 bg-foreground text-white dark:text-black rounded-full font-bold text-base md:text-lg transition-all shadow-2xl shadow-foreground/20"
                 >
-                  {/* Shimmer effect */}
-                  <motion.div
-                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
-                    animate={{ x: ["-100%", "100%"] }}
-                    transition={{
-                      duration: 2,
-                      repeat: Infinity,
-                      repeatDelay: 4,
-                      ease: "easeInOut",
-                    }}
-                  />
                   <span className="relative flex items-center gap-2">
                     Get Started Now
                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                   </span>
-                </motion.button>
+                </CrackedButton>
               </Link>
 
               <Link href="/auth/signin">
                 <motion.button
-                  whileHover={{ scale: 1.03 }}
+                  whileHover={{ scale: 1.02, backgroundColor: "rgba(var(--secondary), 0.8)" }}
                   whileTap={{ scale: 0.98 }}
-                  className="group px-10 md:px-12 py-5 bg-secondary/80 backdrop-blur-sm border border-border text-foreground rounded-full font-bold text-base md:text-lg hover:bg-secondary hover:border-primary/30 transition-all flex items-center gap-3"
+                  className="group px-10 md:px-12 py-5 bg-transparent border border-border text-foreground rounded-full font-bold text-base md:text-lg transition-all flex items-center gap-3 hover:border-primary/50"
                 >
                   <svg className="w-5 h-5" viewBox="0 0 24 24">
                     <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -237,31 +172,37 @@ export default function LandingPage() {
                     <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
                   </svg>
                   Sign in with Google
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </motion.button>
               </Link>
             </motion.div>
 
-            {/* Trust Indicators */}
+            {/* Trust Indicators - Subtle stagger */}
             <motion.div
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
+              initial="hidden"
+              whileInView="visible"
               viewport={{ once: true }}
-              transition={{ delay: 0.6, duration: 0.8 }}
+              variants={{
+                visible: { transition: { staggerChildren: 0.1, delayChildren: 0.8 } }
+              }}
               className="mt-16 flex flex-col sm:flex-row items-center justify-center gap-6 md:gap-10 text-sm text-muted-foreground"
             >
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
-                <span>Free forever for individuals</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
-                <span>No credit card required</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
-                <span>Setup in under 2 minutes</span>
-              </div>
+              {[
+                { color: "bg-emerald-500", text: "Free forever for individuals" },
+                { color: "bg-blue-500", text: "No credit card required" },
+                { color: "bg-violet-500", text: "Setup in under 2 minutes" },
+              ].map((item, i) => (
+                <motion.div
+                  key={i}
+                  variants={{
+                    hidden: { opacity: 0, y: 10 },
+                    visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
+                  }}
+                  className="flex items-center gap-2"
+                >
+                  <div className={`w-1.5 h-1.5 ${item.color} rounded-full`} />
+                  <span>{item.text}</span>
+                </motion.div>
+              ))}
             </motion.div>
           </div>
         </section>
