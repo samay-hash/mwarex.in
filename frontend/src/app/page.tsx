@@ -65,7 +65,7 @@ export default function LandingPage() {
                 ease: "easeInOut",
               }}
               style={{ willChange: "transform, opacity", transform: "translateZ(0)" }}
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/20 rounded-full blur-[120px]"
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/20 rounded-full blur-[60px] md:blur-[120px]"
             />
 
             {/* Secondary Violet Accent */}
@@ -82,7 +82,7 @@ export default function LandingPage() {
                 delay: 2,
               }}
               style={{ willChange: "transform, opacity", transform: "translateZ(0)" }}
-              className="absolute top-0 right-0 w-[500px] h-[500px] bg-violet-500/10 rounded-full blur-[100px]"
+              className="absolute top-0 right-0 w-[500px] h-[500px] bg-violet-500/10 rounded-full blur-[50px] md:blur-[100px]"
             />
 
             {/* Tertiary Indigo Accent */}
@@ -99,7 +99,7 @@ export default function LandingPage() {
                 delay: 4,
               }}
               style={{ willChange: "transform, opacity", transform: "translateZ(0)" }}
-              className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-indigo-500/10 rounded-full blur-[110px]"
+              className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-indigo-500/10 rounded-full blur-[55px] md:blur-[110px]"
             />
 
             {/* Subtle Grid Pattern */}
