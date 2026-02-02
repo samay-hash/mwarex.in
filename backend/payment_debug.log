@@ -82,3 +82,10 @@
 2026-01-28T06:36:29.327Z: Creating Razorpay order with options: {"amount":29900,"currency":"INR","receipt":"ord_1769582189327_5759e3bf90","notes":{"userId":"6979ac01dcdb215759e3bf90","plan":"pro"}}
 2026-01-28T06:36:29.605Z: Razorpay order created: {"amount":29900,"amount_due":29900,"amount_paid":0,"attempts":0,"created_at":1769582189,"currency":"INR","entity":"order","id":"order_S9Ca1N575KqKYs","notes":{"plan":"pro","userId":"6979ac01dcdb215759e3bf90"},"offer_id":null,"receipt":"ord_1769582189327_5759e3bf90","status":"created"}
 2026-01-28T06:36:29.642Z: Payment record saved to DB
+2026-02-02T21:16:47.302Z: Request received for create-order
+2026-02-02T21:16:47.304Z: User ID: 6981142b5d576b3e7e3e308b, Plan: pro
+2026-02-02T21:16:47.305Z: Razorpay instance is present
+2026-02-02T21:16:47.305Z: Plan details found: {"name":"Pro","amount":1100,"features":["Unlimited projects","Priority support","Advanced AI tools"]}
+2026-02-02T21:16:47.305Z: Creating Razorpay order with options: {"amount":1100,"currency":"INR","receipt":"ord_1770067007305_3e7e3e308b","notes":{"userId":"6981142b5d576b3e7e3e308b","plan":"pro"}}
+2026-02-02T21:16:47.627Z: Razorpay order created: {"amount":1100,"amount_due":1100,"amount_paid":0,"attempts":0,"created_at":1770067007,"currency":"INR","entity":"order","id":"order_SBQFVwbZRHFqnK","notes":{"plan":"pro","userId":"6981142b5d576b3e7e3e308b"},"offer_id":null,"receipt":"ord_1770067007305_3e7e3e308b","status":"created"}
+2026-02-02T21:16:47.840Z: Payment record saved to DB

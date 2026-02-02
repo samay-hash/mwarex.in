@@ -64,7 +64,7 @@ export default function LandingPage() {
                 repeat: Infinity,
                 ease: "easeInOut",
               }}
-              style={{ willChange: "transform, opacity" }}
+              style={{ willChange: "transform, opacity", transform: "translateZ(0)" }}
               className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/20 rounded-full blur-[120px]"
             />
 
@@ -81,7 +81,7 @@ export default function LandingPage() {
                 ease: "easeInOut",
                 delay: 2,
               }}
-              style={{ willChange: "transform, opacity" }}
+              style={{ willChange: "transform, opacity", transform: "translateZ(0)" }}
               className="absolute top-0 right-0 w-[500px] h-[500px] bg-violet-500/10 rounded-full blur-[100px]"
             />
 
@@ -98,7 +98,7 @@ export default function LandingPage() {
                 ease: "easeInOut",
                 delay: 4,
               }}
-              style={{ willChange: "transform, opacity" }}
+              style={{ willChange: "transform, opacity", transform: "translateZ(0)" }}
               className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-indigo-500/10 rounded-full blur-[110px]"
             />
 

@@ -121,6 +121,7 @@ export default function SignInPage() {
               repeat: Infinity,
               ease: "easeInOut",
             }}
+            style={{ willChange: "transform, opacity", transform: "translateZ(0)" }}
             className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-radial from-indigo-500/20 via-purple-500/10 to-transparent rounded-full blur-[80px]"
           />
 
@@ -136,6 +137,7 @@ export default function SignInPage() {
               ease: "easeInOut",
               delay: 2,
             }}
+            style={{ willChange: "transform, opacity", transform: "translateZ(0)" }}
             className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-gradient-radial from-violet-600/20 to-transparent rounded-full blur-[60px]"
           />
 
@@ -161,6 +163,8 @@ export default function SignInPage() {
               style={{
                 top: `${Math.random() * 100}%`,
                 left: `${Math.random() * 100}%`,
+                willChange: "opacity", // Optimized stars
+                transform: "translateZ(0)"
               }}
             />
           ))}

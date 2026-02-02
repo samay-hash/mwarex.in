@@ -25,10 +25,10 @@ const images = [
 const WorkflowCarousel = ({
     images,
     className,
-    showPagination = true,
-    showNavigation = true,
+    showPagination = false,
+    showNavigation = false,
     loop = true,
-    autoplay = true,
+    autoplay = false,
     spaceBetween = 40,
 }: {
     images: { src: string; alt: string }[];
@@ -40,27 +40,20 @@ const WorkflowCarousel = ({
     spaceBetween?: number;
 }) => {
     const css = `
-    .WorkflowCarousel {
-        padding-bottom: 50px !important;
-    }
-    .WorkflowCarousel .swiper-pagination-bullet {
-        background: hsl(var(--primary));
-        opacity: 0.4;
-    }
-    .WorkflowCarousel .swiper-pagination-bullet-active {
-        opacity: 1;
+    .Carousal_002 {
+      padding-bottom: 50px !important;
     }
     `;
-
     return (
         <motion.div
             initial={{ opacity: 0, translateY: 20 }}
-            animate={{ opacity: 1, translateY: 0 }}
+            whileInView={{ opacity: 1, translateY: 0 }}
+            viewport={{ once: true }}
             transition={{
-                duration: 0.5,
-                delay: 0.3,
+                duration: 0.3,
+                delay: 0.5,
             }}
-            className={cn("relative w-full max-w-4xl", className)}
+            className={cn("relative w-full max-w-3xl", className)}
         >
             <style>{css}</style>
 
@@ -69,7 +62,7 @@ const WorkflowCarousel = ({
                 autoplay={
                     autoplay
                         ? {
-                            delay: 3000,
+                            delay: 1000,
                             disableOnInteraction: false,
                         }
                         : false
@@ -92,35 +85,25 @@ const WorkflowCarousel = ({
                         }
                         : false
                 }
-                className="WorkflowCarousel h-[450px] md:h-[550px] w-[320px] md:w-[450px]"
+                className="Carousal_002 h-[550px] w-[380px]"
                 modules={[EffectCards, Autoplay, Pagination, Navigation]}
             >
                 {images.map((image, index) => (
-                    <SwiperSlide key={index} className="rounded-3xl overflow-hidden shadow-2xl border border-white/10">
-                        <div className="relative h-full w-full">
-                            {/* Card label overlay */}
-                            <div className="absolute top-4 left-4 z-10 px-3 py-1.5 bg-black/50 backdrop-blur-sm rounded-full border border-white/10">
-                                <span className="text-xs font-medium text-white/90">{image.alt}</span>
-                            </div>
-                            <img
-                                className="h-full w-full object-cover"
-                                src={image.src}
-                                alt={image.alt}
-                            />
-                        </div>
+                    <SwiperSlide key={index} className="rounded-3xl">
+                        <img
+                            className="h-full w-full object-cover"
+                            src={image.src}
+                            alt={image.alt}
+                        />
                     </SwiperSlide>
                 ))}
                 {showNavigation && (
                     <div>
                         <div className="swiper-button-next after:hidden">
-                            <div className="w-10 h-10 rounded-full bg-primary/80 backdrop-blur-sm flex items-center justify-center hover:bg-primary transition-colors">
-                                <ChevronRightIcon className="h-5 w-5 text-primary-foreground" />
-                            </div>
+                            <ChevronRightIcon className="h-6 w-6 text-white" />
                         </div>
                         <div className="swiper-button-prev after:hidden">
-                            <div className="w-10 h-10 rounded-full bg-primary/80 backdrop-blur-sm flex items-center justify-center hover:bg-primary transition-colors">
-                                <ChevronLeftIcon className="h-5 w-5 text-primary-foreground" />
-                            </div>
+                            <ChevronLeftIcon className="h-6 w-6 text-white" />
                         </div>
                     </div>
                 )}
@@ -131,7 +114,7 @@ const WorkflowCarousel = ({
 
 export function ProductPreview() {
     return (
-        <section className="relative bg-background py-24 overflow-hidden">
+        <section className="relative bg-background py-24 overflow-visible">
             {/* Background Effects */}
             <div className="absolute inset-0 -z-10">
                 <motion.div
@@ -184,10 +167,8 @@ export function ProductPreview() {
                 <div className="flex items-center justify-center min-h-[600px]">
                     <WorkflowCarousel
                         images={images}
-                        loop={true}
-                        autoplay={true}
-                        showPagination={true}
-                        showNavigation={true}
+                        loop
+                        autoplay
                     />
                 </div>
 

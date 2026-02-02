@@ -40,10 +40,10 @@ export function HeroSection() {
                 />
 
                 {/* Gradient Orbs - Reduced blur on mobile, enabled hardware acceleration */}
-                <div className="absolute top-0 right-0 w-[300px] md:w-[600px] h-[300px] md:h-[600px] bg-gradient-to-br from-violet-500/10 to-indigo-500/10 rounded-full blur-[60px] md:blur-[120px] translate-x-1/3 -translate-y-1/4 will-change-transform" />
-                <div className="absolute bottom-0 left-0 w-[250px] md:w-[500px] h-[250px] md:h-[500px] bg-gradient-to-tr from-blue-500/10 to-cyan-500/10 rounded-full blur-[50px] md:blur-[100px] -translate-x-1/4 translate-y-1/4 will-change-transform" />
+                <div className="absolute top-0 right-0 w-[300px] md:w-[600px] h-[300px] md:h-[600px] bg-gradient-to-br from-violet-500/10 to-indigo-500/10 rounded-full blur-[60px] md:blur-[120px] translate-x-1/3 -translate-y-1/4" style={{ willChange: 'transform', transform: 'translateZ(0)' }} />
+                <div className="absolute bottom-0 left-0 w-[250px] md:w-[500px] h-[250px] md:h-[500px] bg-gradient-to-tr from-blue-500/10 to-cyan-500/10 rounded-full blur-[50px] md:blur-[100px] -translate-x-1/4 translate-y-1/4" style={{ willChange: 'transform', transform: 'translateZ(0)' }} />
                 {/* Central orb removed on mobile to save resources, added back on desktop */}
-                <div className="hidden md:block absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-radial from-primary/5 to-transparent rounded-full will-change-transform" />
+                <div className="hidden md:block absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-radial from-primary/5 to-transparent rounded-full" style={{ willChange: 'transform', transform: 'translateZ(0)' }} />
             </div>
 
             <div className="max-w-7xl mx-auto px-6 w-full z-10">

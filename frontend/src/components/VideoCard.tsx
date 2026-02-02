@@ -104,6 +104,7 @@ export default function VideoCard({
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       layout
+      style={{ willChange: "transform, opacity", transform: "translateZ(0)" }}
       className="glass-card rounded-2xl overflow-visible card-hover group flex flex-col h-full border border-border/40 hover:border-border/80 bg-card transition-all duration-300 shadow-sm hover:shadow-lg relative"
     >
       {/* Rejection Note - "Hanging" effect */}

@@ -10,6 +10,7 @@ export function SiteHeader() {
         <motion.header
             initial={{ y: -20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
+            style={{ willChange: "transform, opacity", transform: "translateZ(0)" }}
             className="fixed top-0 left-0 right-0 z-50 px-6 py-4 flex items-center justify-between pointer-events-none"
         >
 

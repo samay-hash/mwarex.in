@@ -77,6 +77,9 @@
   html {
     scroll-behavior: smooth;
     background-color: #ffffff;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
 
   html.dark {
@@ -269,7 +272,8 @@
     pointer-events: none;
     z-index: 1;
     transform: translateZ(0);
-    will-change: transform;
+    will-change: opacity; /* Changed from transform to opacity to reduce transform overhead */
+    backface-visibility: hidden;
   }
 }
 

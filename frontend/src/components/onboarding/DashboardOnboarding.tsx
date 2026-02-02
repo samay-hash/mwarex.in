@@ -30,8 +30,9 @@ export function DashboardOnboarding() {
         // Using a broad selector to catch the button. 
         // In real app, adding data-onboarding="invite-editor" is best.
         // Assuming button exists:
-        const inviteBtn = document.querySelector('button:has-text("Invite")') ||
-            document.querySelector('button'); // Fallback logic needs to be specific in prod
+        // Find button containing "Invite" text
+        const buttons = Array.from(document.querySelectorAll('button'));
+        const inviteBtn = buttons.find(btn => btn.textContent?.includes('Invite'));
 
         // We'll rely on the user clicking the HIGHLIGHTED element.
         // The overlay interaction click handler passes through.
@@ -67,7 +68,8 @@ export function DashboardOnboarding() {
     useEffect(() => {
         if (!isOnboarding || currentStep !== "invite_modal_create") return;
         // Listen for submit/click on create
-        const btn = document.querySelector('button[type="submit"]') || document.querySelector('button:has-text("Send")');
+        const btn = document.querySelector('button[type="submit"]') ||
+            Array.from(document.querySelectorAll('button')).find(b => b.textContent?.includes('Send'));
         if (!btn) return;
 
         const handler = () => setTimeout(() => completeStep("invite_modal_create"), 500);
@@ -93,7 +95,8 @@ export function DashboardOnboarding() {
     useEffect(() => {
         if (!isOnboarding || currentStep !== "youtube_connect") return;
         // Selector for YouTube button
-        const btn = document.querySelector('[data-onboarding="youtube-connect"]') || document.querySelector('button:has-text("Connect")');
+        const btn = document.querySelector('[data-onboarding="youtube-connect"]') ||
+            Array.from(document.querySelectorAll('button')).find(b => b.textContent?.includes('Connect'));
         if (!btn) return;
 
         const handler = () => setTimeout(() => completeStep("youtube_connect"), 500);
@@ -105,7 +108,8 @@ export function DashboardOnboarding() {
     useEffect(() => {
         if (!isOnboarding || currentStep !== "video_approval") return;
 
-        const btn = document.querySelector('[data-onboarding="approve-video"]') || document.querySelector('button:has-text("Approve")');
+        const btn = document.querySelector('[data-onboarding="approve-video"]') ||
+            Array.from(document.querySelectorAll('button')).find(b => b.textContent?.includes('Approve'));
         if (!btn) return;
 
         const handler = () => {
@@ -125,7 +129,7 @@ export function DashboardOnboarding() {
         <AnimatePresence>
             {/* Step 3 */}
             {currentStep === "dashboard_invite" && (
-                <OnboardingOverlay targetSelector='button:has-text("Invite"), button' allowInteraction={true}>
+                <OnboardingOverlay targetSelector='button' allowInteraction={true}>
                     <OnboardingArrow
                         direction="down"
                         text="Invite your editor to collaborate"
