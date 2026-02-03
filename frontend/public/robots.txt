@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://mwarex.in/sitemap.xml
+
+# Block sensitive paths
+Disallow: /api/
+Disallow: /dashboard/
+Disallow: /_next/
+Disallow: /oauth2callback/

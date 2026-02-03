@@ -1,0 +1,255 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+
+export const metadata: Metadata = {
+    title: "Samay Samrat – Founder of Mwarex",
+    description: "Samay Samrat is the founder of Mwarex, India's first scalable middleware platform built to simplify workflows for creators and editors.",
+    openGraph: {
+        title: "Samay Samrat – Founder of Mwarex",
+        description: "Meet Samay Samrat, the visionary founder behind Mwarex - revolutionizing content collaboration for YouTubers and digital creators.",
+        url: "https://mwarex.in/founder",
+        siteName: "Mwarex",
+        type: "profile",
+    },
+    twitter: {
+        card: "summary_large_image",
+        title: "Samay Samrat – Founder of Mwarex",
+        description: "Meet Samay Samrat, the visionary founder behind Mwarex.",
+    },
+    alternates: {
+        canonical: "https://mwarex.in/founder",
+    },
+};
+
+export default function FounderPage() {
+    // Schema.org structured data for Person
+    const personSchema = {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        name: "Samay Samrat",
+        jobTitle: "Founder",
+        worksFor: {
+            "@type": "Organization",
+            name: "Mwarex",
+            url: "https://mwarex.in",
+        },
+        url: "https://mwarex.in/founder",
+        sameAs: [
+            "https://twitter.com/samaysamrat",
+            "https://linkedin.com/in/samaysamrat",
+            "https://github.com/samay-hash",
+        ],
+    };
+
+    return (
+        <>
+            {/* Structured Data for SEO */}
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(personSchema) }}
+            />
+
+            <main className="min-h-screen py-20 px-4 sm:px-6 lg:px-8">
+                <div className="max-w-4xl mx-auto">
+                    {/* Back Link */}
+                    <Link
+                        href="/"
+                        className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-8"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="16"
+                            height="16"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                        >
+                            <path d="m12 19-7-7 7-7" />
+                            <path d="M19 12H5" />
+                        </svg>
+                        Back to Home
+                    </Link>
+
+                    {/* Main Content */}
+                    <article className="space-y-8">
+                        {/* Hero Section */}
+                        <header className="space-y-6">
+                            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-foreground via-foreground to-foreground/70">
+                                Samay Samrat – Founder & Creator of Mwarex
+                            </h1>
+
+                            <p className="text-xl sm:text-2xl text-muted-foreground leading-relaxed">
+                                Building India&apos;s first scalable middleware platform for content creators
+                            </p>
+                        </header>
+
+                        {/* Founder Card */}
+                        <div className="relative p-8 rounded-2xl border border-border/50 bg-card/50 backdrop-blur-sm">
+                            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent rounded-2xl" />
+
+                            <div className="relative space-y-6">
+                                {/* Avatar Placeholder */}
+                                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-primary to-primary/50 flex items-center justify-center text-3xl font-bold text-primary-foreground">
+                                    SS
+                                </div>
+
+                                <div className="space-y-4">
+                                    <h2 className="text-2xl font-semibold">About the Founder</h2>
+
+                                    <p className="text-lg text-muted-foreground leading-relaxed">
+                                        <strong className="text-foreground">Samay Samrat</strong> is the founder of Mwarex,
+                                        India&apos;s first scalable middleware platform built to simplify workflows for creators
+                                        and editors. With a passion for solving real-world problems in the digital content space,
+                                        Samay Samrat envisioned a platform that would revolutionize how YouTubers and digital
+                                        creators collaborate.
+                                    </p>
+
+                                    <p className="text-lg text-muted-foreground leading-relaxed">
+                                        <strong className="text-foreground">Mwarex was founded by Samay Samrat</strong> to
+                                        solve real-world content collaboration, review, and publishing problems faced by
+                                        YouTubers and digital creators. The platform streamlines the entire video production
+                                        workflow, from upload to publish.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Vision Section */}
+                        <section className="space-y-6">
+                            <h2 className="text-3xl font-bold">The Vision Behind Mwarex</h2>
+
+                            <div className="grid gap-6 md:grid-cols-2">
+                                <div className="p-6 rounded-xl border border-border/50 bg-card/30 space-y-3">
+                                    <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            width="24"
+                                            height="24"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            strokeWidth="2"
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            className="text-primary"
+                                        >
+                                            <path d="M12 20h9" />
+                                            <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
+                                        </svg>
+                                    </div>
+                                    <h3 className="text-xl font-semibold">The Problem</h3>
+                                    <p className="text-muted-foreground">
+                                        Content creators struggle with fragmented workflows, scattered feedback,
+                                        and inefficient collaboration with their editing teams.
+                                    </p>
+                                </div>
+
+                                <div className="p-6 rounded-xl border border-border/50 bg-card/30 space-y-3">
+                                    <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            width="24"
+                                            height="24"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            strokeWidth="2"
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            className="text-primary"
+                                        >
+                                            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+                                        </svg>
+                                    </div>
+                                    <h3 className="text-xl font-semibold">The Solution</h3>
+                                    <p className="text-muted-foreground">
+                                        Mwarex provides a unified platform where creators and editors can
+                                        seamlessly upload, review, approve, and publish content together.
+                                    </p>
+                                </div>
+                            </div>
+                        </section>
+
+                        {/* Journey Section */}
+                        <section className="space-y-6">
+                            <h2 className="text-3xl font-bold">The Mwarex Journey</h2>
+
+                            <div className="relative pl-8 border-l-2 border-primary/30 space-y-8">
+                                <div className="relative">
+                                    <div className="absolute -left-[2.45rem] w-4 h-4 rounded-full bg-primary" />
+                                    <h3 className="text-xl font-semibold">Ideation</h3>
+                                    <p className="text-muted-foreground mt-2">
+                                        Samay Samrat identified the pain points in content collaboration after
+                                        observing the struggles of YouTubers managing multiple editors.
+                                    </p>
+                                </div>
+
+                                <div className="relative">
+                                    <div className="absolute -left-[2.45rem] w-4 h-4 rounded-full bg-primary/70" />
+                                    <h3 className="text-xl font-semibold">Development</h3>
+                                    <p className="text-muted-foreground mt-2">
+                                        Built from the ground up with modern technologies to ensure scalability,
+                                        security, and a seamless user experience.
+                                    </p>
+                                </div>
+
+                                <div className="relative">
+                                    <div className="absolute -left-[2.45rem] w-4 h-4 rounded-full bg-primary/50" />
+                                    <h3 className="text-xl font-semibold">Launch</h3>
+                                    <p className="text-muted-foreground mt-2">
+                                        Mwarex is now live, helping creators and editors work together more
+                                        efficiently than ever before.
+                                    </p>
+                                </div>
+                            </div>
+                        </section>
+
+                        {/* CTA Section */}
+                        <section className="p-8 rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20 text-center space-y-4">
+                            <h2 className="text-2xl font-bold">Ready to Transform Your Workflow?</h2>
+                            <p className="text-muted-foreground max-w-2xl mx-auto">
+                                Join the platform built by Samay Samrat to revolutionize content creation workflows.
+                            </p>
+                            <Link
+                                href="/auth/signup"
+                                className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-colors"
+                            >
+                                Get Started Free
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="16"
+                                    height="16"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                >
+                                    <path d="M5 12h14" />
+                                    <path d="m12 5 7 7-7 7" />
+                                </svg>
+                            </Link>
+                        </section>
+
+                        {/* Footer Links */}
+                        <footer className="pt-8 border-t border-border/50 flex flex-wrap gap-4 text-sm text-muted-foreground">
+                            <Link href="/about" className="hover:text-foreground transition-colors">
+                                About Mwarex
+                            </Link>
+                            <Link href="/privacy-policy" className="hover:text-foreground transition-colors">
+                                Privacy Policy
+                            </Link>
+                            <Link href="/terms" className="hover:text-foreground transition-colors">
+                                Terms of Service
+                            </Link>
+                        </footer>
+                    </article>
+                </div>
+            </main>
+        </>
+    );
+}
