@@ -3,6 +3,7 @@ const dotenv = require("dotenv");
 dotenv.config();
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
+const axios = require("axios");
 const { connectDB } = require("./db");
 const userRoutes = require("./routes/authUser");
 const adminRoutes = require("./routes/authAdmin");
@@ -19,6 +20,10 @@ const googleAuthRoutes = require("./routes/googleAuth");
 
 const http = require("http");
 const { Server } = require("socket.io");
+
+// Keep-alive configuration
+const SELF_PING_URL = process.env.BACKEND_URL || "https://mwarex-in.onrender.com";
+const PING_INTERVAL = 14 * 60 * 1000; // 14 minutes (before Render's 15 min sleep)
 
 const app = express();
 const server = http.createServer(app);
@@ -89,6 +94,40 @@ app.use("/api/v1", inviteRoutes);
 app.use("/api/v1/payment", paymentRoutes);
 app.use("/auth", googleAuthRoutes);
 
+// ========================
+// HEALTH CHECK & KEEP-ALIVE
+// ========================
+
+// Fast health check endpoint (responds in milliseconds)
+app.get("/health", (req, res) => {
+  res.status(200).json({
+    status: "ok",
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime()
+  });
+});
+
+// Also add /ping as an alias
+app.get("/ping", (req, res) => {
+  res.status(200).send("pong");
+});
+
+// Self-ping function to keep the server awake
+const keepServerAlive = () => {
+  const pingUrl = `${SELF_PING_URL}/health`;
+
+  setInterval(async () => {
+    try {
+      const response = await axios.get(pingUrl, { timeout: 10000 });
+      console.log(`[Keep-Alive] Pinged ${pingUrl} at ${new Date().toISOString()} - Status: ${response.status}`);
+    } catch (error) {
+      console.log(`[Keep-Alive] Ping failed: ${error.message}`);
+    }
+  }, PING_INTERVAL);
+
+  console.log(`[Keep-Alive] Self-ping enabled, pinging ${pingUrl} every ${PING_INTERVAL / 60000} minutes`);
+};
+
 app.get("/oauth2callback", async (req, res) => {
   try {
     const code = req.query.code;
@@ -128,4 +167,11 @@ app.get("/oauth2callback", async (req, res) => {
 });
 
 const PORT = process.env.PORT || 8000;
-server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+server.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+
+  // Start keep-alive only in production (when BACKEND_URL is set)
+  if (process.env.NODE_ENV === "production" || process.env.BACKEND_URL) {
+    keepServerAlive();
+  }
+});
