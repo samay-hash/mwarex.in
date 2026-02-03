@@ -362,17 +362,30 @@ export function PricingSection() {
                                     key={plan.name}
                                     onMouseEnter={() => setHoveredPlan(plan.name)}
                                     onMouseLeave={() => setHoveredPlan(null)}
+                                    whileHover={{
+                                        y: -12,
+                                        scale: 1.03,
+                                        transition: { type: "spring", stiffness: 300, damping: 20 }
+                                    }}
                                     className={cn(
-                                        "relative rounded-3xl transition-all duration-500 flex flex-col h-full group w-full max-w-[380px] bg-card border border-border overflow-hidden",
-                                        isPopular ? "shadow-2xl shadow-primary/20 scale-[1.02]" : "shadow-lg"
+                                        "relative rounded-3xl transition-all duration-300 flex flex-col h-full group w-full max-w-[380px] bg-card border border-border overflow-hidden",
+                                        isPopular ? "shadow-2xl shadow-primary/20" : "shadow-lg hover:shadow-xl hover:shadow-primary/5"
                                     )}
                                 >
+                                    {/* Hover Shine Effect */}
+                                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-0">
+                                        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/5" />
+                                    </div>
+
+                                    {/* Glass Swipe Effect */}
+                                    <div className="absolute inset-0 -translate-x-[150%] skew-x-12 group-hover:animate-shine bg-gradient-to-r from-transparent via-white/10 dark:via-white/5 to-transparent z-10 pointer-events-none" />
+
                                     {/* Gradient Border Effect */}
                                     <div className={cn(
                                         "absolute inset-0 pointer-events-none transition-opacity duration-500 rounded-3xl z-0",
                                         isPopular
                                             ? "opacity-100 bg-gradient-to-b from-primary/20 via-transparent to-transparent"
-                                            : "opacity-0"
+                                            : "opacity-0 group-hover:opacity-100 bg-gradient-to-b from-foreground/5 via-transparent to-transparent"
                                     )} />
 
                                     {/* Popular Badge */}
@@ -390,21 +403,27 @@ export function PricingSection() {
                                         isPopular && "pt-12"
                                     )}>
                                         {/* Header */}
-                                        <div className="mb-8 text-center">
+                                        <div className="mb-8 text-center relative">
+                                            {/* Icon Background Glow */}
                                             <div className={cn(
-                                                "w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-inner",
+                                                "absolute inset-0 bg-gradient-to-b from-current to-transparent opacity-0 group-hover:opacity-10 transition-opacity duration-500 blur-2xl",
+                                                plan.iconColor
+                                            )} />
+
+                                            <div className={cn(
+                                                "w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-inner relative z-10 transform group-hover:scale-110 transition-transform duration-300",
                                                 plan.iconBg
                                             )}>
                                                 <plan.icon className={cn("w-7 h-7", plan.iconColor)} />
                                             </div>
-                                            <h3 className="text-2xl font-bold text-foreground mb-2">{plan.name}</h3>
+                                            <h3 className="text-2xl font-bold text-foreground mb-2 group-hover:text-primary transition-colors duration-300">{plan.name}</h3>
                                             <p className="text-sm text-muted-foreground leading-relaxed">
                                                 {plan.description}
                                             </p>
                                         </div>
 
                                         {/* Price */}
-                                        <div className="mb-8 text-center bg-secondary/30 rounded-2xl p-4 border border-border/50 backdrop-blur-sm">
+                                        <div className="mb-8 text-center bg-secondary/30 rounded-2xl p-4 border border-border/50 backdrop-blur-sm group-hover:border-primary/20 transition-colors duration-300">
                                             {plan.price === "0" ? (
                                                 <div className="flex items-center justify-center">
                                                     <span className="text-4xl font-black text-foreground tracking-tight">
@@ -431,12 +450,12 @@ export function PricingSection() {
                                             {plan.features.map((feature) => (
                                                 <li key={feature} className="flex items-start gap-3 text-sm text-muted-foreground">
                                                     <div className={cn(
-                                                        "w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5",
-                                                        isPopular ? "bg-primary/20 text-primary" : "bg-emerald-500/10 text-emerald-500"
+                                                        "w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5 transition-colors duration-300",
+                                                        isPopular || isHovered ? "bg-primary/20 text-primary" : "bg-emerald-500/10 text-emerald-500"
                                                     )}>
                                                         <Check className="w-3 h-3 stroke-[3]" />
                                                     </div>
-                                                    <span>{feature}</span>
+                                                    <span className="group-hover:text-foreground transition-colors duration-300">{feature}</span>
                                                 </li>
                                             ))}
                                         </ul>
@@ -452,7 +471,7 @@ export function PricingSection() {
                                                     : "bg-background border-2 border-border hover:border-primary/50 text-foreground"
                                             )}
                                         >
-                                            <span className="relative z-10 flex items-center justify-center gap-2">
+                                            <span className="relative z-10 flex items-center justify-center gap-2 group-hover/btn:scale-105 transition-transform">
                                                 {isLoading ? (
                                                     <Loader2 className="w-4 h-4 animate-spin" />
                                                 ) : (

@@ -74,11 +74,21 @@ module.exports = {
                     "0%, 100%": { transform: "translateY(0)" },
                     "50%": { transform: "translateY(-10px)" },
                 },
+                shine: {
+                    "0%": { transform: "translateX(-150%) skewX(-12deg)" },
+                    "100%": { transform: "translateX(150%) skewX(-12deg)" },
+                },
+                "glow-pulse": {
+                    "0%, 100%": { opacity: "0.5", transform: "scale(1)" },
+                    "50%": { opacity: "1", transform: "scale(1.05)" },
+                },
             },
             animation: {
                 "accordion-down": "accordion-down 0.2s ease-out",
                 "accordion-up": "accordion-up 0.2s ease-out",
                 float: "float 6s ease-in-out infinite",
+                shine: "shine 0.8s ease-out forwards",
+                "glow-pulse": "glow-pulse 2s ease-in-out infinite",
             },
         },
     },

@@ -1,10 +1,26 @@
 "use client";
 
-import { motion, useInView, useSpring, useTransform } from "framer-motion";
-import { Quote, Star } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { motion } from "framer-motion";
+import { Quote, Star, ChevronLeft, ChevronRight } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Autoplay, EffectCreative, Pagination, Navigation } from "swiper/modules";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
+import "swiper/css/effect-creative";
+import "swiper/css/pagination";
+import "swiper/css/autoplay";
+import "swiper/css/navigation";
+import { cn } from "@/lib/utils";
 
-const testimonials = [
+interface Testimonial {
+    quote: string;
+    author: string;
+    role: string;
+    gradient: string;
+    rating: number;
+}
+
+const testimonials: Testimonial[] = [
     {
         quote: "mWareX completely removed the bottleneck of downloading 50GB files just to review them. It's a game changer.",
         author: "Alex Hormozi (Parody)",
@@ -30,211 +46,86 @@ const testimonials = [
 
 function Counter({ value, suffix = "" }: { value: number; suffix?: string }) {
     const ref = useRef<HTMLSpanElement>(null);
-    const isInView = useInView(ref, { once: true, margin: "-50px" });
-    const spring = useSpring(0, { mass: 0.8, stiffness: 75, damping: 15 });
-    const display = useTransform(spring, (current) =>
-        Math.round(current).toLocaleString() + suffix
-    );
+    const [hasInView, setHasInView] = useState(false);
 
     useEffect(() => {
-        if (isInView) {
-            spring.set(value);
-        }
-    }, [isInView, value, spring]);
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting) {
+                    setHasInView(true);
+                    observer.disconnect();
+                }
+            },
+            { rootMargin: "-50px" }
+        );
+        if (ref.current) observer.observe(ref.current);
+        return () => observer.disconnect();
+    }, []);
 
-    return <motion.span ref={ref}>{display}</motion.span>;
+    const [count, setCount] = useState(0);
+    useEffect(() => {
+        if (hasInView) {
+            let start = 0;
+            const end = value;
+            const duration = 2000;
+            const incrementTime = 30;
+            const step = end / (duration / incrementTime);
+
+            const timer = setInterval(() => {
+                start += step;
+                if (start >= end) {
+                    setCount(end);
+                    clearInterval(timer);
+                } else {
+                    setCount(Math.round(start));
+                }
+            }, incrementTime);
+            return () => clearInterval(timer);
+        }
+    }, [hasInView, value]);
+
+    return <span ref={ref}>{count.toLocaleString()}{suffix}</span>;
 }
 
 export function Testimonials() {
-    // Animation variants
-    const containerVariants = {
-        hidden: { opacity: 0 },
-        visible: {
-            opacity: 1,
-            transition: {
-                staggerChildren: 0.15,
-                delayChildren: 0.2,
-            },
-        },
-    };
-
-    const headingTextVariants = {
-        hidden: { opacity: 0, y: 20 },
-        visible: {
-            opacity: 1,
-            y: 0,
-            transition: {
-                duration: 0.6,
-                ease: [0.2, 0.65, 0.3, 0.9] as const,
-            },
-        },
-    };
-
-    const headingHighlightVariants = {
-        hidden: { opacity: 0, scale: 0.9, filter: "blur(10px)" },
-        visible: {
-            opacity: 1,
-            scale: 1,
-            filter: "blur(0px)",
-            transition: {
-                duration: 0.8,
-                ease: "easeOut" as const,
-                delay: 0.4,
-            },
-        },
-    };
-
-    // Custom card variants based on position
-    const getCardVariant = (index: number) => {
-        if (index === 0) {
-            // Left card: Rotate in from bottom-left
-            return {
-                hidden: { opacity: 0, x: -50, y: 50, rotate: -5 },
-                visible: {
-                    opacity: 1, x: 0, y: 0, rotate: 0,
-                    transition: { type: "spring" as const, stiffness: 50, damping: 15 }
-                }
-            };
-        } else if (index === 1) {
-            // Center card: Scale up with fade
-            return {
-                hidden: { opacity: 0, y: 50, scale: 0.9 },
-                visible: {
-                    opacity: 1, y: 0, scale: 1,
-                    transition: { type: "spring" as const, stiffness: 50, damping: 15, delay: 0.1 }
-                }
-            };
-        } else {
-            // Right card: Rotate in from bottom-right
-            return {
-                hidden: { opacity: 0, x: 50, y: 50, rotate: 5 },
-                visible: {
-                    opacity: 1, x: 0, y: 0, rotate: 0,
-                    transition: { type: "spring" as const, stiffness: 50, damping: 15, delay: 0.2 }
-                }
-            };
-        }
-    };
-
     return (
         <section className="py-28 relative overflow-hidden bg-secondary/30 border-t border-border">
-            {/* Enhanced Background */}
+            {/* Enhanced Background Blob */}
             <div className="absolute inset-0 pointer-events-none">
-                <motion.div
-                    animate={{
-                        scale: [1, 1.15, 1],
-                        opacity: [0.05, 0.1, 0.05],
-                    }}
-                    transition={{
-                        duration: 10,
-                        repeat: Infinity,
-                        ease: "easeInOut",
-                    }}
-                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-primary/10 rounded-full blur-[150px]"
-                />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-primary/10 rounded-full blur-[150px] animate-pulse" />
             </div>
 
-            <div className="max-w-7xl mx-auto px-6 relative z-10">
+            <div className="max-w-7xl mx-auto px-6 relative z-10 text-center">
                 {/* Header */}
-                <div className="text-center mb-20">
+                <div className="mb-20">
                     <motion.div
-                        initial="hidden"
-                        whileInView="visible"
-                        viewport={{ once: true, margin: "-100px" }}
-                        className="inline-block"
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.6 }}
+                        className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/5 border border-primary/10 mb-8 mx-auto"
                     >
-                        <motion.div
-                            variants={headingTextVariants}
-                            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/5 border border-primary/10 mb-8 mx-auto"
-                        >
-                            <Star className="w-3.5 h-3.5 text-primary fill-primary" />
-                            <span className="text-primary font-semibold text-xs uppercase tracking-wider">Testimonials</span>
-                        </motion.div>
-
-                        <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6 leading-tight">
-                            <motion.span variants={headingTextVariants} className="inline-block">
-                                Trusted by the{" "}
-                            </motion.span>
-                            <motion.span
-                                variants={headingHighlightVariants}
-                                className="relative inline-block ml-2"
-                            >
-                                <span className="relative z-10 text-transparent bg-clip-text bg-gradient-to-r from-primary via-violet-500 to-indigo-500">
-                                    best.
-                                </span>
-                                <motion.span
-                                    initial={{ opacity: 0, scale: 0.5 }}
-                                    whileInView={{ opacity: 0.5, scale: 1.2 }}
-                                    transition={{ duration: 1, delay: 0.6 }}
-                                    className="absolute inset-0 bg-primary/20 blur-xl -z-10 rounded-full"
-                                />
-                            </motion.span>
-                        </h2>
+                        <Star className="w-3.5 h-3.5 text-primary fill-primary" />
+                        <span className="text-primary font-semibold text-xs uppercase tracking-wider">Testimonials</span>
                     </motion.div>
+
+                    <motion.h2
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.6, delay: 0.2 }}
+                        className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6 leading-tight"
+                    >
+                        Trusted by the{" "}
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-violet-500 to-indigo-500">
+                            best.
+                        </span>
+                    </motion.h2>
                 </div>
 
-                {/* Testimonial Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
-                    {testimonials.map((t, i) => (
-                        <motion.div
-                            key={i}
-                            initial="hidden"
-                            whileInView="visible"
-                            viewport={{ once: true, margin: "-50px" }}
-                            variants={getCardVariant(i)}
-                            whileHover={{
-                                y: -10,
-                                transition: { type: "spring", stiffness: 300 }
-                            }}
-                            className="bg-card/50 backdrop-blur-sm border border-border/50 p-8 rounded-3xl hover:border-primary/20 hover:shadow-2xl hover:shadow-primary/5 transition-all duration-500 group relative flex flex-col h-full"
-                        >
-                            {/* Quote Icon */}
-                            <motion.div
-                                initial={{ scale: 0, opacity: 0 }}
-                                whileInView={{ scale: 1, opacity: 1 }}
-                                transition={{ delay: 0.3 + (i * 0.1), type: "spring" }}
-                                className="mb-6 w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center"
-                            >
-                                <Quote className="w-4 h-4 text-primary" />
-                            </motion.div>
-
-                            {/* Rating Stars - Pop Effect */}
-                            <div className="flex gap-1 mb-6">
-                                {[...Array(t.rating)].map((_, starIndex) => (
-                                    <motion.div
-                                        key={starIndex}
-                                        initial={{ scale: 0, opacity: 0 }}
-                                        whileInView={{ scale: 1, opacity: 1 }}
-                                        viewport={{ once: true }}
-                                        transition={{
-                                            delay: 0.4 + (i * 0.1) + (starIndex * 0.05),
-                                            type: "spring",
-                                            stiffness: 300,
-                                            damping: 10
-                                        }}
-                                    >
-                                        <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
-                                    </motion.div>
-                                ))}
-                            </div>
-
-                            {/* Quote Text */}
-                            <p className="text-foreground/90 text-lg leading-relaxed mb-8 flex-grow">
-                                &ldquo;{t.quote}&rdquo;
-                            </p>
-
-                            {/* Author */}
-                            <div className="flex items-center gap-4 mt-auto pt-6 border-t border-border/50">
-                                <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${t.gradient} flex items-center justify-center text-white font-bold text-sm shadow-md`}>
-                                    {t.author.charAt(0)}
-                                </div>
-                                <div>
-                                    <h4 className="font-semibold text-foreground text-sm">{t.author}</h4>
-                                    <p className="text-xs text-muted-foreground">{t.role}</p>
-                                </div>
-                            </div>
-                        </motion.div>
-                    ))}
+                {/* Swiper Carousel */}
+                <div className="relative flex w-full items-center justify-center">
+                    <Carousel testimonials={testimonials} />
                 </div>
 
                 {/* Bottom Stats */}
@@ -246,16 +137,14 @@ export function Testimonials() {
                     className="mt-24 flex flex-wrap justify-center gap-12 md:gap-24"
                 >
                     {[
-                        { value: 10000, suffix: "+", label: "Active Creators" },
-                        { value: 50, suffix: "M+", label: "Videos Processed" },
-                        { value: 99, suffix: "%", label: "Accuracy" },
+                        { value: 101, suffix: "+", label: "Active Creators" },
+                        { value: 50, suffix: "+", label: "Videos Processed" },
+                        { value: 93, suffix: "%", label: "Accuracy" },
                     ].map((stat, i) => (
                         <div key={i} className="text-center">
-                            <motion.div
-                                className="text-4xl md:text-5xl font-bold text-foreground mb-2"
-                            >
+                            <div className="text-4xl md:text-5xl font-bold text-foreground mb-2">
                                 <Counter value={stat.value} suffix={stat.suffix} />
-                            </motion.div>
+                            </div>
                             <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">{stat.label}</p>
                         </div>
                     ))}
@@ -264,3 +153,128 @@ export function Testimonials() {
         </section>
     );
 }
+
+// Adaptive Card Swiper Component
+const Carousel = ({
+    testimonials,
+    autoplay = false,
+    loop = true,
+}: {
+    testimonials: Testimonial[];
+    autoplay?: boolean;
+    loop?: boolean;
+}) => {
+    // Custom CSS for Swiper to adjust slide visuals
+    const css = `
+    .testimonial-swiper {
+        width: 100%;
+        max-width: 900px;
+        padding: 40px 10px;
+        overflow: visible !important;
+    }
+    .testimonial-swiper .swiper-slide {
+        display: flex;
+        justify-content: center;
+        opacity: 0.4;
+        transform: scale(0.9);
+        transition: all 0.5s ease;
+    }
+    .testimonial-swiper .swiper-slide-active {
+        opacity: 1;
+        transform: scale(1);
+        z-index: 10;
+    }
+    `;
+
+    return (
+        <div className="w-full relative">
+            <style>{css}</style>
+
+            <Swiper
+                modules={[EffectCreative, Pagination, Autoplay, Navigation]}
+                spaceBetween={30}
+                slidesPerView={1}
+                loop={loop}
+                speed={800}
+                autoplay={
+                    autoplay ? { delay: 3000, disableOnInteraction: true } : false
+                }
+                pagination={{
+                    clickable: true,
+                    dynamicBullets: true,
+                }}
+                navigation={{
+                    nextEl: ".swiper-button-next-custom",
+                    prevEl: ".swiper-button-prev-custom",
+                }}
+                breakpoints={{
+                    640: { slidesPerView: 1 },
+                    768: { slidesPerView: 1.2, centeredSlides: true }, // Show partial next slides
+                    1024: { slidesPerView: 1.5, centeredSlides: true },
+                }}
+                className="testimonial-swiper"
+            >
+                {testimonials.map((t, i) => (
+                    <SwiperSlide key={i}>
+                        <div className="w-full max-w-2xl relative group h-full min-h-[400px]">
+                            {/* --- CARD BACKGROUND --- */}
+                            <div className="absolute inset-0 rounded-3xl overflow-hidden shadow-2xl">
+                                {/* Dark Mode: Cinematic Image */}
+                                <div
+                                    className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-700 hidden dark:block"
+                                    style={{ backgroundImage: 'url("/new-card-bg.png")' }}
+                                />
+                                <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] hidden dark:block" />
+
+                                {/* Light Mode: Transparent Glass (Requested) */}
+                                <div className="absolute inset-0 bg-white/40 backdrop-blur-xl border border-white/60 shadow-[0_8px_30px_rgb(0,0,0,0.1)] dark:hidden" />
+
+                                {/* Shine Effect */}
+                                <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/40 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-in-out z-10 opacity-40 dark:opacity-20" />
+                            </div>
+
+                            {/* --- CARD CONTENT --- */}
+                            <div className="relative z-20 p-8 md:p-12 flex flex-col items-center text-center h-full border border-black/5 dark:border-white/10 rounded-3xl transition-colors">
+                                {/* Quote Icon */}
+                                <div className="mb-6 w-12 h-12 rounded-full bg-primary/10 dark:bg-white/10 backdrop-blur-md flex items-center justify-center border border-primary/10 dark:border-white/20">
+                                    <Quote className="w-5 h-5 text-primary dark:text-white" />
+                                </div>
+
+                                {/* Rating */}
+                                <div className="flex gap-1 mb-8">
+                                    {[...Array(t.rating)].map((_, idx) => (
+                                        <Star key={idx} className="w-5 h-5 text-amber-500 fill-amber-500 dark:text-white dark:fill-white dark:drop-shadow-[0_0_8px_rgba(255,255,255,0.6)]" />
+                                    ))}
+                                </div>
+
+                                {/* Quote Text */}
+                                <p className="text-foreground dark:text-white text-xl md:text-2xl leading-relaxed mb-8 font-medium dark:font-light tracking-wide dark:drop-shadow-md">
+                                    &ldquo;{t.quote}&rdquo;
+                                </p>
+
+                                {/* Author */}
+                                <div className="flex items-center gap-4 mt-auto">
+                                    <div className={`w-12 h-12 rounded-full bg-gradient-to-br ${t.gradient} flex items-center justify-center text-white font-bold text-lg shadow-md ring-1 ring-white/20`}>
+                                        {t.author.charAt(0)}
+                                    </div>
+                                    <div className="text-left">
+                                        <h4 className="font-bold text-foreground dark:text-white text-base tracking-wide">{t.author}</h4>
+                                        <p className="text-sm text-muted-foreground dark:text-white/60">{t.role}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </SwiperSlide>
+                ))}
+
+                {/* Navigation Buttons */}
+                <div className="hidden md:flex absolute top-1/2 -translate-y-1/2 -left-4 z-20 swiper-button-prev-custom cursor-pointer w-12 h-12 bg-background/80 dark:bg-black/50 backdrop-blur-md rounded-full items-center justify-center border border-border hover:scale-110 transition-all text-foreground dark:text-white shadow-lg">
+                    <ChevronLeft className="w-6 h-6" />
+                </div>
+                <div className="hidden md:flex absolute top-1/2 -translate-y-1/2 -right-4 z-20 swiper-button-next-custom cursor-pointer w-12 h-12 bg-background/80 dark:bg-black/50 backdrop-blur-md rounded-full items-center justify-center border border-border hover:scale-110 transition-all text-foreground dark:text-white shadow-lg">
+                    <ChevronRight className="w-6 h-6" />
+                </div>
+            </Swiper>
+        </div>
+    );
+};

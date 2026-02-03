@@ -99,10 +99,10 @@ export function HeroSection() {
                         >
                             <div className="flex -space-x-2">
                                 {[
-                                    'bg-gradient-to-br from-violet-400 to-purple-600',
-                                    'bg-gradient-to-br from-blue-400 to-cyan-600',
-                                    'bg-gradient-to-br from-emerald-400 to-green-600',
-                                    'bg-gradient-to-br from-orange-400 to-red-600',
+                                   'bg-gradient-to-br from-orange-400 to-orange-600', 
+                                   'bg-gradient-to-br from-slate-50 to-gray-200',       
+                                   'bg-gradient-to-br from-green-500 to-emerald-800',         
+                                   
                                 ].map((gradient, i) => (
                                     <div
                                         key={i}
@@ -110,7 +110,7 @@ export function HeroSection() {
                                     />
                                 ))}
                             </div>
-                            <p>Trusted by <span className="text-foreground font-medium">10,000+</span> creators</p>
+                            <p>Trusted by <span className="text-foreground font-medium">Indians</span> creators</p>
                         </motion.div>
                     </div>
 
