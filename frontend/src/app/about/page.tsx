@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 
 export const metadata: Metadata = {
     title: "About Mwarex – India's Premier Creator Workflow Platform",
@@ -90,8 +91,14 @@ export default function AboutPage() {
                         {/* Founder Highlight */}
                         <section className="p-8 rounded-2xl border border-primary/30 bg-gradient-to-br from-primary/10 to-transparent">
                             <div className="flex flex-col md:flex-row gap-6 items-start">
-                                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary to-primary/50 flex items-center justify-center text-2xl font-bold text-primary-foreground flex-shrink-0">
-                                    SS
+                                <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-primary/30 flex-shrink-0">
+                                    <Image
+                                        src="/images/samay-samrat.jpg"
+                                        alt="Samay Samrat - Founder of Mwarex"
+                                        width={80}
+                                        height={80}
+                                        className="w-full h-full object-cover"
+                                    />
                                 </div>
                                 <div className="space-y-3">
                                     <p className="text-lg leading-relaxed">

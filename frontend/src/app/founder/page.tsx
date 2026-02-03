@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 
 export const metadata: Metadata = {
     title: "Samay Samrat – Founder of Mwarex",
@@ -10,11 +11,20 @@ export const metadata: Metadata = {
         url: "https://mwarex.in/founder",
         siteName: "Mwarex",
         type: "profile",
+        images: [
+            {
+                url: "https://mwarex.in/images/samay-samrat.jpg",
+                width: 800,
+                height: 600,
+                alt: "Samay Samrat - Founder of Mwarex",
+            },
+        ],
     },
     twitter: {
         card: "summary_large_image",
         title: "Samay Samrat – Founder of Mwarex",
         description: "Meet Samay Samrat, the visionary founder behind Mwarex.",
+        images: ["https://mwarex.in/images/samay-samrat.jpg"],
     },
     alternates: {
         canonical: "https://mwarex.in/founder",
@@ -27,6 +37,7 @@ export default function FounderPage() {
         "@context": "https://schema.org",
         "@type": "Person",
         name: "Samay Samrat",
+        image: "https://mwarex.in/images/samay-samrat.jpg",
         jobTitle: "Founder",
         worksFor: {
             "@type": "Organization",
@@ -91,9 +102,16 @@ export default function FounderPage() {
                             <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent rounded-2xl" />
 
                             <div className="relative space-y-6">
-                                {/* Avatar Placeholder */}
-                                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-primary to-primary/50 flex items-center justify-center text-3xl font-bold text-primary-foreground">
-                                    SS
+                                {/* Founder Photo */}
+                                <div className="w-32 h-32 sm:w-40 sm:h-40 rounded-full overflow-hidden border-4 border-primary/30 shadow-lg shadow-primary/20">
+                                    <Image
+                                        src="/images/samay-samrat.jpg"
+                                        alt="Samay Samrat - Founder of Mwarex"
+                                        width={160}
+                                        height={160}
+                                        className="w-full h-full object-cover"
+                                        priority
+                                    />
                                 </div>
 
                                 <div className="space-y-4">
