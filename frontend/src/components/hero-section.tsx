@@ -110,7 +110,7 @@ export function HeroSection() {
                                     />
                                 ))}
                             </div>
-                            <p>Trusted by <span className="text-foreground font-medium">Indians</span> creators</p>
+                            <p>Trusted by <span className="text-foreground font-medium">Indian</span> Creators</p>
                         </motion.div>
                     </div>
 
