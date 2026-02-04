@@ -4,6 +4,7 @@ const EditorAssignment = require("../models/EditorAssignment");
 const userModel = require("../models/user");
 const { creatorAuth } = require("../middlewares/creatorMiddleware");
 const { sendInviteEmail } = require("../services/emailService");
+const { error } = require("console");
 
 router.post("/invite", creatorAuth, async (req, res) => {
   try {
@@ -30,8 +31,7 @@ router.post("/invite", creatorAuth, async (req, res) => {
 
     if (process.env.EMAIL_USER && process.env.EMAIL_PASS && email) {
       console.log("Environment variables present. Sending email...");
-      // We'll await this just for debugging to ensure we catch the error 
-      // (In production high-scale you might queue this, but for now we need to see the error)
+debugger
       try {
         await sendInviteEmail(email, inviteLink, creatorName);
         console.log("Email sent successfully to:", email);

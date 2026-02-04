@@ -23,7 +23,7 @@ export const metadata: Metadata = {
 };
 
 export default function AboutPage() {
-    // Schema.org structured data for Organization
+ 
     const orgSchema = {
         "@context": "https://schema.org",
         "@type": "Organization",
