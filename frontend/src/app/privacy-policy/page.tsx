@@ -129,10 +129,10 @@ export default function PrivacyPolicy() {
             If you have any questions about this Privacy Policy, please contact
             us at:{" "}
             <a
-              href="mailto:support@mwarex.com"
+              href="mailto:founder.samay@gmail.com"
               className="text-blue-400 underline"
             >
-              support@mwarex.com
+              founder.samay@gmail.com
             </a>
           </p>
         </section>
