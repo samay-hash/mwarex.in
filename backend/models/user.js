@@ -3,6 +3,8 @@ const userSchema = new mongoose.Schema({
   email: String,
   password: String,
   name: String,
+  googleId: String, // For Google OAuth users
+  profilePicture: String, // Google profile picture URL
   creatorId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",

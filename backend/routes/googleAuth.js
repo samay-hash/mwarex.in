@@ -1,20 +1,27 @@
 const router = require("express").Router();
 const { google } = require("googleapis");
+const jwt = require("jsonwebtoken");
+const userModel = require("../models/user");
 
+// Helper function to create OAuth2 client
+const createOAuth2Client = () => {
+  return new google.auth.OAuth2(
+    process.env.GOOGLE_CLIENT_ID,
+    process.env.GOOGLE_CLIENT_SECRET,
+    process.env.GOOGLE_REDIRECT
+  );
+};
+
+// Initiate Google OAuth for Sign In/Sign Up
 router.get("/google", (req, res) => {
   try {
-    const oauth2Client = new google.auth.OAuth2(
-      process.env.GOOGLE_CLIENT_ID,
-      process.env.GOOGLE_CLIENT_SECRET,
-      process.env.GOOGLE_REDIRECT
-    );
-
+    const oauth2Client = createOAuth2Client();
     const { origin } = req.query;
 
     const url = oauth2Client.generateAuthUrl({
       access_type: "offline",
       prompt: "consent",
-      state: origin, // Pass the origin in the state
+      state: origin || process.env.FRONTEND_URL || "https://www.mwarex.in",
       scope: [
         "https://www.googleapis.com/auth/userinfo.profile",
         "https://www.googleapis.com/auth/userinfo.email",
@@ -24,9 +31,111 @@ router.get("/google", (req, res) => {
 
     return res.redirect(url);
   } catch (err) {
-    console.error(err);
+    console.error("Google Auth Error:", err);
     res.status(500).json({ message: "Failed to generate auth url" });
   }
 });
 
+// Google OAuth Callback - Handle authentication
+router.get("/google/callback", async (req, res) => {
+  try {
+    const { code, state } = req.query;
+    const frontend = state || process.env.FRONTEND_URL || "https://www.mwarex.in";
+
+    if (!code) {
+      return res.redirect(`${frontend}/auth/signin?error=no_code`);
+    }
+
+    const oauth2Client = createOAuth2Client();
+
+    // Exchange code for tokens
+    const { tokens } = await oauth2Client.getToken(code);
+    oauth2Client.setCredentials(tokens);
+
+    // Get user info from Google
+    const oauth2 = google.oauth2({ version: "v2", auth: oauth2Client });
+    const { data: googleUser } = await oauth2.userinfo.get();
+
+    console.log("Google User Info:", googleUser);
+
+    if (!googleUser.email) {
+      return res.redirect(`${frontend}/auth/signin?error=no_email`);
+    }
+
+    // Find or create user in database
+    let user = await userModel.findOne({ email: googleUser.email });
+
+    if (!user) {
+      // Create new user (Google Sign Up)
+      user = await userModel.create({
+        email: googleUser.email,
+        name: googleUser.name || googleUser.email.split("@")[0],
+        password: null, // No password for Google users
+        role: "creator",
+        googleId: googleUser.id,
+        profilePicture: googleUser.picture,
+        youtubeTokens: {
+          accessToken: tokens.access_token,
+          refreshToken: tokens.refresh_token,
+          updatedAt: new Date(),
+        },
+      });
+      console.log("New user created via Google:", user.email);
+    } else {
+      // Update existing user with YouTube tokens
+      user = await userModel.findByIdAndUpdate(
+        user._id,
+        {
+          $set: {
+            googleId: googleUser.id,
+            profilePicture: googleUser.picture,
+            name: user.name || googleUser.name,
+            youtubeTokens: {
+              accessToken: tokens.access_token,
+              refreshToken: tokens.refresh_token || user.youtubeTokens?.refreshToken,
+              updatedAt: new Date(),
+            },
+          },
+        },
+        { new: true }
+      );
+      console.log("Existing user signed in via Google:", user.email);
+    }
+
+    // Generate JWT token for your app
+    const appToken = jwt.sign(
+      { id: user._id },
+      process.env.JWT_SECRET_USER,
+      { expiresIn: "7d" }
+    );
+
+    // Set cookie (for SSR/security)
+    res.cookie("auth", appToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+      maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+    });
+
+    // Redirect to frontend with token and user info
+    const params = new URLSearchParams();
+    params.append("token", appToken);
+    params.append("email", user.email);
+    params.append("name", user.name || "");
+    params.append("role", user.role || "creator");
+    params.append("userId", user._id.toString());
+
+    // Redirect based on user role
+    const dashboard = user.role === "editor" ? "/dashboard/editor" : "/dashboard/creator";
+
+    return res.redirect(`${frontend.replace(/\/$/, "")}/auth/google-callback?${params.toString()}&redirect=${encodeURIComponent(dashboard)}`);
+
+  } catch (err) {
+    console.error("Google Callback Error:", err);
+    const frontend = req.query.state || process.env.FRONTEND_URL || "https://www.mwarex.in";
+    return res.redirect(`${frontend}/auth/signin?error=auth_failed&message=${encodeURIComponent(err.message)}`);
+  }
+});
+
 module.exports = router;
+
