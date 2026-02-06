@@ -99,6 +99,56 @@ export const getGoogleAuthUrl = () => {
   return `${API_BASE_URL}/auth/google?origin=${encodeURIComponent(origin)}`;
 };
 
+// Health check to warm up the server
+export const healthCheck = async (): Promise<boolean> => {
+  try {
+    // Try multiple endpoints to wake up the server
+    const response = await api.get("/api/v1/health", { timeout: 60000 });
+    return response.status === 200;
+  } catch (error) {
+    // Even if health endpoint doesn't exist, a 404 means server is awake
+    return true;
+  }
+};
+
+// Warm up server before Google OAuth redirect
+export const warmAndRedirectToGoogle = async (
+  onWarmingUp: () => void,
+  onReady: () => void,
+  onError: (error: string) => void
+): Promise<void> => {
+  onWarmingUp();
+
+  const maxAttempts = 30; // 30 attempts
+  const delayBetweenAttempts = 2000; // 2 seconds
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      // Make a simple request to wake up the server
+      await api.get("/api/v1/health", { timeout: 10000 });
+      onReady();
+      // Server is awake, redirect to Google OAuth
+      window.location.href = getGoogleAuthUrl();
+      return;
+    } catch (error: any) {
+      // If we get any response (even error), server is likely awake
+      if (error.response) {
+        onReady();
+        window.location.href = getGoogleAuthUrl();
+        return;
+      }
+      // Network error - server still waking up
+      if (attempt < maxAttempts) {
+        await new Promise(resolve => setTimeout(resolve, delayBetweenAttempts));
+      }
+    }
+  }
+
+  // After all attempts, try to redirect anyway
+  onReady();
+  window.location.href = getGoogleAuthUrl();
+};
+
 // Payment APIs
 export const paymentAPI = {
   createOrder: (plan: string) => api.post("/api/v1/payment/create-order", { plan }),

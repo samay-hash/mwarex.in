@@ -13,7 +13,7 @@ import {
   ShieldCheck,
   UserCheck,
 } from "lucide-react";
-import { authAPI, getGoogleAuthUrl } from "@/lib/api";
+import { authAPI, warmAndRedirectToGoogle } from "@/lib/api";
 import { setToken, setUserRole, setUserData } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 import { MWareXLogo } from "@/components/mwarex-logo";
@@ -33,6 +33,56 @@ export default function SignInPage() {
   const [recruiterName, setRecruiterName] = useState("");
   const [recruiterViewAs, setRecruiterViewAs] = useState<"creator" | "editor">("creator");
   const [isRecruiterLoading, setIsRecruiterLoading] = useState(false);
+
+  // Google OAuth Warmup State
+  const [showGoogleLoadingModal, setShowGoogleLoadingModal] = useState(false);
+  const [googleLoadingStatus, setGoogleLoadingStatus] = useState<"warming" | "ready" | "error">("warming");
+  const [googleLoadingMessage, setGoogleLoadingMessage] = useState("Preparing secure connection...");
+
+  // Handle Google Sign In with warmup
+  const handleGoogleSignIn = () => {
+    warmAndRedirectToGoogle(
+      // onWarmingUp
+      () => {
+        setShowGoogleLoadingModal(true);
+        setGoogleLoadingStatus("warming");
+        setGoogleLoadingMessage("Waking up secure servers...");
+
+        // Update messages periodically
+        const messages = [
+          "Waking up secure servers...",
+          "Establishing encrypted connection...",
+          "Preparing authentication...",
+          "Almost ready...",
+          "Connecting to Google...",
+        ];
+        let msgIndex = 0;
+        const interval = setInterval(() => {
+          msgIndex = (msgIndex + 1) % messages.length;
+          setGoogleLoadingMessage(messages[msgIndex]);
+        }, 3000);
+
+        // Store interval ID to clear later
+        (window as any).__googleWarmupInterval = interval;
+      },
+      // onReady
+      () => {
+        setGoogleLoadingStatus("ready");
+        setGoogleLoadingMessage("Redirecting to Google...");
+        if ((window as any).__googleWarmupInterval) {
+          clearInterval((window as any).__googleWarmupInterval);
+        }
+      },
+      // onError
+      (error) => {
+        setGoogleLoadingStatus("error");
+        setGoogleLoadingMessage(error);
+        if ((window as any).__googleWarmupInterval) {
+          clearInterval((window as any).__googleWarmupInterval);
+        }
+      }
+    );
+  };
 
   useEffect(() => {
     setMounted(true);
@@ -333,8 +383,8 @@ export default function SignInPage() {
 
           {/* Google Sign In */}
           <button
-            onClick={() => window.location.href = getGoogleAuthUrl()}
-            className="w-full h-12 bg-secondary hover:bg-muted text-foreground text-sm font-semibold rounded-xl transition-all flex items-center justify-center gap-3 shadow-lg mb-4 border border-border"
+            onClick={handleGoogleSignIn}
+            className="w-full h-12 bg-white dark:bg-secondary hover:bg-gray-50 dark:hover:bg-muted text-foreground text-sm font-semibold rounded-xl transition-all flex items-center justify-center gap-3 shadow-lg mb-4 border border-gray-200 dark:border-border"
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -461,6 +511,118 @@ export default function SignInPage() {
                   Demo mode allows full access to explore the platform. Please note that video uploads and YouTube approval are unavailable because the JWT token for API authentication is not issued in this mode.
                 </p>
               </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Google OAuth Loading Modal */}
+      <AnimatePresence>
+        {showGoogleLoadingModal && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-gradient-to-br from-indigo-900/95 via-purple-900/95 to-violet-900/95 backdrop-blur-xl"
+            />
+
+            <motion.div
+              initial={{ scale: 0.9, y: 20, opacity: 0 }}
+              animate={{ scale: 1, y: 0, opacity: 1 }}
+              exit={{ scale: 0.9, y: 20, opacity: 0 }}
+              className="relative z-10 flex flex-col items-center text-center max-w-md"
+            >
+              {/* Animated Logo/Orb */}
+              <motion.div
+                animate={{
+                  scale: [1, 1.1, 1],
+                  boxShadow: [
+                    "0 0 40px rgba(99,102,241,0.4), 0 0 80px rgba(139,92,246,0.3)",
+                    "0 0 60px rgba(99,102,241,0.6), 0 0 120px rgba(139,92,246,0.5)",
+                    "0 0 40px rgba(99,102,241,0.4), 0 0 80px rgba(139,92,246,0.3)",
+                  ],
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+                className="w-24 h-24 rounded-full bg-gradient-to-br from-indigo-400 via-violet-400 to-purple-500 flex items-center justify-center mb-8"
+              >
+                <MWareXLogo showText={false} size="md" />
+              </motion.div>
+
+              {/* Loading Spinner */}
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{
+                  duration: 1.5,
+                  repeat: Infinity,
+                  ease: "linear",
+                }}
+                className="mb-6"
+              >
+                <Loader2 className="w-8 h-8 text-white/80" />
+              </motion.div>
+
+              {/* Status Text */}
+              <motion.h2
+                key={googleLoadingMessage}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-xl font-semibold text-white mb-2"
+              >
+                {googleLoadingStatus === "warming" && "Connecting..."}
+                {googleLoadingStatus === "ready" && "Ready!"}
+                {googleLoadingStatus === "error" && "Connection Issue"}
+              </motion.h2>
+
+              <motion.p
+                key={googleLoadingMessage + "-sub"}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-white/60 text-sm max-w-xs"
+              >
+                {googleLoadingMessage}
+              </motion.p>
+
+              {/* Progress Dots */}
+              {googleLoadingStatus === "warming" && (
+                <div className="flex gap-2 mt-6">
+                  {[0, 1, 2].map((i) => (
+                    <motion.div
+                      key={i}
+                      animate={{
+                        scale: [1, 1.3, 1],
+                        opacity: [0.3, 1, 0.3],
+                      }}
+                      transition={{
+                        duration: 1,
+                        repeat: Infinity,
+                        delay: i * 0.2,
+                      }}
+                      className="w-2 h-2 rounded-full bg-white/50"
+                    />
+                  ))}
+                </div>
+              )}
+
+              {/* Security Badge */}
+              <div className="mt-8 flex items-center gap-2 text-white/40 text-xs">
+                <ShieldCheck className="w-4 h-4" />
+                <span>Secure connection • Encrypted</span>
+              </div>
+
+              {/* Cancel Button - only show if warming for too long */}
+              {googleLoadingStatus === "error" && (
+                <button
+                  onClick={() => setShowGoogleLoadingModal(false)}
+                  className="mt-6 px-6 py-2 bg-white/10 hover:bg-white/20 text-white text-sm rounded-lg transition-all"
+                >
+                  Cancel
+                </button>
+              )}
             </motion.div>
           </div>
         )}

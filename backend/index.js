@@ -107,6 +107,16 @@ app.get("/health", (req, res) => {
   });
 });
 
+// Health check for API v1 (used by frontend warmup)
+app.get("/api/v1/health", (req, res) => {
+  res.status(200).json({
+    status: "ok",
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    version: "1.0.0"
+  });
+});
+
 // Also add /ping as an alias
 app.get("/ping", (req, res) => {
   res.status(200).send("pong");
