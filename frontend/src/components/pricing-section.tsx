@@ -368,7 +368,7 @@ export function PricingSection() {
                                         transition: { type: "spring", stiffness: 300, damping: 20 }
                                     }}
                                     className={cn(
-                                        "relative rounded-3xl transition-all duration-300 flex flex-col h-full group w-full max-w-[380px] bg-card border border-border overflow-hidden",
+                                        "relative rounded-3xl transition-all duration-300 flex flex-col h-full group w-full md:max-w-[380px] bg-card border border-border overflow-hidden",
                                         isPopular ? "shadow-2xl shadow-primary/20" : "shadow-lg hover:shadow-xl hover:shadow-primary/5"
                                     )}
                                 >

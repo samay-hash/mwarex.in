@@ -89,6 +89,7 @@
   body {
     @apply bg-transparent text-foreground antialiased;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    overflow-x: hidden;
   }
 
   /* Ensure proper color inheritance for all elements */

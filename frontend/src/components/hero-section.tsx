@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { CinematicText } from "@/components/cinematic-text";
+import { BlurReveal } from "@/components/blur-reveal";
 import { HeroVideo } from "@/components/hero-video";
 
 export function HeroSection() {
@@ -27,8 +27,8 @@ export function HeroSection() {
                 />
 
                 {/* Gradient Orbs - Reduced blur on mobile, enabled hardware acceleration */}
-                <div className="absolute top-0 right-0 w-[300px] md:w-[600px] h-[300px] md:h-[600px] bg-gradient-to-br from-violet-500/10 to-indigo-500/10 rounded-full blur-[60px] md:blur-[120px] translate-x-1/3 -translate-y-1/4" style={{ willChange: 'transform', transform: 'translateZ(0)' }} />
-                <div className="absolute bottom-0 left-0 w-[250px] md:w-[500px] h-[250px] md:h-[500px] bg-gradient-to-tr from-blue-500/10 to-cyan-500/10 rounded-full blur-[50px] md:blur-[100px] -translate-x-1/4 translate-y-1/4" style={{ willChange: 'transform', transform: 'translateZ(0)' }} />
+                <div className="absolute top-0 right-0 w-[300px] md:w-[600px] h-[300px] md:h-[600px] bg-gradient-to-br from-violet-500/10 to-indigo-500/10 rounded-full blur-[40px] md:blur-[80px] translate-x-1/3 -translate-y-1/4" style={{ willChange: 'transform', transform: 'translateZ(0)' }} />
+                <div className="absolute bottom-0 left-0 w-[250px] md:w-[500px] h-[250px] md:h-[500px] bg-gradient-to-tr from-blue-500/10 to-cyan-500/10 rounded-full blur-[30px] md:blur-[60px] -translate-x-1/4 translate-y-1/4" style={{ willChange: 'transform', transform: 'translateZ(0)' }} />
                 {/* Central orb removed on mobile to save resources, added back on desktop */}
                 <div className="hidden md:block absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-radial from-primary/5 to-transparent rounded-full" style={{ willChange: 'transform', transform: 'translateZ(0)' }} />
             </div>
@@ -37,7 +37,7 @@ export function HeroSection() {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
 
                     {/* Left Column: Content */}
-                    <div className="flex flex-col items-start text-left order-2 lg:order-1 relative z-30">
+                    <div className="flex flex-col items-start text-left order-1 lg:order-1 relative z-30">
                         {/* Announcement Badge */}
                         <motion.div
                             initial={{ opacity: 0, y: -20 }}
@@ -54,10 +54,9 @@ export function HeroSection() {
 
                         {/* Main Heading with CinematicText */}
                         <div className="mb-6 max-w-3xl">
-                            <h1 className="text-5xl lg:text-[5.5rem] font-bold tracking-tighter text-foreground leading-[1.05]">
-                                <CinematicText
+                            <h1 className="text-4xl md:text-5xl lg:text-[5.5rem] font-bold tracking-tighter text-foreground leading-[1.05]">
+                                <BlurReveal
                                     text="Simplify your creator workflow"
-                                    delay={0.2}
                                     className="justify-start"
                                 />
                             </h1>
@@ -70,7 +69,7 @@ export function HeroSection() {
                             transition={{ duration: 0.7, delay: 0.3 }}
                             className="text-lg text-muted-foreground max-w-lg mb-8 leading-normal font-normal"
                         >
-                            The professional operating system for creators and editing teams. Align, approve, and publish faster—without the chaos.
+                            India’s First Scalable Web Platform designed to solve real-world creator and editor problems by connecting, managing, and simplifying the entire content workflow.
                         </motion.p>
 
                         {/* CTA Buttons */}
@@ -99,10 +98,10 @@ export function HeroSection() {
                         >
                             <div className="flex -space-x-2">
                                 {[
-                                   'bg-gradient-to-br from-orange-400 to-orange-600', 
-                                   'bg-gradient-to-br from-slate-50 to-gray-200',       
-                                   'bg-gradient-to-br from-green-500 to-emerald-800',         
-                                   
+                                    'bg-gradient-to-br from-orange-400 to-orange-600',
+                                    'bg-gradient-to-br from-slate-50 to-gray-200',
+                                    'bg-gradient-to-br from-green-500 to-emerald-800',
+
                                 ].map((gradient, i) => (
                                     <div
                                         key={i}
@@ -119,7 +118,7 @@ export function HeroSection() {
                         initial={{ opacity: 0, scale: 0.95, x: 20 }}
                         animate={{ opacity: 1, scale: 1, x: 0 }}
                         transition={{ duration: 0.8, delay: 0.5 }}
-                        className="w-full relative z-20 order-1 lg:order-2 flex justify-center lg:justify-end"
+                        className="w-full relative z-20 order-2 lg:order-2 flex justify-center lg:justify-end"
                     >
                         {/* Wrapper to constrain size as requested ("small") */}
                         <div className="w-full max-w-lg lg:max-w-none xl:max-w-xl 2xl:max-w-2xl transform hover:scale-[1.02] transition-transform duration-500">

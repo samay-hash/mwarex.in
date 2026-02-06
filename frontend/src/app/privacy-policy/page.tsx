@@ -104,7 +104,7 @@ export default function PrivacyPolicy() {
               Access to user data is restricted to authorized services only.
             </li>
             <li>
-              We do not sell, rent, or share user data with third parties.
+              We do not sell, rent, or share user data with third parties
             </li>
             <li>
               OAuth access tokens are securely stored and used only for the

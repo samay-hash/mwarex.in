@@ -50,7 +50,8 @@ export const PricingCarousel = ({
     display: flex;
     justify-content: center;
     height: auto; /* Let content dictate height */
-    width: 320px; /* Base width for mobile slides */
+    width: 85vw; /* Responsive width for mobile */
+    max-width: 340px;
   }
 
   /* Responsive width for larger screens if this is ever used elsewhere, 

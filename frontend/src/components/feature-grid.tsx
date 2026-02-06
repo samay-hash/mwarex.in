@@ -70,7 +70,7 @@ export function FeatureGrid() {
                 </div>
 
                 {/* Cross Layout Container */}
-                <div className="relative w-full max-w-4xl mx-auto min-h-[600px] flex items-center justify-center">
+                <div className="relative w-full max-w-4xl mx-auto md:min-h-[600px] flex flex-col md:flex-row items-center justify-center">
 
                     {/* Center Core Visual */}
                     <motion.div
@@ -121,7 +121,7 @@ export function FeatureGrid() {
                     })}
 
                     {/* Mobile View: Simple Grid */}
-                    <div className="md:hidden grid grid-cols-1 gap-6 w-full pt-32">
+                    <div className="md:hidden grid grid-cols-1 gap-6 w-full pt-12">
                         {features.map((feature) => (
                             <div key={feature.title} className="flex flex-col items-center text-center p-6 rounded-2xl border border-border bg-card/80">
                                 <feature.icon className="w-8 h-8 text-primary mb-4" />

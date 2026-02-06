@@ -29,7 +29,7 @@ export default function LandingPage() {
             <p className="text-sm font-semibold text-muted-foreground uppercase tracking-widest mb-8">
               Trusted by the best.
             </p>
-            <div className="flex flex-wrap justify-center items-center gap-12 md:gap-24 opacity-60 hover:opacity-100 transition-all duration-500">
+            <div className="flex flex-wrap justify-center items-center gap-6 md:gap-12 opacity-60 hover:opacity-100 transition-all duration-500">
               {/* Simple text logos for now since we don't have SVGs, styled to look like logos */}
               <span className="text-xl font-bold font-serif text-foreground">Acme.Corp</span>
               <span className="text-xl font-bold font-mono text-foreground">Vortex</span>
@@ -58,7 +58,8 @@ export default function LandingPage() {
             <motion.div
               animate={{ x: ["-100%", "200%"] }}
               transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-              className="absolute top-0 left-0 w-1/3 h-full bg-gradient-to-r from-transparent via-white/5 to-transparent skew-x-12 blur-3xl opacity-30"
+              className="absolute top-0 left-0 w-1/3 h-full bg-gradient-to-r from-transparent via-white/5 to-transparent skew-x-12 blur-xl opacity-20"
+              style={{ willChange: 'transform' }}
             />
 
             {/* Faint Grid Parallax */}

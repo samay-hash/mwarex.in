@@ -167,7 +167,7 @@ export const HeroVideo = () => {
                     opacity.set(0);
                 }}
                 onClick={() => setShowVideoPopOver(true)}
-                className="w-full max-w-4xl aspect-video rounded-3xl overflow-hidden cursor-none relative border border-white/10 shadow-2xl bg-black group"
+                className="w-full max-w-4xl aspect-video rounded-3xl overflow-hidden cursor-none relative border border-white/10 shadow-[0_0_40px_rgba(255,255,255,0.1)] bg-black group"
             >
                 <motion.div
                     style={{ x, y, opacity }}
