@@ -39,26 +39,23 @@ export const PricingCarousel = ({
     const css = `
   .PricingCarouselSwiper {
     width: 100%;
-    /* Allow height to be determined by content, but giving a min-height for safety */
-    min-height: 500px; 
-    padding-bottom: 50px !important;
+    min-height: 420px; 
+    padding-bottom: 40px !important;
     padding-top: 20px !important;
   }
   
-  /* Make slides equal height if possible, or center them */
+  /* Make slides square-ish for premium look */
   .PricingCarouselSwiper .swiper-slide {
     display: flex;
     justify-content: center;
-    height: auto; /* Let content dictate height */
-    width: 85vw; /* Responsive width for mobile */
+    height: auto;
+    width: 85vw;
     max-width: 340px;
   }
 
-  /* Responsive width for larger screens if this is ever used elsewhere, 
-     but for this pricing carousel we likely want a specific card width */
   @media (min-width: 640px) {
     .PricingCarouselSwiper .swiper-slide {
-      width: 380px; 
+      width: 340px; 
     }
   }
 

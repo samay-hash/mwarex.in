@@ -55,10 +55,23 @@ export function HeroSection() {
                         {/* Main Heading with CinematicText */}
                         <div className="mb-6 max-w-3xl">
                             <h1 className="text-4xl md:text-5xl lg:text-[5.5rem] font-bold tracking-tighter text-foreground leading-[1.05]">
-                                <BlurReveal
-                                    text="Simplify your creator workflow"
-                                    className="justify-start"
-                                />
+                                <div className="flex flex-col items-start gap-1">
+                                    <BlurReveal
+                                        text="Simplify"
+                                        className="text-foreground dark:text-[#E5E7EB]"
+                                        delay={0.1}
+                                    />
+                                    <BlurReveal
+                                        text="your creator"
+                                        className="text-[#7C3AED] dark:text-[#A78BFA]"
+                                        delay={0.3}
+                                    />
+                                    <BlurReveal
+                                        text="workflow"
+                                        className="text-[#6366F1] dark:text-[#E6E6FA]"
+                                        delay={0.5}
+                                    />
+                                </div>
                             </h1>
                         </div>
 

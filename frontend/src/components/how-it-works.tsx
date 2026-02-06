@@ -125,9 +125,14 @@ export function HowItWorks() {
 
                     {/* Animated Progress Line - Scroll Based Only */}
                     <motion.div
-                        className="absolute left-6 md:left-1/2 top-0 w-[2px] md:-translate-x-1/2 bg-gradient-to-b from-primary via-violet-500 to-primary rounded-full"
+                        className="absolute left-6 md:left-1/2 top-0 w-[2px] md:-translate-x-1/2 rounded-full overflow-hidden"
                         style={{ height: lineHeight }}
-                    />
+                    >
+                        {/* Glowing animated line */}
+                        <div className="w-full h-full bg-gradient-to-b from-primary via-violet-500 to-primary relative">
+                            <div className="absolute inset-0 bg-gradient-to-b from-primary via-violet-500 to-primary blur-sm" />
+                        </div>
+                    </motion.div>
 
                     {/* Steps */}
                     <div className="space-y-16 md:space-y-24">
@@ -146,14 +151,59 @@ export function HowItWorks() {
                                         isEven ? "md:flex-row" : "md:flex-row-reverse"
                                     )}
                                 >
-                                    {/* Timeline Node */}
+                                    {/* Horizontal Connector Line - From Node to Card */}
+                                    <div
+                                        className={cn(
+                                            "hidden md:block absolute top-1/2 -translate-y-1/2 h-[2px] z-10",
+                                            isEven
+                                                ? "left-[calc(50%+24px)] right-[calc(50%+60px)]"
+                                                : "right-[calc(50%+24px)] left-[calc(50%+60px)]"
+                                        )}
+                                    >
+                                        {/* Glowing line effect */}
+                                        <div className={cn(
+                                            "absolute inset-0 rounded-full",
+                                            `bg-gradient-to-${isEven ? 'l' : 'r'} ${step.color}`
+                                        )} />
+                                        <div className={cn(
+                                            "absolute inset-0 rounded-full blur-sm opacity-50",
+                                            `bg-gradient-to-${isEven ? 'l' : 'r'} ${step.color}`
+                                        )} />
+                                    </div>
+
+                                    {/* Timeline Node - Enhanced with Glow */}
                                     <div
                                         className={cn(
                                             "absolute left-6 md:left-1/2 w-12 h-12 -translate-x-1/2 rounded-full flex items-center justify-center z-20",
                                             `bg-gradient-to-br ${step.color}`
                                         )}
                                     >
-                                        <step.icon className="w-5 h-5 text-white" />
+                                        {/* Outer glow ring */}
+                                        <div className={cn(
+                                            "absolute inset-[-4px] rounded-full blur-md opacity-40",
+                                            `bg-gradient-to-br ${step.color}`
+                                        )} />
+                                        {/* Pulse animation ring */}
+                                        <motion.div
+                                            className={cn(
+                                                "absolute inset-[-2px] rounded-full border-2 opacity-50",
+                                                step.color.includes("blue") ? "border-blue-400" :
+                                                    step.color.includes("violet") ? "border-violet-400" :
+                                                        step.color.includes("orange") ? "border-orange-400" :
+                                                            step.color.includes("red") ? "border-red-400" :
+                                                                "border-green-400"
+                                            )}
+                                            animate={{
+                                                scale: [1, 1.2, 1],
+                                                opacity: [0.5, 0, 0.5]
+                                            }}
+                                            transition={{
+                                                duration: 2,
+                                                repeat: Infinity,
+                                                ease: "easeInOut"
+                                            }}
+                                        />
+                                        <step.icon className="w-5 h-5 text-white relative z-10" />
                                     </div>
 
                                     {/* Content Card */}
@@ -161,7 +211,7 @@ export function HowItWorks() {
                                         "pl-20 md:pl-0 w-full md:w-[calc(50%-60px)]",
                                         isEven ? "md:pr-8" : "md:pl-8"
                                     )}>
-                                        <div className="p-6 md:p-8 rounded-2xl border border-border bg-card/80 backdrop-blur-sm hover:border-primary/20 hover:shadow-lg transition-all">
+                                        <div className="p-6 md:p-8 rounded-2xl border border-border bg-card/80 backdrop-blur-sm hover:border-primary/20 hover:shadow-lg hover:shadow-primary/5 transition-all group">
                                             {/* Step Number & Badge */}
                                             <div className={cn(
                                                 "flex items-center gap-3 mb-4",

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Check, Zap, Crown, Shield, Loader2 } from "lucide-react";
+import { Check, Zap, Crown, Shield, Loader2, Users, Upload } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { paymentAPI, RAZORPAY_KEY_ID } from "@/lib/api";
@@ -240,9 +240,10 @@ export function PricingSection() {
     };
 
     return (
-        <section className="relative py-32 px-6 overflow-hidden z-10 bg-background" id="pricing">
-            {/* Enhanced Background */}
-            <div className="absolute inset-0">
+        <section className="relative py-32 px-6 overflow-hidden z-10 bg-transparent dark:bg-background" id="pricing">
+
+            {/* Dark Mode Background Effects */}
+            <div className="absolute inset-0 hidden dark:block">
                 {/* Subtle Grid */}
                 <div
                     className="absolute inset-0 opacity-[0.03]"
@@ -346,12 +347,11 @@ export function PricingSection() {
                     </motion.div>
                 </div>
 
-                {/* Pricing Cards Carousel */}
+                {/* Pricing Cards - New Design */}
                 <div className="w-full">
-                    <PricingCarousel>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
                         {pricingPlans.map((plan, index) => {
                             const isPopular = plan.popular;
-                            const isHovered = hoveredPlan === plan.name;
                             const isLoading = loadingPlan === plan.planId;
                             const displayPrice = billingCycle === "yearly"
                                 ? Math.round(parseInt(plan.priceInr) * 0.8)
@@ -360,133 +360,162 @@ export function PricingSection() {
                             return (
                                 <motion.div
                                     key={plan.name}
-                                    onMouseEnter={() => setHoveredPlan(plan.name)}
-                                    onMouseLeave={() => setHoveredPlan(null)}
-                                    whileHover={{
-                                        y: -12,
-                                        scale: 1.03,
-                                        transition: { type: "spring", stiffness: 300, damping: 20 }
-                                    }}
+                                    initial={{ opacity: 0, y: 30 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true }}
+                                    transition={{ duration: 0.5, delay: index * 0.1 }}
                                     className={cn(
-                                        "relative rounded-3xl transition-all duration-300 flex flex-col h-full group w-full md:max-w-[380px] bg-card border border-border overflow-hidden",
-                                        isPopular ? "shadow-2xl shadow-primary/20" : "shadow-lg hover:shadow-xl hover:shadow-primary/5"
+                                        "relative rounded-2xl overflow-hidden group",
+                                        "bg-card/80 dark:bg-zinc-900/80 backdrop-blur-xl",
+                                        "border border-border/50 dark:border-white/10",
+                                        isPopular && "ring-1 ring-primary/50 dark:ring-orange-500/30"
                                     )}
                                 >
-                                    {/* Hover Shine Effect */}
-                                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-0">
-                                        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/5" />
+                                    {/* Decorative Gradient Shapes */}
+                                    <div className="absolute top-0 right-0 w-32 h-32 opacity-30 pointer-events-none">
+                                        <div className={cn(
+                                            "absolute top-4 right-4 w-20 h-20 rounded-full blur-xl",
+                                            plan.planId === "free" ? "bg-cyan-500/40" :
+                                                plan.planId === "pro" ? "bg-orange-500/40" :
+                                                    "bg-violet-500/40"
+                                        )} />
+                                        <div className={cn(
+                                            "absolute top-8 right-8 w-12 h-12 rounded-full blur-lg",
+                                            plan.planId === "free" ? "bg-teal-400/50" :
+                                                plan.planId === "pro" ? "bg-rose-400/50" :
+                                                    "bg-purple-400/50"
+                                        )} />
                                     </div>
-
-                                    {/* Glass Swipe Effect */}
-                                    <div className="absolute inset-0 -translate-x-[150%] skew-x-12 group-hover:animate-shine bg-gradient-to-r from-transparent via-white/10 dark:via-white/5 to-transparent z-10 pointer-events-none" />
-
-                                    {/* Gradient Border Effect */}
-                                    <div className={cn(
-                                        "absolute inset-0 pointer-events-none transition-opacity duration-500 rounded-3xl z-0",
-                                        isPopular
-                                            ? "opacity-100 bg-gradient-to-b from-primary/20 via-transparent to-transparent"
-                                            : "opacity-0 group-hover:opacity-100 bg-gradient-to-b from-foreground/5 via-transparent to-transparent"
-                                    )} />
 
                                     {/* Popular Badge */}
                                     {isPopular && (
-                                        <div className="absolute top-0 inset-x-0 flex justify-center -translate-y-1/2 z-20">
-                                            <span className="px-4 py-1.5 bg-primary text-primary-foreground text-xs font-bold rounded-full shadow-lg shadow-primary/30 uppercase tracking-widest border-2 border-background">
-                                                Most Popular
+                                        <div className="absolute top-4 right-4 z-10">
+                                            <span className="px-3 py-1 text-[10px] font-semibold uppercase tracking-wider rounded-full bg-zinc-800 dark:bg-white/10 text-foreground border border-border/50 dark:border-white/20">
+                                                Most popular
                                             </span>
                                         </div>
                                     )}
 
-                                    {/* Card Content */}
-                                    <div className={cn(
-                                        "relative z-10 flex flex-col h-full p-8",
-                                        isPopular && "pt-12"
-                                    )}>
-                                        {/* Header */}
-                                        <div className="mb-8 text-center relative">
-                                            {/* Icon Background Glow */}
-                                            <div className={cn(
-                                                "absolute inset-0 bg-gradient-to-b from-current to-transparent opacity-0 group-hover:opacity-10 transition-opacity duration-500 blur-2xl",
-                                                plan.iconColor
-                                            )} />
-
-                                            <div className={cn(
-                                                "w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-inner relative z-10 transform group-hover:scale-110 transition-transform duration-300",
-                                                plan.iconBg
-                                            )}>
-                                                <plan.icon className={cn("w-7 h-7", plan.iconColor)} />
-                                            </div>
-                                            <h3 className="text-2xl font-bold text-foreground mb-2 group-hover:text-primary transition-colors duration-300">{plan.name}</h3>
-                                            <p className="text-sm text-muted-foreground leading-relaxed">
-                                                {plan.description}
-                                            </p>
+                                    <div className="p-6 relative z-10">
+                                        {/* Icon */}
+                                        <div className={cn(
+                                            "w-10 h-10 rounded-xl flex items-center justify-center mb-5",
+                                            plan.planId === "free" ? "bg-cyan-500/20 text-cyan-500" :
+                                                plan.planId === "pro" ? "bg-orange-500/20 text-orange-500" :
+                                                    "bg-violet-500/20 text-violet-500"
+                                        )}>
+                                            <plan.icon className="w-5 h-5" />
                                         </div>
+
+                                        {/* Plan Name */}
+                                        <h3 className="text-xl font-bold text-foreground mb-1">
+                                            {plan.name}
+                                        </h3>
+
+                                        {/* Description */}
+                                        <p className="text-xs text-muted-foreground mb-5 leading-relaxed">
+                                            {plan.description}
+                                        </p>
 
                                         {/* Price */}
-                                        <div className="mb-8 text-center bg-secondary/30 rounded-2xl p-4 border border-border/50 backdrop-blur-sm group-hover:border-primary/20 transition-colors duration-300">
+                                        <div className="mb-5">
                                             {plan.price === "0" ? (
-                                                <div className="flex items-center justify-center">
-                                                    <span className="text-4xl font-black text-foreground tracking-tight">
-                                                        Free
-                                                    </span>
+                                                <div className="flex items-baseline gap-1">
+                                                    <span className="text-3xl font-bold text-foreground">Free</span>
                                                 </div>
                                             ) : (
-                                                <div className="flex items-center justify-center items-baseline gap-1">
-                                                    <span className="text-4xl font-black text-foreground tracking-tight">
-                                                        ₹{displayPrice}
-                                                    </span>
-                                                    <span className="text-muted-foreground text-sm font-medium">/mo</span>
+                                                <div className="flex items-baseline gap-1">
+                                                    <span className="text-3xl font-bold text-foreground">₹{displayPrice}</span>
+                                                    <span className="text-sm text-muted-foreground">/month</span>
                                                 </div>
-                                            )}
-                                            {billingCycle === "yearly" && plan.price !== "0" && (
-                                                <p className="text-xs text-emerald-500 font-medium mt-1">
-                                                    Billed yearly (Save 20%)
-                                                </p>
                                             )}
                                         </div>
 
-                                        {/* Features */}
-                                        <ul className="space-y-4 flex-1 mb-8">
-                                            {plan.features.map((feature) => (
-                                                <li key={feature} className="flex items-start gap-3 text-sm text-muted-foreground">
-                                                    <div className={cn(
-                                                        "w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5 transition-colors duration-300",
-                                                        isPopular || isHovered ? "bg-primary/20 text-primary" : "bg-emerald-500/10 text-emerald-500"
-                                                    )}>
-                                                        <Check className="w-3 h-3 stroke-[3]" />
-                                                    </div>
-                                                    <span className="group-hover:text-foreground transition-colors duration-300">{feature}</span>
-                                                </li>
-                                            ))}
-                                        </ul>
-
-                                        {/* Button */}
+                                        {/* CTA Button */}
                                         <button
                                             onClick={() => handleSelectPlan(plan)}
                                             disabled={isLoading || loadingPlan !== null}
                                             className={cn(
-                                                "w-full py-4 rounded-xl font-bold text-sm transition-all duration-300 relative overflow-hidden group/btn shadow-md hover:shadow-xl active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed",
+                                                "w-full py-3 rounded-xl font-semibold text-sm transition-all duration-300 mb-6",
+                                                "disabled:opacity-50 disabled:cursor-not-allowed",
                                                 isPopular
-                                                    ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                                                    : "bg-background border-2 border-border hover:border-primary/50 text-foreground"
+                                                    ? "bg-gradient-to-r from-orange-500 to-rose-500 text-white hover:from-orange-600 hover:to-rose-600 shadow-lg shadow-orange-500/20"
+                                                    : "bg-transparent border border-border dark:border-white/20 text-foreground hover:bg-muted/50 dark:hover:bg-white/5"
                                             )}
                                         >
-                                            <span className="relative z-10 flex items-center justify-center gap-2 group-hover/btn:scale-105 transition-transform">
-                                                {isLoading ? (
-                                                    <Loader2 className="w-4 h-4 animate-spin" />
-                                                ) : (
-                                                    <>
-                                                        {plan.buttonText}
-                                                        {isPopular && <Zap className="w-4 h-4 fill-current" />}
-                                                    </>
-                                                )}
-                                            </span>
+                                            {isLoading ? (
+                                                <Loader2 className="w-4 h-4 animate-spin mx-auto" />
+                                            ) : (
+                                                plan.buttonText
+                                            )}
                                         </button>
+
+                                        {/* Key Stats */}
+                                        <div className="space-y-2 mb-5">
+                                            <div className="flex items-center gap-2 text-sm">
+                                                <div className="w-5 h-5 rounded-full bg-muted/50 dark:bg-white/5 flex items-center justify-center">
+                                                    <Users className="w-3 h-3 text-muted-foreground" />
+                                                </div>
+                                                <span className="text-muted-foreground">
+                                                    <span className="text-foreground font-medium">
+                                                        {plan.planId === "free" ? "1" : plan.planId === "pro" ? "5" : "Unlimited"}
+                                                    </span>
+                                                    {" "}editors included
+                                                </span>
+                                            </div>
+                                            <div className="flex items-center gap-2 text-sm">
+                                                <div className="w-5 h-5 rounded-full bg-muted/50 dark:bg-white/5 flex items-center justify-center">
+                                                    <Upload className="w-3 h-3 text-muted-foreground" />
+                                                </div>
+                                                <span className="text-muted-foreground">
+                                                    <span className="text-foreground font-medium">
+                                                        {plan.planId === "free" ? "2GB" : plan.planId === "pro" ? "50GB" : "Unlimited"}
+                                                    </span>
+                                                    {" "}storage
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        {/* Divider */}
+                                        {isPopular && (
+                                            <div className="flex items-center gap-3 mb-4">
+                                                <div className="flex-1 h-px bg-border dark:bg-white/10" />
+                                                <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                                                    {plan.name} Features
+                                                </span>
+                                                <div className="flex-1 h-px bg-border dark:bg-white/10" />
+                                            </div>
+                                        )}
+
+                                        {/* Features List */}
+                                        <ul className="space-y-2.5">
+                                            {plan.features.slice(0, isPopular ? 6 : 4).map((feature, idx) => (
+                                                <li key={idx} className="flex items-center gap-2.5 text-sm">
+                                                    <div className={cn(
+                                                        "w-4 h-4 rounded-full flex items-center justify-center",
+                                                        isPopular
+                                                            ? "bg-orange-500/20 text-orange-500"
+                                                            : "bg-muted/50 dark:bg-white/10 text-muted-foreground"
+                                                    )}>
+                                                        <Check className="w-2.5 h-2.5 stroke-[3]" />
+                                                    </div>
+                                                    <span className="text-muted-foreground group-hover:text-foreground transition-colors">
+                                                        {feature}
+                                                    </span>
+                                                    {/* AI Badge for special features */}
+                                                    {feature.toLowerCase().includes("automatic") && (
+                                                        <span className="px-1.5 py-0.5 text-[9px] font-medium rounded bg-muted/50 dark:bg-white/10 text-muted-foreground border border-border/50 dark:border-white/10">
+                                                            ✦ AI-based
+                                                        </span>
+                                                    )}
+                                                </li>
+                                            ))}
+                                        </ul>
                                     </div>
                                 </motion.div>
                             );
                         })}
-                    </PricingCarousel>
+                    </div>
                 </div>
 
                 {/* Secure Payment Badge */}
