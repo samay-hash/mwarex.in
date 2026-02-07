@@ -517,111 +517,136 @@ export default function SignInPage() {
       </AnimatePresence>
 
       {/* Google OAuth Loading Modal */}
+      {/* Google OAuth Loading Modal - Premium Design */}
       <AnimatePresence>
         {showGoogleLoadingModal && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            {/* Ultra-Dark Backdrop with exquisite blur */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-gradient-to-br from-indigo-900/95 via-purple-900/95 to-violet-900/95 backdrop-blur-xl"
+              transition={{ duration: 0.5 }}
+              className="absolute inset-0 bg-[#050505]/90 backdrop-blur-3xl"
             />
 
             <motion.div
-              initial={{ scale: 0.9, y: 20, opacity: 0 }}
-              animate={{ scale: 1, y: 0, opacity: 1 }}
-              exit={{ scale: 0.9, y: 20, opacity: 0 }}
-              className="relative z-10 flex flex-col items-center text-center max-w-md"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0, filter: "blur(10px)" }}
+              transition={{ type: "spring", damping: 20, stiffness: 100 }}
+              className="relative z-10 flex flex-col items-center justify-center w-full max-w-sm"
             >
-              {/* Animated Logo/Orb */}
-              <motion.div
-                animate={{
-                  scale: [1, 1.1, 1],
-                  boxShadow: [
-                    "0 0 40px rgba(99,102,241,0.4), 0 0 80px rgba(139,92,246,0.3)",
-                    "0 0 60px rgba(99,102,241,0.6), 0 0 120px rgba(139,92,246,0.5)",
-                    "0 0 40px rgba(99,102,241,0.4), 0 0 80px rgba(139,92,246,0.3)",
-                  ],
-                }}
-                transition={{
-                  duration: 2,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                }}
-                className="w-24 h-24 rounded-full bg-gradient-to-br from-indigo-400 via-violet-400 to-purple-500 flex items-center justify-center mb-8"
-              >
-                <MWareXLogo showText={false} size="md" />
-              </motion.div>
+              {/* Central Premium Loader */}
+              <div className="relative w-32 h-32 mb-10 flex items-center justify-center">
+                {/* Outer Glow Ring - Ambient */}
+                <motion.div
+                  animate={{ opacity: [0.3, 0.6, 0.3] }}
+                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                  className="absolute inset-0 rounded-full bg-indigo-500/20 blur-3xl"
+                />
 
-              {/* Loading Spinner */}
-              <motion.div
-                animate={{ rotate: 360 }}
-                transition={{
-                  duration: 1.5,
-                  repeat: Infinity,
-                  ease: "linear",
-                }}
-                className="mb-6"
-              >
-                <Loader2 className="w-8 h-8 text-white/80" />
-              </motion.div>
+                {/* Track Ring (Static Thin) */}
+                <div className="absolute inset-0 rounded-full border border-white/5" />
 
-              {/* Status Text */}
-              <motion.h2
-                key={googleLoadingMessage}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="text-xl font-semibold text-white mb-2"
-              >
-                {googleLoadingStatus === "warming" && "Connecting..."}
-                {googleLoadingStatus === "ready" && "Ready!"}
-                {googleLoadingStatus === "error" && "Connection Issue"}
-              </motion.h2>
+                {/* Spinning Gradient Ring 1 */}
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+                  className="absolute inset-0 rounded-full border-t border-r border-indigo-500/50"
+                  style={{ boxShadow: "0 0 15px rgba(99, 102, 241, 0.3)" }}
+                />
 
-              <motion.p
-                key={googleLoadingMessage + "-sub"}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="text-white/60 text-sm max-w-xs"
-              >
-                {googleLoadingMessage}
-              </motion.p>
+                {/* Spinning Gradient Ring 2 (Counter-Rotating) */}
+                <motion.div
+                  animate={{ rotate: -360 }}
+                  transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+                  className="absolute inset-2 rounded-full border-b border-l border-purple-500/50"
+                />
 
-              {/* Progress Dots */}
-              {googleLoadingStatus === "warming" && (
-                <div className="flex gap-2 mt-6">
-                  {[0, 1, 2].map((i) => (
+                {/* Logo Container */}
+                <div className="relative z-10 w-16 h-16 rounded-2xl bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center shadow-2xl">
+                  {googleLoadingStatus === "ready" ? (
                     <motion.div
-                      key={i}
+                      initial={{ scale: 0, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      className="text-emerald-400"
+                    >
+                      <ShieldCheck className="w-8 h-8" />
+                    </motion.div>
+                  ) : (
+                    <motion.div
                       animate={{
-                        scale: [1, 1.3, 1],
-                        opacity: [0.3, 1, 0.3],
+                        scale: [1, 1.05, 1],
+                        filter: ["brightness(1)", "brightness(1.2)", "brightness(1)"]
                       }}
-                      transition={{
-                        duration: 1,
-                        repeat: Infinity,
-                        delay: i * 0.2,
-                      }}
-                      className="w-2 h-2 rounded-full bg-white/50"
-                    />
-                  ))}
+                      transition={{ duration: 2, repeat: Infinity }}
+                    >
+                      <MWareXLogo showText={false} size="sm" />
+                    </motion.div>
+                  )}
                 </div>
-              )}
-
-              {/* Security Badge */}
-              <div className="mt-8 flex items-center gap-2 text-white/40 text-xs">
-                <ShieldCheck className="w-4 h-4" />
-                <span>Secure connection • Encrypted</span>
               </div>
 
-              {/* Cancel Button - only show if warming for too long */}
-              {googleLoadingStatus === "error" && (
-                <button
-                  onClick={() => setShowGoogleLoadingModal(false)}
-                  className="mt-6 px-6 py-2 bg-white/10 hover:bg-white/20 text-white text-sm rounded-lg transition-all"
+              {/* Status Typography */}
+              <div className="flex flex-col items-center text-center space-y-4">
+                <motion.h2
+                  key={googleLoadingStatus}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-2xl font-light tracking-tight text-white"
                 >
-                  Cancel
-                </button>
+                  {googleLoadingStatus === "warming" && (
+                    <span className="flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse" />
+                      Authenticating
+                    </span>
+                  )}
+                  {googleLoadingStatus === "ready" && (
+                    <span className="text-emerald-400 font-medium">Access Granted</span>
+                  )}
+                  {googleLoadingStatus === "error" && (
+                    <span className="text-red-400">Connection Failed</span>
+                  )}
+                </motion.h2>
+
+                <div className="h-6 overflow-hidden">
+                  <motion.p
+                    key={googleLoadingMessage}
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -15 }}
+                    className="text-sm font-mono text-white/40 tracking-wide uppercase"
+                  >
+                    {googleLoadingMessage}
+                  </motion.p>
+                </div>
+              </div>
+
+              {/* Tech Elements / Decoration */}
+              <div className="mt-12 w-48 h-1 bg-white/5 rounded-full overflow-hidden">
+                <motion.div
+                  initial={{ x: "-100%" }}
+                  animate={{ x: "100%" }}
+                  transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                  className="w-full h-full bg-gradient-to-r from-transparent via-indigo-500 to-transparent opacity-50"
+                />
+              </div>
+
+              <div className="mt-4 flex items-center gap-2 text-[10px] text-white/20 uppercase tracking-[0.2em]">
+                <span>Secure</span> • <span>Encrypted</span> • <span>v2.4</span>
+              </div>
+
+              {/* Cancel Button (Error State) */}
+              {googleLoadingStatus === "error" && (
+                <motion.button
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  onClick={() => setShowGoogleLoadingModal(false)}
+                  className="mt-8 px-6 py-2 bg-white/5 border border-white/10 hover:bg-white/10 text-white/60 text-xs tracking-wider uppercase rounded transition-all"
+                >
+                  Close & Retry
+                </motion.button>
               )}
             </motion.div>
           </div>
