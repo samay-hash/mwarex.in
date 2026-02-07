@@ -47,7 +47,7 @@ export function WorkflowAnimation() {
                     <br />
 
                 </h2>
-                <p className="text-muted-foreground text-lg">who care about security and spee</p>
+                <p className="text-muted-foreground text-lg">who care about security and speed</p>
             </motion.div>
 
             {/* The Connection Layer (SVG) - Zig Zag Path */}
