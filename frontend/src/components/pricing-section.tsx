@@ -391,6 +391,7 @@ export function PricingSection() {
                                     whileInView={{ opacity: 1, y: 0 }}
                                     viewport={{ once: true }}
                                     transition={{ duration: 0.5, delay: index * 0.1 }}
+                                    whileHover={{ y: -12, transition: { type: "spring", stiffness: 300, damping: 20 } }} // Premium Hover Lift
                                     className={cn(
                                         "relative rounded-2xl overflow-hidden group",
                                         "bg-card/80 dark:bg-zinc-900/80 backdrop-blur-xl",
@@ -463,17 +464,24 @@ export function PricingSection() {
                                             onClick={() => handleSelectPlan(plan)}
                                             disabled={isLoading || loadingPlan !== null}
                                             className={cn(
-                                                "w-full py-3 rounded-xl font-semibold text-sm transition-all duration-300 mb-6",
+                                                "relative w-full py-3 rounded-xl font-semibold text-sm transition-all duration-300 mb-6 overflow-hidden group/btn",
                                                 "disabled:opacity-50 disabled:cursor-not-allowed",
-                                                isPopular
+                                                plan.price !== "0"
                                                     ? "bg-gradient-to-r from-orange-500 to-rose-500 text-white hover:from-orange-600 hover:to-rose-600 shadow-lg shadow-orange-500/20"
                                                     : "bg-transparent border border-border dark:border-white/20 text-foreground hover:bg-muted/50 dark:hover:bg-white/5"
                                             )}
                                         >
-                                            {isLoading ? (
-                                                <Loader2 className="w-4 h-4 animate-spin mx-auto" />
-                                            ) : (
-                                                plan.buttonText
+                                            <span className="relative z-10 flex items-center justify-center gap-2">
+                                                {isLoading ? (
+                                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                                ) : (
+                                                    plan.price === "0" ? "Get Started" : "Upgrade Now"
+                                                )}
+                                            </span>
+
+                                            {/* Button Shine Effect - Only for paid plans */}
+                                            {plan.price !== "0" && (
+                                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover/btn:translate-x-[100%] transition-transform duration-1000" />
                                             )}
                                         </button>
 
@@ -482,12 +490,15 @@ export function PricingSection() {
                                             <button
                                                 onClick={() => handleCryptoPayment(plan)}
                                                 disabled={isLoading || loadingPlan !== null}
-                                                className="w-full py-2.5 rounded-xl font-medium text-xs transition-all flex items-center justify-center gap-2 border border-foreground/10 hover:bg-foreground/5 hover:border-foreground/20 text-muted-foreground hover:text-foreground mb-6"
+                                                className="relative w-full py-3 rounded-xl font-medium text-xs transition-all flex items-center justify-center gap-2 border border-orange-500/30 bg-orange-500/5 hover:bg-orange-500/10 text-muted-foreground hover:text-foreground mb-6 group overflow-hidden"
                                             >
-                                                <span className="bg-clip-text text-transparent bg-gradient-to-r from-orange-400 to-yellow-400 font-bold text-sm">
+                                                {/* Subtle Glow Effect */}
+                                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-orange-400/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
+
+                                                <span className="bg-clip-text text-transparent bg-gradient-to-r from-orange-400 to-yellow-400 font-bold text-sm relative z-10">
                                                     ⚡
                                                 </span>
-                                                Pay with Crypto
+                                                <span className="relative z-10">Pay with Crypto</span>
                                             </button>
                                         )}
 

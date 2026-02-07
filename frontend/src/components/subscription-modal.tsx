@@ -247,12 +247,15 @@ export function SubscriptionModal({ isOpen, onClose, currentPlan = "free" }: Sub
                                                     <button
                                                         onClick={() => handleCryptoPayment(plan)}
                                                         disabled={loadingPlan !== null}
-                                                        className="w-full py-2.5 rounded-xl font-medium text-xs transition-all flex items-center justify-center gap-2 border border-white/10 hover:bg-white/5 hover:border-white/20 text-gray-400 hover:text-white"
+                                                        className="relative w-full py-3 rounded-xl font-medium text-xs transition-all flex items-center justify-center gap-2 border border-orange-500/30 bg-orange-500/5 hover:bg-orange-500/10 text-orange-200/80 hover:text-orange-100 group overflow-hidden"
                                                     >
-                                                        <span className="bg-clip-text text-transparent bg-gradient-to-r from-orange-400 to-yellow-400 font-bold">
+                                                        {/* Subtle Glow Effect */}
+                                                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-orange-400/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
+
+                                                        <span className="bg-clip-text text-transparent bg-gradient-to-r from-orange-400 to-yellow-400 font-bold text-sm relative z-10">
                                                             ₿
                                                         </span>
-                                                        Pay via Crypto
+                                                        <span className="relative z-10">Pay via Crypto</span>
                                                     </button>
                                                 )}
                                             </div>
