@@ -6,6 +6,11 @@ const paymentSchema = new mongoose.Schema({
         ref: "User",
         required: true,
     },
+    provider: {
+        type: String,
+        enum: ["razorpay", "coinbase"],
+        default: "razorpay"
+    },
     orderId: {
         type: String,
         required: true,

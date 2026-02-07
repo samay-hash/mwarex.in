@@ -162,6 +162,8 @@ export const paymentAPI = {
   getSubscription: () => api.get("/api/v1/payment/subscription"),
 
   getPaymentHistory: () => api.get("/api/v1/payment/history"),
+
+  createCryptoCharge: (plan: string) => api.post("/api/v1/payment/crypto/create-charge", { plan }),
 };
 
 // Razorpay Key for frontend

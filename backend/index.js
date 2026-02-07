@@ -13,6 +13,7 @@ const editorRoutes = require("./routes/editor");
 const inviteRoutes = require("./routes/invite");
 const settingsRoutes = require("./routes/settings");
 const paymentRoutes = require("./routes/payment");
+const cryptoRoutes = require("./routes/crypto"); // Import crypto routes
 const { verifyConnection } = require("./services/emailService");
 
 const { google } = require("googleapis");
@@ -92,6 +93,7 @@ app.use("/api/v1/ai", aiRoutes);
 app.use("/api/editor", editorRoutes);
 app.use("/api/v1", inviteRoutes);
 app.use("/api/v1/payment", paymentRoutes);
+app.use("/api/v1/payment/crypto", cryptoRoutes); // Use crypto routes
 app.use("/auth", googleAuthRoutes);
 
 // ========================

@@ -196,6 +196,33 @@ export function PricingSection() {
         }
     };
 
+    const handleCryptoPayment = async (plan: typeof pricingPlans[0]) => {
+        // Check authentication
+        if (!isAuthenticated()) {
+            toast.error("Please sign in to upgrade your plan");
+            router.push("/auth/signin");
+            return;
+        }
+
+        setLoadingPlan(plan.planId);
+
+        try {
+            const { data } = await paymentAPI.createCryptoCharge(plan.planId);
+
+            if (data.success && data.hosted_url) {
+                // Redirect to Coinbase Commerce
+                window.location.href = data.hosted_url;
+            } else {
+                toast.error("Failed to initiate crypto payment");
+            }
+        } catch (error: any) {
+            console.error("Crypto payment error:", error);
+            toast.error(error?.response?.data?.message || "Failed to initiate crypto payment");
+        } finally {
+            setLoadingPlan(null);
+        }
+    };
+
     // Animation variants
     const containerVariants = {
         hidden: { opacity: 0 },
@@ -449,6 +476,17 @@ export function PricingSection() {
                                                 plan.buttonText
                                             )}
                                         </button>
+
+                                        {/* Crypto Payment Option - Subtle */}
+                                        {plan.price !== "0" && (
+                                            <button
+                                                onClick={() => handleCryptoPayment(plan)}
+                                                disabled={isLoading || loadingPlan !== null}
+                                                className="w-full text-xs text-muted-foreground hover:text-foreground underline decoration-dotted underline-offset-4 mb-6 transition-colors"
+                                            >
+                                                Pay with Crypto
+                                            </button>
+                                        )}
 
                                         {/* Key Stats */}
                                         <div className="space-y-2 mb-5">
