@@ -3,11 +3,11 @@ import Link from "next/link";
 import Image from "next/image";
 
 export const metadata: Metadata = {
-    title: "Samay Samrat – Founder of Mwarex",
-    description: "Samay Samrat is the founder of Mwarex, India's first scalable middleware platform built to simplify workflows for creators and editors.",
+    title: "Samay Samrat – Founder of Mwarex | YouTuber | Tech & Creator Tools",
+    description: "Samay Samrat is an Indian YouTuber and founder of Mwarex. This channel focuses on technology, creators, startups, and digital workflows.",
     openGraph: {
-        title: "Samay Samrat – Founder of Mwarex",
-        description: "Meet Samay Samrat, the visionary founder behind Mwarex - revolutionizing content collaboration for YouTubers and digital creators.",
+        title: "Samay Samrat – Founder of Mwarex | YouTuber | Tech & Creator Tools",
+        description: "Samay Samrat is an Indian YouTuber and founder of Mwarex. This channel focuses on technology, creators, startups, and digital workflows.",
         url: "https://mwarex.in/founder",
         siteName: "Mwarex",
         type: "profile",
@@ -22,8 +22,8 @@ export const metadata: Metadata = {
     },
     twitter: {
         card: "summary_large_image",
-        title: "Samay Samrat – Founder of Mwarex",
-        description: "Meet Samay Samrat, the visionary founder behind Mwarex.",
+        title: "Samay Samrat – Founder of Mwarex | YouTuber | Tech & Creator Tools",
+        description: "Samay Samrat is an Indian YouTuber and founder of Mwarex.",
         images: ["https://mwarex.in/images/samay-samrat.jpg"],
     },
     alternates: {
@@ -38,7 +38,7 @@ export default function FounderPage() {
         "@type": "Person",
         name: "Samay Samrat",
         image: "https://mwarex.in/images/samay-samrat.jpg",
-        jobTitle: "Founder",
+        jobTitle: "Founder of Mwarex",
         worksFor: {
             "@type": "Organization",
             name: "Mwarex",
@@ -46,9 +46,10 @@ export default function FounderPage() {
         },
         url: "https://mwarex.in/founder",
         sameAs: [
-            "https://twitter.com/samaysamrat",
-            "https://linkedin.com/in/samaysamrat",
+            "https://www.youtube.com/@futxsamay",
+            "https://twitter.com/ChemistGamer1",
             "https://github.com/samay-hash",
+            "https://www.instagram.com/chemist.gamer"
         ],
     };
 
@@ -89,12 +90,18 @@ export default function FounderPage() {
                         {/* Hero Section */}
                         <header className="space-y-6">
                             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-foreground via-foreground to-foreground/70">
-                                Samay Samrat – Founder & Creator of Mwarex
+                                Samay Samrat
                             </h1>
 
-                            <p className="text-xl sm:text-2xl text-muted-foreground leading-relaxed">
-                                Building India&apos;s first scalable middleware platform for content creators
-                            </p>
+                            <div className="text-xl sm:text-2xl text-muted-foreground leading-relaxed space-y-4">
+                                <p>
+                                    Samay Samrat is an Indian entrepreneur and YouTuber.
+                                    He is the Founder of Mwarex, a creator workflow platform.
+                                </p>
+                                <p>
+                                    Known for content on technology, creators, and workflow automation.
+                                </p>
+                            </div>
                         </header>
 
                         {/* Founder Card */}
