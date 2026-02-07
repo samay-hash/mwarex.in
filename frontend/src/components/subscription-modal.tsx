@@ -126,6 +126,25 @@ export function SubscriptionModal({ isOpen, onClose, currentPlan = "free" }: Sub
         }
     };
 
+    const handleCryptoPayment = async (plan: typeof plans[0]) => {
+        setLoadingPlan(plan.id);
+        try {
+            const { data } = await paymentAPI.createCryptoCharge(plan.id);
+
+            if (data.success && data.hosted_url) {
+                // Redirect to Coinbase Commerce
+                window.location.href = data.hosted_url;
+            } else {
+                toast.error("Failed to initiate crypto payment");
+            }
+        } catch (error: any) {
+            console.error("Crypto payment error:", error);
+            toast.error(error?.response?.data?.message || "Failed to initiate crypto payment");
+        } finally {
+            setLoadingPlan(null);
+        }
+    };
+
     return (
         <AnimatePresence>
             {isOpen && (
@@ -203,24 +222,40 @@ export function SubscriptionModal({ isOpen, onClose, currentPlan = "free" }: Sub
                                                 ))}
                                             </div>
 
-                                            <button
-                                                onClick={() => handleUpgrade(plan)}
-                                                disabled={loadingPlan !== null}
-                                                className={cn(
-                                                    "w-full py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2",
-                                                    currentPlan === plan.id
-                                                        ? "bg-white/10 text-gray-400 cursor-not-allowed"
-                                                        : "bg-white text-black hover:bg-gray-100 hover:scale-[1.02]"
+                                            <div className="flex flex-col gap-3">
+                                                <button
+                                                    onClick={() => handleUpgrade(plan)}
+                                                    disabled={loadingPlan !== null}
+                                                    className={cn(
+                                                        "w-full py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2",
+                                                        currentPlan === plan.id
+                                                            ? "bg-white/10 text-gray-400 cursor-not-allowed"
+                                                            : "bg-white text-black hover:bg-gray-100 hover:scale-[1.02]"
+                                                    )}
+                                                >
+                                                    {loadingPlan === plan.id ? (
+                                                        <Loader2 className="w-4 h-4 animate-spin" />
+                                                    ) : currentPlan === plan.id ? (
+                                                        "Current Plan"
+                                                    ) : (
+                                                        "Upgrade Now"
+                                                    )}
+                                                </button>
+
+                                                {/* Premium Crypto Button */}
+                                                {currentPlan !== plan.id && (
+                                                    <button
+                                                        onClick={() => handleCryptoPayment(plan)}
+                                                        disabled={loadingPlan !== null}
+                                                        className="w-full py-2.5 rounded-xl font-medium text-xs transition-all flex items-center justify-center gap-2 border border-white/10 hover:bg-white/5 hover:border-white/20 text-gray-400 hover:text-white"
+                                                    >
+                                                        <span className="bg-clip-text text-transparent bg-gradient-to-r from-orange-400 to-yellow-400 font-bold">
+                                                            ₿
+                                                        </span>
+                                                        Pay via Crypto
+                                                    </button>
                                                 )}
-                                            >
-                                                {loadingPlan === plan.id ? (
-                                                    <Loader2 className="w-4 h-4 animate-spin" />
-                                                ) : currentPlan === plan.id ? (
-                                                    "Current Plan"
-                                                ) : (
-                                                    "Upgrade Now"
-                                                )}
-                                            </button>
+                                            </div>
                                         </div>
                                     ))}
                                 </div>

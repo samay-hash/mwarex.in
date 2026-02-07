@@ -477,13 +477,16 @@ export function PricingSection() {
                                             )}
                                         </button>
 
-                                        {/* Crypto Payment Option - Subtle */}
+                                        {/* Crypto Payment Option - Premium UI */}
                                         {plan.price !== "0" && (
                                             <button
                                                 onClick={() => handleCryptoPayment(plan)}
                                                 disabled={isLoading || loadingPlan !== null}
-                                                className="w-full text-xs text-muted-foreground hover:text-foreground underline decoration-dotted underline-offset-4 mb-6 transition-colors"
+                                                className="w-full py-2.5 rounded-xl font-medium text-xs transition-all flex items-center justify-center gap-2 border border-foreground/10 hover:bg-foreground/5 hover:border-foreground/20 text-muted-foreground hover:text-foreground mb-6"
                                             >
+                                                <span className="bg-clip-text text-transparent bg-gradient-to-r from-orange-400 to-yellow-400 font-bold text-sm">
+                                                    ⚡
+                                                </span>
                                                 Pay with Crypto
                                             </button>
                                         )}
