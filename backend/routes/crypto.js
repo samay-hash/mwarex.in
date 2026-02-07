@@ -7,8 +7,12 @@ const User = require("../models/user");
 const authMiddleware = require("../middlewares/userMiddleware");
 
 // Check Coinbase keys
+// Check Coinbase keys
 if (!process.env.COINBASE_API_KEY || !process.env.COINBASE_WEBHOOK_SECRET) {
     console.warn("⚠️  WARNING: Coinbase keys not found in environment variables!");
+    console.log("COINBASE_API_KEY:", process.env.COINBASE_API_KEY ? "Found" : "Missing");
+} else {
+    console.log("✅ Coinbase Keys Found");
 }
 
 const COINBASE_API_URL = "https://api.commerce.coinbase.com/charges";
