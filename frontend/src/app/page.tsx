@@ -17,7 +17,7 @@ import { CrackedButton } from "@/components/cracked-button";
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen text-foreground selection:bg-primary/30 font-sans bg-white dark:bg-background relative">
+    <div className="min-h-screen text-foreground selection:bg-primary/30 font-sans bg-white dark:bg-background relative overflow-x-hidden w-full">
       {/* Light Mode - Indigo Radial Gradient Background (applies to entire page) */}
       <div
         className="fixed inset-0 z-0 dark:hidden pointer-events-none"

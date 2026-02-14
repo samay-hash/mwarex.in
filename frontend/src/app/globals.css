@@ -80,6 +80,8 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+    max-width: 100vw;
   }
 
   html.dark {
@@ -90,6 +92,8 @@
     @apply bg-transparent text-foreground antialiased;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
     overflow-x: hidden;
+    max-width: 100vw;
+    position: relative;
   }
 
   /* Ensure proper color inheritance for all elements */
