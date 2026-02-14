@@ -40,6 +40,7 @@ import { MWareXLogo } from "@/components/mwarex-logo";
 import { SubscriptionModal } from "@/components/subscription-modal";
 import { cn } from "@/lib/utils";
 import { DashboardOnboarding } from "@/components/onboarding";
+import { SeasonSwitcher } from "@/components/seasonal-background";
 
 interface Video {
   _id: string;
@@ -378,6 +379,7 @@ export default function CreatorDashboard() {
           </div>
 
           <div className="flex items-center gap-2">
+            <SeasonSwitcher />
             {videos.filter(v => v.status === 'pending').length > 0 && (
               <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs font-medium text-amber-600 dark:text-amber-400">
                 <div className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />

@@ -14,6 +14,7 @@ import { Layers, ArrowRight, Github, Twitter, Linkedin, Sparkles, Youtube, Play 
 import { MWareXLogo } from '@/components/mwarex-logo';
 import { LandingPageOnboarding } from "@/components/onboarding";
 import { CrackedButton } from "@/components/cracked-button";
+import { LandingSeasonSelector } from "@/components/landing-season-selector";
 
 export default function LandingPage() {
   return (
@@ -39,6 +40,7 @@ export default function LandingPage() {
 
       <div className="relative z-10">
         <SiteHeader />
+        <LandingSeasonSelector />
 
         <main>
           <HeroSection />

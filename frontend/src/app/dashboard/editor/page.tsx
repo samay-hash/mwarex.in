@@ -31,6 +31,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { MWareXLogo } from "@/components/mwarex-logo";
 import { SubscriptionModal } from "@/components/subscription-modal";
 import { cn } from "@/lib/utils";
+import { SeasonSwitcher } from "@/components/seasonal-background";
 
 interface Video {
   _id: string;
@@ -250,6 +251,7 @@ export default function EditorDashboard() {
               <Sparkles className="w-4 h-4" />
               <span className="hidden md:inline">AI Studio</span>
             </button>
+            <SeasonSwitcher />
             <button
               onClick={() => router.push("/dashboard/editor/settings")}
               className="p-2 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
