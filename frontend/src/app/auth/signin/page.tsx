@@ -157,7 +157,7 @@ export default function SignInPage() {
   return (
     <main className="min-h-screen w-full flex bg-background text-foreground overflow-hidden font-sans">
       {/* Left Side - Star/Space Illustration for Sign In */}
-      <div className="hidden lg:flex w-1/2 bg-card relative p-12 overflow-hidden items-center justify-center">
+      <div className="hidden lg:flex w-1/2 bg-transparent relative p-12 overflow-hidden items-center justify-center">
         {/* Cosmic Background - Simplified */}
         <div className="absolute inset-0">
           {/* Main Gradient Glow */}
@@ -172,7 +172,7 @@ export default function SignInPage() {
               ease: "easeInOut",
             }}
             style={{ willChange: "transform, opacity", transform: "translateZ(0)" }}
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-radial from-indigo-500/20 via-purple-500/10 to-transparent rounded-full blur-[80px]"
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-radial from-indigo-500/30 via-purple-500/20 to-transparent rounded-full blur-[80px]"
           />
 
           {/* Secondary Purple Glow */}
@@ -188,13 +188,13 @@ export default function SignInPage() {
               delay: 2,
             }}
             style={{ willChange: "transform, opacity", transform: "translateZ(0)" }}
-            className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-gradient-radial from-violet-600/20 to-transparent rounded-full blur-[60px]"
+            className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-gradient-radial from-violet-600/30 to-transparent rounded-full blur-[60px]"
           />
 
           {/* Static Grid Lines */}
-          <div className="absolute left-1/4 top-0 w-[1px] h-1/2 bg-gradient-to-b from-transparent via-zinc-700/50 to-transparent opacity-40" />
-          <div className="absolute left-1/3 bottom-0 w-[1px] h-1/3 bg-gradient-to-t from-transparent via-zinc-700/50 to-transparent opacity-30" />
-          <div className="absolute right-1/4 top-20 w-[1px] h-1/4 bg-gradient-to-b from-transparent via-zinc-600/50 to-transparent opacity-20" />
+          <div className="absolute left-1/4 top-0 w-[1px] h-1/2 bg-gradient-to-b from-transparent via-zinc-700/50 dark:via-zinc-700/50 via-indigo-300/30 to-transparent opacity-40" />
+          <div className="absolute left-1/3 bottom-0 w-[1px] h-1/3 bg-gradient-to-t from-transparent via-zinc-700/50 dark:via-zinc-700/50 via-indigo-300/30 to-transparent opacity-30" />
+          <div className="absolute right-1/4 top-20 w-[1px] h-1/4 bg-gradient-to-b from-transparent via-zinc-600/50 dark:via-zinc-600/50 via-indigo-300/30 to-transparent opacity-20" />
 
           {/* Twinkling Stars */}
           {mounted && [...Array(20)].map((_, i) => (
@@ -209,7 +209,7 @@ export default function SignInPage() {
                 repeat: Infinity,
                 delay: Math.random() * 2,
               }}
-              className="absolute w-[2px] h-[2px] bg-white rounded-full"
+              className="absolute w-[2px] h-[2px] bg-indigo-400 dark:bg-white rounded-full"
               style={{
                 top: `${Math.random() * 100}%`,
                 left: `${Math.random() * 100}%`,

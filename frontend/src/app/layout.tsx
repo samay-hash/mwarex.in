@@ -53,11 +53,11 @@ export default function RootLayout({
           <OnboardingProvider>
             <SmoothScrollProvider>
               <div className="min-h-screen w-full relative noise bg-white dark:bg-black">
-                {/* Light Mode: Slate Radial Gradient Background */}
+                {/* Light Mode: Indigo Radial Gradient Background (Matches Landing Page) */}
                 <div
                   className="fixed inset-0 z-0 pointer-events-none transition-opacity duration-500 dark:opacity-0"
                   style={{
-                    background: "radial-gradient(125% 125% at 50% 90%, #ffffff 40%, #475569 100%)",
+                    background: "radial-gradient(125% 125% at 50% 10%, #fff 40%, #6366f1 100%)",
                     transform: 'translateZ(0)', // Force GPU acceleration
                     willChange: 'opacity',
                   }}

@@ -125,16 +125,16 @@ export default function SettingsPage() {
     return (
         <div
             style={{ willChange: "transform", transform: "translateZ(0)" }}
-            className="min-h-screen bg-[#0a0a0a] p-6 lg:p-12"
+            className="min-h-screen bg-transparent p-6 lg:p-12"
         >
             <div className="max-w-4xl mx-auto">
                 <header className="mb-8 flex justify-between items-center">
                     <div>
-                        <h1 className="text-3xl font-bold text-white mb-2 flex items-center gap-3">
-                            <Settings className="w-8 h-8 text-gray-400" />
+                        <h1 className="text-3xl font-bold text-foreground mb-2 flex items-center gap-3">
+                            <Settings className="w-8 h-8 text-muted-foreground" />
                             Settings
                         </h1>
-                        <p className="text-gray-400">Manage your account preferences and integrations.</p>
+                        <p className="text-muted-foreground">Manage your account preferences and integrations.</p>
                     </div>
                     <button
                         onClick={handleSaveSettings}
@@ -148,12 +148,13 @@ export default function SettingsPage() {
 
                 <div className="space-y-6">
 
+
                     {/* Subscription Section - NEW */}
-                    <section className="glass p-8 rounded-3xl border border-white/5 relative overflow-hidden group">
+                    <section className="glass p-8 rounded-3xl border border-border relative overflow-hidden group">
                         <div className="absolute top-0 right-0 p-32 bg-indigo-600/5 rounded-full blur-3xl pointer-events-none" />
 
                         <div className="flex items-center justify-between mb-6">
-                            <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                            <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
                                 <CreditCard className="w-5 h-5 text-indigo-400" />
                                 Subscription Plan
                             </h2>
@@ -161,7 +162,7 @@ export default function SettingsPage() {
                                 "px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide border",
                                 subscription?.plan === 'pro' || subscription?.plan === 'team'
                                     ? "bg-indigo-500/10 text-indigo-400 border-indigo-500/20"
-                                    : "bg-gray-500/10 text-gray-400 border-gray-500/20"
+                                    : "bg-secondary text-muted-foreground border-border"
                             )}>
                                 {subscription?.plan || 'Free'} Plan
                             </div>
@@ -169,8 +170,8 @@ export default function SettingsPage() {
 
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-gray-400 text-sm mb-1">Current Status</p>
-                                <p className="text-white font-medium capitalize">{subscription?.status || 'Active'}</p>
+                                <p className="text-muted-foreground text-sm mb-1">Current Status</p>
+                                <p className="text-foreground font-medium capitalize">{subscription?.status || 'Active'}</p>
                             </div>
 
                             {subscription?.plan === 'free' ? (
@@ -184,7 +185,7 @@ export default function SettingsPage() {
                             ) : (
                                 <button
                                     onClick={() => alert("Manage subscription coming soon!")} // Placeholder
-                                    className="px-4 py-2 bg-white/5 hover:bg-white/10 text-white rounded-xl font-medium transition-colors"
+                                    className="px-4 py-2 bg-secondary hover:bg-secondary/80 text-foreground rounded-xl font-medium transition-colors"
                                 >
                                     Manage Subscription
                                 </button>
@@ -193,45 +194,45 @@ export default function SettingsPage() {
                     </section>
 
                     {/* Profile Section */}
-                    <section className="glass p-8 rounded-3xl border border-white/5">
-                        <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
+                    <section className="glass p-8 rounded-3xl border border-border">
+                        <h2 className="text-xl font-bold text-foreground mb-6 flex items-center gap-2">
                             <User className="w-5 h-5 text-blue-400" />
                             Profile Information
                         </h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label className="block text-sm font-medium text-gray-400 mb-2">Full Name</label>
+                                <label className="block text-sm font-medium text-muted-foreground mb-2">Full Name</label>
                                 <input
                                     type="text"
                                     value={userData?.name || ""}
                                     readOnly
-                                    className="input-field opacity-60 cursor-not-allowed w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white"
+                                    className="input-field opacity-60 cursor-not-allowed w-full bg-secondary border border-border rounded-xl p-3 text-foreground"
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-400 mb-2">Email Address</label>
+                                <label className="block text-sm font-medium text-muted-foreground mb-2">Email Address</label>
                                 <input
                                     type="email"
                                     value={userData?.email || ""}
                                     readOnly
-                                    className="input-field opacity-60 cursor-not-allowed w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white"
+                                    className="input-field opacity-60 cursor-not-allowed w-full bg-secondary border border-border rounded-xl p-3 text-foreground"
                                 />
                             </div>
                         </div>
                     </section>
 
                     {/* AI Preferences Section */}
-                    <section className="glass p-8 rounded-3xl border border-white/5">
-                        <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
+                    <section className="glass p-8 rounded-3xl border border-border">
+                        <h2 className="text-xl font-bold text-foreground mb-6 flex items-center gap-2">
                             <Bot className="w-5 h-5 text-purple-400" />
                             AI Preferences
                         </h2>
                         <div className="space-y-6">
                             {/* Auto Suggest - Free */}
-                            <div className="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/5 hover:border-purple-500/30 transition-colors">
+                            <div className="flex items-center justify-between p-4 bg-secondary/30 rounded-xl border border-border hover:border-purple-500/30 transition-colors">
                                 <div>
-                                    <h3 className="text-white font-medium mb-1">Auto-Suggest Video Ideas</h3>
-                                    <p className="text-sm text-gray-400">Get AI-generated video topics based on trends.</p>
+                                    <h3 className="text-foreground font-medium mb-1">Auto-Suggest Video Ideas</h3>
+                                    <p className="text-sm text-muted-foreground">Get AI-generated video topics based on trends.</p>
                                 </div>
                                 <label className="relative inline-flex items-center cursor-pointer">
                                     <input
@@ -240,19 +241,19 @@ export default function SettingsPage() {
                                         onChange={() => toggleSetting('aiAutoSuggest')}
                                         className="sr-only peer"
                                     />
-                                    <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+                                    <div className="w-11 h-6 bg-gray-200 dark:bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
                                 </label>
                             </div>
 
                             {/* Thumbnail Gen - LOCKED */}
                             <div className={cn(
-                                "flex items-center justify-between p-4 bg-white/5 rounded-xl border transition-colors relative overflow-hidden",
+                                "flex items-center justify-between p-4 bg-secondary/30 rounded-xl border transition-colors relative overflow-hidden",
                                 isLocked('aiThumbnailGen')
                                     ? "border-amber-500/20 opacity-80"
-                                    : "border-white/5 hover:border-purple-500/30"
+                                    : "border-border hover:border-purple-500/30"
                             )}>
                                 <div className="relative z-10">
-                                    <h3 className="text-white font-medium mb-1 flex items-center gap-2">
+                                    <h3 className="text-foreground font-medium mb-1 flex items-center gap-2">
                                         Auto-Generate Thumbnails
                                         {isLocked('aiThumbnailGen') && (
                                             <span className="px-2 py-0.5 bg-amber-500/10 text-amber-400 text-[10px] font-bold uppercase rounded-full border border-amber-500/20 flex items-center gap-1">
@@ -260,7 +261,7 @@ export default function SettingsPage() {
                                             </span>
                                         )}
                                     </h3>
-                                    <p className="text-sm text-gray-400">Create AI thumbnails for confirmed video ideas.</p>
+                                    <p className="text-sm text-muted-foreground">Create AI thumbnails for confirmed video ideas.</p>
                                 </div>
 
                                 {isLocked('aiThumbnailGen') ? (
@@ -278,18 +279,18 @@ export default function SettingsPage() {
                                             onChange={() => toggleSetting('aiThumbnailGen')}
                                             className="sr-only peer"
                                         />
-                                        <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+                                        <div className="w-11 h-6 bg-gray-200 dark:bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
                                     </label>
                                 )}
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-400 mb-2">Default Art Style</label>
+                                    <label className="block text-sm font-medium text-muted-foreground mb-2">Default Art Style</label>
                                     <select
                                         value={settings.defaultStyle}
                                         onChange={(e) => updateSetting('defaultStyle', e.target.value)}
-                                        className="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:border-purple-500"
+                                        className="w-full bg-secondary border border-border rounded-xl p-3 text-foreground focus:outline-none focus:border-purple-500"
                                     >
                                         <option value="modern">Modern & Clean</option>
                                         <option value="bold">Bold & High Contrast</option>
@@ -298,11 +299,11 @@ export default function SettingsPage() {
                                     </select>
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-400 mb-2">Content Moderation</label>
+                                    <label className="block text-sm font-medium text-muted-foreground mb-2">Content Moderation</label>
                                     <select
                                         value={settings.contentModeration}
                                         onChange={(e) => updateSetting('contentModeration', e.target.value)}
-                                        className="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:border-purple-500"
+                                        className="w-full bg-secondary border border-border rounded-xl p-3 text-foreground focus:outline-none focus:border-purple-500"
                                     >
                                         <option value="low">Low (Allow most ideas)</option>
                                         <option value="medium">Medium (Standard safety)</option>
@@ -314,20 +315,20 @@ export default function SettingsPage() {
                     </section>
 
                     {/* Notification Settings */}
-                    <section className="glass p-8 rounded-3xl border border-white/5">
-                        <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
+                    <section className="glass p-8 rounded-3xl border border-border">
+                        <h2 className="text-xl font-bold text-foreground mb-6 flex items-center gap-2">
                             <Bell className="w-5 h-5 text-yellow-500" />
                             Notifications
                         </h2>
                         <div className="space-y-4">
-                            <div className="flex items-center justify-between p-4 px-0 border-b border-white/5 last:border-0">
+                            <div className="flex items-center justify-between p-4 px-0 border-b border-border last:border-0">
                                 <div className="flex items-center gap-3">
                                     <div className="p-2 rounded-lg bg-blue-500/10 text-blue-400">
                                         <Mail className="w-5 h-5" />
                                     </div>
                                     <div>
-                                        <h3 className="text-white font-medium">Email Notifications</h3>
-                                        <p className="text-xs text-gray-400">Receive weekly digests and major updates.</p>
+                                        <h3 className="text-foreground font-medium">Email Notifications</h3>
+                                        <p className="text-xs text-muted-foreground">Receive weekly digests and major updates.</p>
                                     </div>
                                 </div>
                                 <label className="relative inline-flex items-center cursor-pointer">
@@ -337,22 +338,22 @@ export default function SettingsPage() {
                                         onChange={() => toggleSetting('emailNotifications')}
                                         className="sr-only peer"
                                     />
-                                    <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                    <div className="w-11 h-6 bg-gray-200 dark:bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                                 </label>
                             </div>
 
                             {/* Push Notifications - LOCKED */}
-                            <div className="flex items-center justify-between p-4 px-0 border-b border-white/5 last:border-0">
+                            <div className="flex items-center justify-between p-4 px-0 border-b border-border last:border-0">
                                 <div className="flex items-center gap-3">
                                     <div className="p-2 rounded-lg bg-yellow-500/10 text-yellow-400">
                                         <Bell className="w-5 h-5" />
                                     </div>
                                     <div>
-                                        <h3 className="text-white font-medium flex items-center gap-2">
+                                        <h3 className="text-foreground font-medium flex items-center gap-2">
                                             Push Notifications
                                             {isLocked('pushNotifications') && <Lock className="w-3 h-3 text-amber-400" />}
                                         </h3>
-                                        <p className="text-xs text-gray-400">Get real-time alerts for video approvals.</p>
+                                        <p className="text-xs text-muted-foreground">Get real-time alerts for video approvals.</p>
                                     </div>
                                 </div>
                                 {isLocked('pushNotifications') ? (
@@ -370,7 +371,7 @@ export default function SettingsPage() {
                                             onChange={() => toggleSetting('pushNotifications')}
                                             className="sr-only peer"
                                         />
-                                        <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-yellow-600"></div>
+                                        <div className="w-11 h-6 bg-gray-200 dark:bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-yellow-600"></div>
                                     </label>
                                 )}
                             </div>
@@ -378,25 +379,25 @@ export default function SettingsPage() {
                     </section>
 
                     {/* ... Integrations & Account Actions Sections unchanged ... */}
-                    <section className="glass p-8 rounded-3xl border border-white/5 relative overflow-hidden">
+                    <section className="glass p-8 rounded-3xl border border-border relative overflow-hidden">
                         <div className="absolute top-0 right-0 p-32 bg-red-600/5 rounded-full blur-3xl pointer-events-none" />
 
-                        <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
+                        <h2 className="text-xl font-bold text-foreground mb-6 flex items-center gap-2">
                             <Youtube className="w-5 h-5 text-red-500" />
                             Integrations
                         </h2>
 
-                        <div className="flex flex-col md:flex-row items-center justify-between gap-8 p-8 rounded-2xl bg-gradient-to-br from-white/5 to-transparent border border-white/10 relative group">
+                        <div className="flex flex-col md:flex-row items-center justify-between gap-8 p-8 rounded-2xl bg-gradient-to-br from-secondary/50 to-transparent border border-border relative group">
                             <div className="flex items-start gap-5">
                                 <div className="p-4 rounded-2xl bg-[#FF0000]/10 border border-[#FF0000]/20 flex-shrink-0">
                                     <Youtube className="w-8 h-8 text-[#FF0000]" />
                                 </div>
                                 <div className="space-y-1">
-                                    <h3 className="text-xl font-semibold text-white">YouTube Integration</h3>
-                                    <p className="text-sm text-gray-400 max-w-md leading-relaxed">
+                                    <h3 className="text-xl font-semibold text-foreground">YouTube Integration</h3>
+                                    <p className="text-sm text-muted-foreground max-w-md leading-relaxed">
                                         Authorize MwareX to manage your channel. We'll only upload videos that you explicitly approve from your dashboard.
                                     </p>
-                                    <div className="flex items-center gap-2 text-xs text-gray-500 pt-2">
+                                    <div className="flex items-center gap-2 text-xs text-muted-foreground pt-2">
                                         <Shield className="w-3 h-3" />
                                         <span>Secure OAuth 2.0 Connection</span>
                                     </div>
@@ -413,9 +414,9 @@ export default function SettingsPage() {
                                 ) : (
                                     <button
                                         onClick={handleConnectYouTube}
-                                        className="relative overflow-hidden group px-6 py-3 rounded-xl bg-white text-black font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5"
+                                        className="relative overflow-hidden group px-6 py-3 rounded-xl bg-white dark:bg-zinc-800 text-black dark:text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5"
                                     >
-                                        <div className="absolute inset-0 bg-gradient-to-r from-gray-100 to-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                        <div className="absolute inset-0 bg-gradient-to-r from-gray-100 to-white dark:from-zinc-700 dark:to-zinc-800 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                                         <div className="relative flex items-center gap-3">
                                             <Youtube className="w-5 h-5 text-red-600 fill-current" />
                                             <span>Connect Channel</span>
@@ -427,9 +428,9 @@ export default function SettingsPage() {
                     </section>
 
                     {/* Account Actions */}
-                    <section className="glass p-8 rounded-3xl border border-white/5">
-                        <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
-                            <Shield className="w-5 h-5 text-gray-400" />
+                    <section className="glass p-8 rounded-3xl border border-border">
+                        <h2 className="text-xl font-bold text-foreground mb-6 flex items-center gap-2">
+                            <Shield className="w-5 h-5 text-muted-foreground" />
                             Account Actions
                         </h2>
                         <button
@@ -440,7 +441,6 @@ export default function SettingsPage() {
                             Sign Out
                         </button>
                     </section>
-
                 </div>
             </div>
 
