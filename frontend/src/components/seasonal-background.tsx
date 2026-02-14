@@ -23,13 +23,27 @@ const useReducedMotion = () => {
     return prefersReducedMotion;
 };
 
+// Hook to detect mobile view
+const useIsMobile = () => {
+    const [isMobile, setIsMobile] = useState(false);
+    useEffect(() => {
+        const check = () => setIsMobile(window.innerWidth < 768);
+        check();
+        window.addEventListener('resize', check);
+        return () => window.removeEventListener('resize', check);
+    }, []);
+    return isMobile;
+};
+
 // --- Season Components ---
 
 const AutumnParticles = () => {
     const prefersReducedMotion = useReducedMotion();
+    const isMobile = useIsMobile();
+    const count = isMobile ? 8 : PARTICLE_COUNT;
 
     // Generate random positions/delays for leaves
-    const leaves = Array.from({ length: PARTICLE_COUNT }).map((_, i) => ({
+    const leaves = Array.from({ length: count }).map((_, i) => ({
         id: i,
         x: Math.random() * 100, // percentage
         delay: Math.random() * 5,
@@ -75,8 +89,10 @@ const AutumnParticles = () => {
 
 const WinterParticles = () => {
     const prefersReducedMotion = useReducedMotion();
+    const isMobile = useIsMobile();
+    const count = isMobile ? 10 : PARTICLE_COUNT * 2;
 
-    const snowflakes = Array.from({ length: PARTICLE_COUNT * 2 }).map((_, i) => ({
+    const snowflakes = Array.from({ length: count }).map((_, i) => ({
         id: i,
         x: Math.random() * 100,
         delay: Math.random() * 5,
@@ -120,23 +136,31 @@ const WinterParticles = () => {
 
 const SummerParticles = () => {
     const prefersReducedMotion = useReducedMotion();
+    const isMobile = useIsMobile();
+    const count = isMobile ? 5 : 10;
 
     return (
         <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-            {/* Warm Glows */}
+            {/* Warm Glows - Optimized for Mobile */}
             <motion.div
-                className="absolute top-[-10%] left-[20%] w-[500px] h-[500px] bg-yellow-400/10 rounded-full blur-[100px] mix-blend-screen dark:mix-blend-lighten"
-                animate={!prefersReducedMotion ? { x: [0, 50, 0], scale: [1, 1.1, 1] } : {}}
+                className={cn(
+                    "absolute bg-yellow-400/10 rounded-full mix-blend-screen dark:mix-blend-lighten",
+                    isMobile ? "top-[-5%] left-[10%] w-[200px] h-[200px] blur-[40px]" : "top-[-10%] left-[20%] w-[500px] h-[500px] blur-[100px]"
+                )}
+                animate={!prefersReducedMotion && !isMobile ? { x: [0, 50, 0], scale: [1, 1.1, 1] } : {}}
                 transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
             />
             <motion.div
-                className="absolute bottom-[-10%] right-[10%] w-[400px] h-[400px] bg-orange-400/10 rounded-full blur-[80px] mix-blend-screen dark:mix-blend-lighten"
-                animate={!prefersReducedMotion ? { y: [0, -30, 0], scale: [1, 1.2, 1] } : {}}
+                className={cn(
+                    "absolute bg-orange-400/10 rounded-full mix-blend-screen dark:mix-blend-lighten",
+                    isMobile ? "bottom-[-5%] right-[5%] w-[150px] h-[150px] blur-[30px]" : "bottom-[-10%] right-[10%] w-[400px] h-[400px] blur-[80px]"
+                )}
+                animate={!prefersReducedMotion && !isMobile ? { y: [0, -30, 0], scale: [1, 1.2, 1] } : {}}
                 transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 1 }}
             />
 
             {/* Floating Dust */}
-            {Array.from({ length: 10 }).map((_, i) => (
+            {Array.from({ length: count }).map((_, i) => (
                 <motion.div
                     key={i}
                     className="absolute bg-yellow-200 rounded-full opacity-40 will-change-transform"

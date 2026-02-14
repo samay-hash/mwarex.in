@@ -4,11 +4,40 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { MWareXLogo } from "@/components/mwarex-logo";
-import { Menu, X } from "lucide-react";
-import { useState } from "react";
+import { Menu, X, Leaf, Snowflake, Sun, CloudRain, Wind, ChevronLeft, ChevronRight } from "lucide-react";
+import React, { useState } from "react";
+import { useSeason, Season } from "@/contexts/SeasonContext";
+import { cn } from "@/lib/utils";
 
 export function SiteHeader() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const { season, setSeason } = useSeason();
+
+    const seasonsList = [
+        { id: 'autumn', label: 'Autumn', icon: <Leaf className="w-5 h-5" />, color: "text-orange-500" },
+        { id: 'winter', label: 'Winter', icon: <Snowflake className="w-5 h-5" />, color: "text-blue-400" },
+        { id: 'summer', label: 'Summer', icon: <Sun className="w-5 h-5" />, color: "text-amber-500" },
+        { id: 'rainy', label: 'Rainy', icon: <CloudRain className="w-5 h-5" />, color: "text-indigo-400" },
+    ];
+
+    const mobileSeasons = [
+        { id: 'none', label: 'None', icon: <Wind className="w-5 h-5" />, color: "text-muted-foreground" },
+        ...seasonsList
+    ];
+
+    const currentMobileSeason = mobileSeasons.find(s => s.id === season) || mobileSeasons[0];
+
+    const handleMobileNext = () => {
+        const currentIndex = mobileSeasons.findIndex(s => s.id === season);
+        const nextIndex = (currentIndex + 1) % mobileSeasons.length;
+        setSeason(mobileSeasons[nextIndex].id as Season);
+    };
+
+    const handleMobilePrev = () => {
+        const currentIndex = mobileSeasons.findIndex(s => s.id === season);
+        const prevIndex = (currentIndex - 1 + mobileSeasons.length) % mobileSeasons.length;
+        setSeason(mobileSeasons[prevIndex].id as Season);
+    };
 
     return (
         <>
@@ -22,6 +51,42 @@ export function SiteHeader() {
                     <Link href="/" className="z-50 hover:scale-105 transition-transform duration-300">
                         <MWareXLogo />
                     </Link>
+
+                    {/* Mobile Season Selector - Centered Area */}
+                    <div className="md:hidden flex-1 flex justify-center mx-2 z-50">
+                        <div className="flex items-center justify-between gap-1.5 bg-black/40 backdrop-blur-md px-1.5 py-1 rounded-full border border-white/10 shadow-lg w-[140px]">
+                            <button
+                                onClick={handleMobilePrev}
+                                className="p-1 rounded-full hover:bg-white/10 text-muted-foreground transition-colors"
+                            >
+                                <ChevronLeft className="w-3.5 h-3.5" />
+                            </button>
+
+                            <div className="flex items-center gap-1.5 overflow-hidden justify-center flex-1">
+                                <AnimatePresence mode="wait">
+                                    <motion.div
+                                        key={currentMobileSeason.id}
+                                        initial={{ opacity: 0, y: 5 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -5 }}
+                                        className={cn("flex items-center gap-1.5 text-xs font-medium whitespace-nowrap", currentMobileSeason.color)}
+                                    >
+                                        <span className="[&>svg]:w-3.5 [&>svg]:h-3.5 flex items-center justify-center">
+                                            {currentMobileSeason.icon}
+                                        </span>
+                                        <span>{currentMobileSeason.label}</span>
+                                    </motion.div>
+                                </AnimatePresence>
+                            </div>
+
+                            <button
+                                onClick={handleMobileNext}
+                                className="p-1 rounded-full hover:bg-white/10 text-muted-foreground transition-colors"
+                            >
+                                <ChevronRight className="w-3.5 h-3.5" />
+                            </button>
+                        </div>
+                    </div>
 
                     {/* Desktop Navigation */}
                     <nav className="hidden md:flex items-center gap-8 bg-background/50 backdrop-blur-md px-8 py-3 rounded-full border border-border/40 shadow-sm">

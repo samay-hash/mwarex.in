@@ -12,20 +12,28 @@ interface SeasonContextType {
 const SeasonContext = createContext<SeasonContextType | undefined>(undefined);
 
 export function SeasonProvider({ children }: { children: React.ReactNode }) {
-    const [season, setSeasonState] = useState<Season>('winter');
+    const [season, setSeasonState] = useState<Season>('none');
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
-        const savedSeason = localStorage.getItem('dashboard_season_v2') as Season;
+        const savedSeason = localStorage.getItem('dashboard_season_v3') as Season;
+
         if (savedSeason) {
             setSeasonState(savedSeason);
+        } else {
+            // Default Logic: Mobile = None, Desktop = Winter
+            if (window.innerWidth < 768) {
+                setSeasonState('none');
+            } else {
+                setSeasonState('winter');
+            }
         }
         setMounted(true);
     }, []);
 
     const setSeason = (newSeason: Season) => {
         setSeasonState(newSeason);
-        localStorage.setItem('dashboard_season_v2', newSeason);
+        localStorage.setItem('dashboard_season_v3', newSeason);
     };
 
     return (

@@ -17,7 +17,7 @@ export function LandingSeasonSelector() {
 
     if (!mounted) return null;
 
-    const seasons: { id: Season; label: string; icon: React.ReactNode; color: string; desc: string }[] = [
+    const seasonsList = [
         {
             id: 'autumn',
             label: 'Autumn',
@@ -48,8 +48,9 @@ export function LandingSeasonSelector() {
         },
     ];
 
+    // --- Desktop View ---
     return (
-        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center gap-2">
+        <div className="hidden md:flex fixed bottom-8 left-1/2 -translate-x-1/2 z-50 flex-col items-center gap-2">
             {/* Instruction Tooltip (Shows initially or on hover) */}
             <AnimatePresence>
                 {(isHovered || season === 'none') && (
@@ -75,12 +76,12 @@ export function LandingSeasonSelector() {
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 1, type: "spring", stiffness: 200, damping: 20 }}
             >
-                {seasons.map((s) => {
+                {seasonsList.map((s) => {
                     const isActive = season === s.id;
                     return (
                         <button
                             key={s.id}
-                            onClick={() => setSeason(s.id)}
+                            onClick={() => setSeason(s.id as Season)}
                             className="relative group flex items-center justify-center"
                         >
                             {/* Active Background Pill */}
