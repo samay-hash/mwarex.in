@@ -21,12 +21,8 @@ export function SeasonProvider({ children }: { children: React.ReactNode }) {
         if (savedSeason) {
             setSeasonState(savedSeason);
         } else {
-            // Default Logic: Mobile = None, Desktop = Winter
-            if (window.innerWidth < 768) {
-                setSeasonState('none');
-            } else {
-                setSeasonState('winter');
-            }
+            // Default Logic: Always Winter
+            setSeasonState('winter');
         }
         setMounted(true);
     }, []);

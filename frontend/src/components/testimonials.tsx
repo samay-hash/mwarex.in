@@ -2,182 +2,142 @@
 
 import { motion } from "framer-motion";
 import { Star } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
-import { ParallaxScroll } from "@/components/parallax-scroll";
-
+// Reduced to 4 key testimonials for a premium, focused look
 const testimonials = [
     {
         quote: "mWareX completely removed the bottleneck of downloading 50GB files just to review them. It's a game changer for our entire editing workflow.",
         name: "Alex Hormozi (Parody)",
-        designation: "Content Creator",
-        src: ""
-    },
-    {
-        quote: "The security features are what sold us. We no longer share our Google credentials with editors, which was a huge security risk before.",
-        name: "MrBeast Team (Parody)",
-        designation: "Production Lead",
-        src: ""
+        role: "Content Creator",
+        initials: "AH",
+        image: "https://avatar.vercel.sh/alex",
+        gradient: "from-blue-500 to-cyan-500",
     },
     {
         quote: "Direct publishing to YouTube API saves us about 4 hours per week per channel. Essential for scale when managing multiple channels.",
         name: "Ali Abdaal (Parody)",
-        designation: "YouTuber",
-        src: ""
-    },
-    {
-        quote: "The best platform I've used for managing video production. It's clean, fast, and secure.",
-        name: "Sarah Jenkins",
-        designation: "Documentary Filmmaker",
-        src: ""
-    },
-    {
-        quote: "Workflow automation at its finest. We can finally track every stage of production without spreadsheets.",
-        name: "David Cho",
-        designation: "Agency Owner",
-        src: ""
-    },
-    {
-        quote: "A must-have tool for any serious YouTube studio. The ROI is immediate.",
-        name: "TechLead (Parody)",
-        designation: "Ex-Google, Ex-Facebook",
-        src: ""
-    },
-    {
-        quote: "Simple, intuitive, and powerful. My editors love the streamlined review process.",
-        name: "Marcus Brownlee (Parody)",
-        designation: "Tech Reviewer",
-        src: ""
-    },
-    {
-        quote: "Finally, a tool that understands the creator economy workflow.",
-        name: "Casey Neistat (Parody)",
-        designation: "Vlogger",
-        src: ""
+        role: "YouTuber",
+        initials: "AA",
+        image: "https://avatar.vercel.sh/ali",
+        gradient: "from-violet-500 to-purple-500",
     },
     {
         quote: "The version control for video edits is a lifesaver. No more 'Final_Final_v3.mp4' confusion.",
         name: "EditStation",
-        designation: "Post-Production House",
-        src: ""
-    }
+        role: "Post-Production House",
+        initials: "ES",
+        image: "https://avatar.vercel.sh/editstation",
+        gradient: "from-emerald-500 to-teal-500",
+    },
+    {
+        quote: "Simple, intuitive, and powerful. My editors love the streamlined review process.",
+        name: "Marcus B. (Parody)",
+        role: "Tech Reviewer",
+        initials: "MB",
+        image: "https://avatar.vercel.sh/marcus",
+        gradient: "from-orange-500 to-amber-500",
+    },
 ];
 
 export function Testimonials() {
     return (
-        <section className="py-20 relative overflow-hidden bg-secondary/10 border-t border-border">
-            {/* Enhanced Background Blob */}
-            <div className="absolute inset-0 pointer-events-none">
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-primary/5 rounded-full blur-[150px] opacity-50" />
-            </div>
+        <section className="py-24 relative bg-background overflow-hidden" id="testimonials">
+            {/* Subtle Background Pattern */}
+            <div className="absolute inset-0 -z-10 h-full w-full bg-white dark:bg-black bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] dark:bg-[radial-gradient(#ffffff0a_1px,transparent_1px)] opacity-50 mask-gradient" />
 
-            <div className="w-full relative z-10">
+            {/* Soft gradient blur */}
+            <div className="absolute inset-0 -z-10 bg-gradient-to-b from-transparent via-background/80 to-background dark:from-transparent dark:via-black/80 dark:to-black" />
+
+            <div className="max-w-7xl mx-auto px-6 relative z-10">
                 {/* Header */}
-                <div className="max-w-7xl mx-auto px-6 text-center mb-10">
+                <div className="text-center mb-20">
                     <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
                         viewport={{ once: true }}
-                        transition={{ duration: 0.6 }}
-                        className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/5 border border-primary/10 mb-8 mx-auto"
+                        className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 mb-8"
                     >
-                        <Star className="w-3.5 h-3.5 text-primary fill-primary" />
-                        <span className="text-primary font-semibold text-xs uppercase tracking-wider">Community Feedback</span>
+                        <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
+                        <span className="text-zinc-600 dark:text-zinc-300 font-medium text-xs tracking-wide">
+                            Wall of Love
+                        </span>
                     </motion.div>
 
                     <motion.h2
-                        initial={{ opacity: 0, y: 20 }}
+                        initial={{ opacity: 0, y: 10 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
-                        transition={{ duration: 0.6, delay: 0.2 }}
-                        className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6 leading-tight"
+                        transition={{ delay: 0.1 }}
+                        className="text-4xl md:text-5xl font-bold tracking-tight text-zinc-900 dark:text-white mb-6"
                     >
                         Trusted by the{" "}
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-violet-500 to-indigo-500">
+                        <span className="italic font-serif bg-clip-text text-transparent bg-gradient-to-r from-zinc-800 to-zinc-500 dark:from-zinc-100 dark:to-zinc-500">
                             best.
                         </span>
                     </motion.h2>
-                    <p className="text-muted-foreground max-w-2xl mx-auto">
-                        See what creators and teams are saying about their new workflow.
-                    </p>
+
+                    <motion.p
+                        initial={{ opacity: 0, y: 10 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: 0.2 }}
+                        className="text-zinc-600 dark:text-zinc-400 text-lg max-w-2xl mx-auto"
+                    >
+                        Join thousands of creators who rely on mWareX to streamline their production.
+                    </motion.p>
                 </div>
 
-                {/* Parallax Scroll Container */}
-                <div className="h-[800px] w-full relative overflow-hidden mask-gradient-y">
-                    {/* Overlay gradients to fade top/bottom */}
-                    <div className="absolute top-0 left-0 w-full h-24 bg-gradient-to-b from-background to-transparent z-20 pointer-events-none" />
-                    <div className="absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-background to-transparent z-20 pointer-events-none" />
-
-                    <ParallaxScroll testimonials={testimonials} className="h-full" />
-                </div>
-
-                {/* Bottom Stats */}
-                <motion.div
-                    initial={{ opacity: 0, y: 40 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 0.6, duration: 0.8 }}
-                    className="mt-12 flex flex-wrap justify-center gap-12 md:gap-24 relative z-30 bg-background/50 backdrop-blur-sm py-10"
-                >
-                    {[
-                        { value: 101, suffix: "+", label: "Active Creators" },
-                        { value: 50, suffix: "+", label: "Videos Processed" },
-                        { value: 93, suffix: "%", label: "Accuracy" },
-                    ].map((stat, i) => (
-                        <div key={i} className="text-center">
-                            <div className="text-4xl md:text-5xl font-bold text-foreground mb-2">
-                                <Counter value={stat.value} suffix={stat.suffix} />
-                            </div>
-                            <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">{stat.label}</p>
-                        </div>
+                {/* Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 max-w-5xl mx-auto">
+                    {testimonials.map((t, i) => (
+                        <TestimonialCard key={i} t={t} i={i} />
                     ))}
-                </motion.div>
+                </div>
             </div>
         </section>
     );
 }
 
-// Keeping the Counter component
-function Counter({ value, suffix = "" }: { value: number; suffix?: string }) {
-    const ref = useRef<HTMLSpanElement>(null);
-    const [hasInView, setHasInView] = useState(false);
+function TestimonialCard({ t, i }: { t: typeof testimonials[0], i: number }) {
+    return (
+        <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: i * 0.1 }}
+            className="group relative h-full"
+        >
+            <div className="relative h-full flex flex-col justify-between p-8 md:p-10 rounded-3xl bg-white dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800 transition-all duration-300 hover:shadow-2xl hover:shadow-zinc-200/50 dark:hover:shadow-black/50 hover:-translate-y-1">
 
-    useEffect(() => {
-        const observer = new IntersectionObserver(
-            ([entry]) => {
-                if (entry.isIntersecting) {
-                    setHasInView(true);
-                    observer.disconnect();
-                }
-            },
-            { rootMargin: "-50px" }
-        );
-        if (ref.current) observer.observe(ref.current);
-        return () => observer.disconnect();
-    }, []);
+                {/* Subtle Gradient Glow on Hover (Top) */}
+                <div className={cn("absolute inset-x-0 top-0 h-1 bg-gradient-to-r opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-t-3xl", t.gradient)} />
 
-    const [count, setCount] = useState(0);
-    useEffect(() => {
-        if (hasInView) {
-            let start = 0;
-            const end = value;
-            const duration = 2000;
-            const incrementTime = 30;
-            const step = end / (duration / incrementTime);
+                {/* Content */}
+                <div>
+                    {/* Quote Mark */}
+                    <div className="mb-6 opacity-30 group-hover:opacity-100 transition-opacity duration-300">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" className="text-zinc-300 dark:text-zinc-700">
+                            <path d="M14.017 21L14.017 18C14.017 16.8954 14.9124 16 16.017 16H19.017C19.5693 16 20.017 15.5523 20.017 15V9C20.017 8.44772 19.5693 8 19.017 8H15.017C14.4647 8 14.017 8.44772 14.017 9V11C14.017 11.5523 13.5693 12 13.017 12H12.017V5H22.017V15C22.017 18.3137 19.3307 21 16.017 21H14.017ZM5.01697 21L5.01697 18C5.01697 16.8954 5.9124 16 7.01697 16H10.017C10.5693 16 11.017 15.5523 11.017 15V9C11.017 8.44772 10.5693 8 10.017 8H6.01697C5.46468 8 5.01697 8.44772 5.01697 9V11C5.01697 11.5523 4.56925 12 4.01697 12H3.01697V5H13.017V15C13.017 18.3137 10.3307 21 7.01697 21H5.01697Z" />
+                        </svg>
+                    </div>
 
-            const timer = setInterval(() => {
-                start += step;
-                if (start >= end) {
-                    setCount(end);
-                    clearInterval(timer);
-                } else {
-                    setCount(Math.round(start));
-                }
-            }, incrementTime);
-            return () => clearInterval(timer);
-        }
-    }, [hasInView, value]);
+                    <p className="text-lg md:text-xl font-medium text-zinc-700 dark:text-zinc-300 leading-relaxed group-hover:text-zinc-900 dark:group-hover:text-white transition-colors duration-300">
+                        "{t.quote}"
+                    </p>
+                </div>
 
-    return <span ref={ref}>{count.toLocaleString()}{suffix}</span>;
+                {/* Footer */}
+                <div className="mt-8 pt-6 border-t border-zinc-100 dark:border-zinc-800/50 flex items-center gap-4">
+                    <div className={cn("relative w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold text-white bg-gradient-to-br shadow-md", t.gradient)}>
+                        {t.initials}
+                    </div>
+                    <div>
+                        <h4 className="font-semibold text-zinc-900 dark:text-white text-sm">{t.name}</h4>
+                        <p className="text-zinc-500 dark:text-zinc-400 text-xs font-medium uppercase tracking-wide opacity-80">{t.role}</p>
+                    </div>
+                </div>
+            </div>
+        </motion.div>
+    );
 }

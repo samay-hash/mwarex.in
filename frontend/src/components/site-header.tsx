@@ -2,42 +2,17 @@
 
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { ThemeToggle } from "@/components/theme-toggle";
+import { useThemeToggle } from "@/components/theme-toggle";
 import { MWareXLogo } from "@/components/mwarex-logo";
-import { Menu, X, Leaf, Snowflake, Sun, CloudRain, Wind, ChevronLeft, ChevronRight } from "lucide-react";
+import { Menu, X, Snowflake, Sun, Moon } from "lucide-react";
 import React, { useState } from "react";
-import { useSeason, Season } from "@/contexts/SeasonContext";
+import { useSeason } from "@/contexts/SeasonContext";
 import { cn } from "@/lib/utils";
 
 export function SiteHeader() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const { season, setSeason } = useSeason();
-
-    const seasonsList = [
-        { id: 'autumn', label: 'Autumn', icon: <Leaf className="w-5 h-5" />, color: "text-orange-500" },
-        { id: 'winter', label: 'Winter', icon: <Snowflake className="w-5 h-5" />, color: "text-blue-400" },
-        { id: 'summer', label: 'Summer', icon: <Sun className="w-5 h-5" />, color: "text-amber-500" },
-        { id: 'rainy', label: 'Rainy', icon: <CloudRain className="w-5 h-5" />, color: "text-indigo-400" },
-    ];
-
-    const mobileSeasons = [
-        { id: 'none', label: 'None', icon: <Wind className="w-5 h-5" />, color: "text-muted-foreground" },
-        ...seasonsList
-    ];
-
-    const currentMobileSeason = mobileSeasons.find(s => s.id === season) || mobileSeasons[0];
-
-    const handleMobileNext = () => {
-        const currentIndex = mobileSeasons.findIndex(s => s.id === season);
-        const nextIndex = (currentIndex + 1) % mobileSeasons.length;
-        setSeason(mobileSeasons[nextIndex].id as Season);
-    };
-
-    const handleMobilePrev = () => {
-        const currentIndex = mobileSeasons.findIndex(s => s.id === season);
-        const prevIndex = (currentIndex - 1 + mobileSeasons.length) % mobileSeasons.length;
-        setSeason(mobileSeasons[prevIndex].id as Season);
-    };
+    const { isDark, toggleTheme } = useThemeToggle({ variant: "circle", start: "top-right" });
 
     return (
         <>
@@ -52,41 +27,7 @@ export function SiteHeader() {
                         <MWareXLogo />
                     </Link>
 
-                    {/* Mobile Season Selector - Centered Area */}
-                    <div className="md:hidden flex-1 flex justify-center mx-2 z-50">
-                        <div className="flex items-center justify-between gap-1.5 bg-black/40 backdrop-blur-md px-1.5 py-1 rounded-full border border-white/10 shadow-lg w-[140px]">
-                            <button
-                                onClick={handleMobilePrev}
-                                className="p-1 rounded-full hover:bg-white/10 text-muted-foreground transition-colors"
-                            >
-                                <ChevronLeft className="w-3.5 h-3.5" />
-                            </button>
 
-                            <div className="flex items-center gap-1.5 overflow-hidden justify-center flex-1">
-                                <AnimatePresence mode="wait">
-                                    <motion.div
-                                        key={currentMobileSeason.id}
-                                        initial={{ opacity: 0, y: 5 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        exit={{ opacity: 0, y: -5 }}
-                                        className={cn("flex items-center gap-1.5 text-xs font-medium whitespace-nowrap", currentMobileSeason.color)}
-                                    >
-                                        <span className="[&>svg]:w-3.5 [&>svg]:h-3.5 flex items-center justify-center">
-                                            {currentMobileSeason.icon}
-                                        </span>
-                                        <span>{currentMobileSeason.label}</span>
-                                    </motion.div>
-                                </AnimatePresence>
-                            </div>
-
-                            <button
-                                onClick={handleMobileNext}
-                                className="p-1 rounded-full hover:bg-white/10 text-muted-foreground transition-colors"
-                            >
-                                <ChevronRight className="w-3.5 h-3.5" />
-                            </button>
-                        </div>
-                    </div>
 
                     {/* Desktop Navigation */}
                     <nav className="hidden md:flex items-center gap-8 bg-background/50 backdrop-blur-md px-8 py-3 rounded-full border border-border/40 shadow-sm">
@@ -97,7 +38,32 @@ export function SiteHeader() {
 
                     {/* Desktop Actions */}
                     <div className="hidden md:flex items-center gap-4 z-10">
-                        <ThemeToggle />
+                        <div className="flex items-center gap-2">
+                            <button
+                                onClick={toggleTheme}
+                                className={cn(
+                                    "w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 border",
+                                    isDark
+                                        ? "bg-indigo-500/10 border-indigo-500/30 text-indigo-400 shadow-[0_0_15px_-3px_rgba(99,102,241,0.5)]"
+                                        : "bg-amber-500/10 border-amber-500/30 text-amber-500 shadow-[0_0_15px_-3px_rgba(245,158,11,0.5)]"
+                                )}
+                                title="Toggle Theme"
+                            >
+                                {isDark ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
+                            </button>
+                            <button
+                                onClick={() => setSeason(season === 'winter' ? 'none' : 'winter')}
+                                className={cn(
+                                    "w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 border",
+                                    season === 'winter'
+                                        ? "bg-blue-500/10 border-blue-500/30 text-blue-400 shadow-[0_0_15px_-3px_rgba(59,130,246,0.5)]"
+                                        : "bg-transparent border-transparent text-muted-foreground hover:bg-secondary hover:text-foreground"
+                                )}
+                                title="Toggle Snow"
+                            >
+                                <Snowflake className={cn("w-5 h-5", season === 'winter' && "animate-pulse")} />
+                            </button>
+                        </div>
                         <Link href="/auth/signin" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
                             Log in
                         </Link>
@@ -158,7 +124,31 @@ export function SiteHeader() {
 
                         <div className="flex flex-col items-center gap-6 w-full">
                             <div className="scale-125">
-                                <ThemeToggle />
+                                <div className="scale-125 flex items-center gap-4">
+                                    <button
+                                        onClick={toggleTheme}
+                                        className={cn(
+                                            "w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 border",
+                                            isDark
+                                                ? "bg-indigo-500/10 border-indigo-500/30 text-indigo-400 shadow-[0_0_15px_-3px_rgba(99,102,241,0.5)]"
+                                                : "bg-amber-500/10 border-amber-500/30 text-amber-500 shadow-[0_0_15px_-3px_rgba(245,158,11,0.5)]"
+                                        )}
+                                        title="Toggle Theme"
+                                    >
+                                        {isDark ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
+                                    </button>
+                                    <button
+                                        onClick={() => setSeason(season === 'winter' ? 'none' : 'winter')}
+                                        className={cn(
+                                            "w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 border",
+                                            season === 'winter'
+                                                ? "bg-blue-500/10 border-blue-500/30 text-blue-400 shadow-[0_0_15px_-3px_rgba(59,130,246,0.5)]"
+                                                : "bg-transparent border-white/5 text-muted-foreground hover:bg-white/10 hover:text-foreground"
+                                        )}
+                                    >
+                                        <Snowflake className="w-5 h-5" />
+                                    </button>
+                                </div>
                             </div>
 
                             <Link
