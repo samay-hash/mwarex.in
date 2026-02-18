@@ -103,3 +103,10 @@
 2026-02-03T03:39:17.200Z: Creating Razorpay order with options: {"amount":1100,"currency":"INR","receipt":"ord_1770089957199_7bcc60790b","notes":{"userId":"69816ddbbaa8977bcc60790b","plan":"pro"}}
 2026-02-03T03:39:17.413Z: Razorpay order created: {"amount":1100,"amount_due":1100,"amount_paid":0,"attempts":0,"created_at":1770089957,"currency":"INR","entity":"order","id":"order_SBWlYfsGzuazD1","notes":{"plan":"pro","userId":"69816ddbbaa8977bcc60790b"},"offer_id":null,"receipt":"ord_1770089957199_7bcc60790b","status":"created"}
 2026-02-03T03:39:17.425Z: Payment record saved to DB
+2026-02-18T09:56:18.998Z: Request received for create-order
+2026-02-18T09:56:19.001Z: User ID: 697f44bd542481abab0c68d2, Plan: team
+2026-02-18T09:56:19.001Z: Razorpay instance is present
+2026-02-18T09:56:19.002Z: Plan details found: {"name":"Team","amount":89900,"features":["Everything in Pro","Team collaboration","Custom integrations"]}
+2026-02-18T09:56:19.005Z: Creating Razorpay order with options: {"amount":89900,"currency":"INR","receipt":"ord_1771408579002_abab0c68d2","notes":{"userId":"697f44bd542481abab0c68d2","plan":"team"}}
+2026-02-18T09:56:19.557Z: Razorpay order created: {"amount":89900,"amount_due":89900,"amount_paid":0,"attempts":0,"created_at":1771408579,"currency":"INR","entity":"order","id":"order_SHZCdiC2n5p8iQ","notes":{"plan":"team","userId":"697f44bd542481abab0c68d2"},"offer_id":null,"receipt":"ord_1771408579002_abab0c68d2","status":"created"}
+2026-02-18T09:56:19.618Z: Payment record saved to DB

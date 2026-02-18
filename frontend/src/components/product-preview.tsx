@@ -52,9 +52,8 @@ export function ProductPreview() {
                         title="Protected & Secure"
                         description="Your data is safe. All assets are stored in segregated, encrypted cloud environments with bank-grade security protocols."
                         delay={0.1}
-                        className="group"
+                        direction="left"
                     >
-                        <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
                         {/* Abstract Visual: Lock & Shield */}
                         <div className="absolute top-8 right-8 pointer-events-none">
@@ -89,6 +88,7 @@ export function ProductPreview() {
                         title="Regulated & Compliant"
                         description="We operate under strict supervision of data protection regulations, ensuring your content rights are fully managed."
                         delay={0.2}
+                        direction="right"
                     >
                         <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
@@ -120,6 +120,7 @@ export function ProductPreview() {
                         title="Professional Support"
                         description="Our customer service team is available around the clock to assist you instantly. No bots, just expert humans."
                         delay={0.3}
+                        direction="left"
                     >
                         <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
@@ -143,6 +144,7 @@ export function ProductPreview() {
                         title="99.99% Reliability"
                         description="Built on a global edge network. Your workspace is available 24/7 with zero downtime and lightning-fast speeds."
                         delay={0.4}
+                        direction="right"
                     >
                         <div className="absolute inset-0 bg-gradient-to-br from-violet-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
@@ -174,17 +176,24 @@ export function ProductPreview() {
     );
 }
 
-function FeatureCard({ title, description, children, delay = 0, className }: { title: string, description: string, children?: React.ReactNode, delay?: number, className?: string }) {
+function FeatureCard({ title, description, children, delay = 0, className, direction = "left" }: { title: string, description: string, children?: React.ReactNode, delay?: number, className?: string, direction?: "left" | "right" }) {
     return (
         <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay }}
-            className={cn("relative overflow-hidden rounded-[32px] bg-white/5 dark:bg-black/40 border border-white/10 dark:border-white/5 p-8 md:p-10 h-[320px] flex flex-col justify-end group transition-all duration-500 hover:border-white/20 hover:bg-white/10 dark:hover:bg-white/5 backdrop-blur-xl", className)}
+            initial={{ opacity: 0, x: direction === "left" ? -50 : 50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 1.2, delay, ease: [0.25, 0.1, 0.25, 1] }}
+            whileHover={{ y: -8, transition: { duration: 0.4, ease: "easeOut" } }}
+            className={cn(
+                "relative overflow-hidden rounded-[32px] bg-white/5 dark:bg-black/40 border border-black/5 dark:border-white/5 p-8 md:p-10 h-[320px] flex flex-col justify-end group transition-all duration-500 backdrop-blur-xl",
+                "hover:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.1)] dark:hover:shadow-[0_30px_60px_-20px_rgba(255,255,255,0.08)]",
+                "hover:border-black/10 dark:hover:border-white/10",
+                "cursor-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMiAyTDEwIDI2TDE0IDE2TDI2IDEyTDIgMloiIGZpbGw9IiMxMGI5ODEiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PC9zdmc+'),_pointer]",
+                className
+            )}
         >
-            {/* Hover Glow Behind */}
-            <div className="absolute -inset-px bg-gradient-to-br from-white/10 to-transparent dark:from-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-[32px] pointer-events-none" />
+            {/* Soft Gradient Overlay on Hover */}
+            <div className="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent dark:from-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700 rounded-[32px] pointer-events-none mix-blend-overlay" />
 
             {/* Visual Container */}
             <div className="absolute inset-0 pointer-events-none">
@@ -192,11 +201,11 @@ function FeatureCard({ title, description, children, delay = 0, className }: { t
             </div>
 
             {/* Texts */}
-            <div className="relative z-10 max-w-[85%]">
+            <div className="relative z-10 max-w-[90%]">
                 <h3 className="text-xl md:text-2xl font-bold text-foreground mb-3 group-hover:text-primary transition-colors duration-300">
                     {title}
                 </h3>
-                <p className="text-muted-foreground text-sm md:text-base leading-relaxed">
+                <p className="text-muted-foreground text-sm md:text-base leading-relaxed group-hover:text-foreground/80 transition-colors duration-300">
                     {description}
                 </p>
             </div>

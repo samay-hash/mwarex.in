@@ -468,7 +468,8 @@ export function PricingSection() {
                                                 "disabled:opacity-50 disabled:cursor-not-allowed",
                                                 plan.price !== "0"
                                                     ? "bg-gradient-to-r from-orange-500 to-rose-500 text-white hover:from-orange-600 hover:to-rose-600 shadow-lg shadow-orange-500/20"
-                                                    : "bg-transparent border border-border dark:border-white/20 text-foreground hover:bg-muted/50 dark:hover:bg-white/5"
+                                                    : "bg-transparent border border-border dark:border-white/20 text-foreground hover:bg-muted/50 dark:hover:bg-white/5",
+                                                "cursor-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMiAyTDEwIDI2TDE0IDE2TDI2IDEyTDIgMloiIGZpbGw9IiNGNTlFMEIiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PC9zdmc+'),_pointer]"
                                             )}
                                         >
                                             <span className="relative z-10 flex items-center justify-center gap-2">
@@ -490,7 +491,7 @@ export function PricingSection() {
                                             <button
                                                 onClick={() => handleCryptoPayment(plan)}
                                                 disabled={isLoading || loadingPlan !== null}
-                                                className="relative w-full py-3 rounded-xl font-medium text-xs transition-all flex items-center justify-center gap-2 border border-orange-500/30 bg-orange-500/5 hover:bg-orange-500/10 text-muted-foreground hover:text-foreground mb-6 group overflow-hidden"
+                                                className="relative w-full py-3 rounded-xl font-medium text-xs transition-all flex items-center justify-center gap-2 border border-orange-500/30 bg-orange-500/5 hover:bg-orange-500/10 text-muted-foreground hover:text-foreground mb-6 group overflow-hidden cursor-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMiAyTDEwIDI2TDE0IDE2TDI2IDEyTDIgMloiIGZpbGw9IiNGNTlFMEIiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PC9zdmc+'),_pointer]"
                                             >
                                                 {/* Subtle Glow Effect */}
                                                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-orange-400/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />

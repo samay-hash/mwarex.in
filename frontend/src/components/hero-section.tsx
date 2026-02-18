@@ -93,7 +93,7 @@ export function HeroSection() {
                             className="flex flex-col sm:flex-row items-center gap-4 mb-12"
                         >
                             <Link href="/auth/signup">
-                                <div className="group relative px-8 py-3.5 bg-foreground text-white dark:text-black rounded-full font-medium text-base transition-all hover:bg-foreground/90 active:scale-95 shadow-lg shadow-foreground/10">
+                                <div className="group relative px-8 py-3.5 bg-foreground text-white dark:text-black rounded-full font-medium text-base transition-all hover:bg-foreground/90 active:scale-95 shadow-lg shadow-foreground/10 cursor-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMiAyTDEwIDI2TDE0IDE2TDI2IDEyTDIgMloiIGZpbGw9IiMxMGI5ODEiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PC9zdmc+'),_pointer]">
                                     <span className="relative flex items-center justify-center gap-2">
                                         Start Free Trial
                                         <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
@@ -111,15 +111,20 @@ export function HeroSection() {
                         >
                             <div className="flex -space-x-2">
                                 {[
-                                    'bg-gradient-to-br from-orange-400 to-orange-600',
-                                    'bg-gradient-to-br from-slate-50 to-gray-200',
-                                    'bg-gradient-to-br from-green-500 to-emerald-800',
-
-                                ].map((gradient, i) => (
+                                    '/images/creator-1.png',
+                                    '/images/creator-2.png',
+                                    '/images/creator-3.png',
+                                ].map((src, i) => (
                                     <div
                                         key={i}
-                                        className={`w-9 h-9 rounded-full border-2 border-background ${gradient} overflow-hidden`}
-                                    />
+                                        className="relative w-9 h-9 rounded-full border-2 border-background overflow-hidden"
+                                    >
+                                        <img
+                                            src={src}
+                                            alt={`Creator ${i + 1}`}
+                                            className="w-full h-full object-cover"
+                                        />
+                                    </div>
                                 ))}
                             </div>
                             <p>Trusted by <span className="text-foreground font-medium">Indian</span> Creators</p>
