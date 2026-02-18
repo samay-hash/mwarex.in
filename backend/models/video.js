@@ -16,12 +16,27 @@ const videoSchema = new mongoose.Schema({
     ref: "User",
   },
 
+  roomId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Room",
+  },
+
   status: {
     type: String,
-    enum: ["pending", "approved", "rejected", "uploaded", "processing", "upload_failed"],
+    enum: ["pending", "approved", "rejected", "uploaded", "processing", "upload_failed", "raw_uploaded", "raw_rejected", "editing_in_progress"],
     default: "pending",
   },
   rejectionReason: String,
+
+  // Raw Video Workflow Fields
+  rawFileUrl: String, // If creator uploads a raw video
+  hasRawVideo: { type: Boolean, default: false },
+  editorReviewStatus: {
+    type: String,
+    enum: ["pending", "accepted", "rejected"],
+    default: "pending" // Only relevant if hasRawVideo is true
+  },
+  editorRejectionReason: String,
 
   // Messaging / Feedback
   comments: [{
@@ -42,6 +57,6 @@ const videoSchema = new mongoose.Schema({
   }
 });
 
-const videoModel = mongoose.model("Video", videoSchema);
+const videoModel = mongoose.models.Video || mongoose.model("Video", videoSchema);
 
 module.exports = videoModel;

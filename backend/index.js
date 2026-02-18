@@ -94,6 +94,7 @@ app.use("/api/editor", editorRoutes);
 app.use("/api/v1", inviteRoutes);
 app.use("/api/v1/payment", paymentRoutes);
 app.use("/api/v1/payment/crypto", cryptoRoutes); // Use crypto routes
+app.use("/api/v1/rooms", require("./routes/room"));
 app.use("/auth", googleAuthRoutes);
 
 // ========================

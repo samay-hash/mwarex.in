@@ -25,7 +25,7 @@ import {
   Wand2
 } from "lucide-react";
 import VideoCard from "@/components/VideoCard";
-import { videoAPI, aiAPI, paymentAPI } from "@/lib/api";
+import { videoAPI, aiAPI, paymentAPI, roomAPI } from "@/lib/api";
 import { isAuthenticated, getUserData, logout, isDemoUser } from "@/lib/auth";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { MWareXLogo } from "@/components/mwarex-logo";
@@ -38,8 +38,10 @@ interface Video {
   title: string;
   description: string;
   fileUrl: string;
-  status: "pending" | "approved" | "rejected" | "uploaded" | "processing";
+  status: "pending" | "approved" | "rejected" | "uploaded" | "processing" | "raw_uploaded" | "raw_rejected" | "editing_in_progress";
   rejectionReason?: string;
+  rawFileUrl?: string; // Add rawFileUrl
+  editorId?: { _id: string; name: string; email: string } | string;
 }
 
 export default function EditorDashboard() {
@@ -55,11 +57,19 @@ export default function EditorDashboard() {
   const [subscription, setSubscription] = useState<any>(null);
   const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
 
+  // Room State
+  const [rooms, setRooms] = useState<{ _id: string; name: string }[]>([]);
+  const [currentRoom, setCurrentRoom] = useState<{ _id: string; name: string } | null>(null);
+  const [isRoomModalOpen, setIsRoomModalOpen] = useState(false);
+  const [joinToken, setJoinToken] = useState("");
+  const [isJoining, setIsJoining] = useState(false);
+
   // Form State
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [error, setError] = useState("");
+  const [uploadEditId, setUploadEditId] = useState<string | null>(null); // Track if uploading an edit for a raw video
 
   // AI Thumbnail State
   const [thumbnailPrompt, setThumbnailPrompt] = useState("");
@@ -80,11 +90,28 @@ export default function EditorDashboard() {
       setCreatorId(data.creatorId);
     }
 
-    // Only fetch videos if not a demo user
-    if (!data?.isDemo) {
-      fetchVideos();
-    } else {
+    // Don't call fetchVideos() here — wait for rooms to load first
+    if (data?.isDemo) {
       setIsLoading(false);
+    }
+
+    // Fetch Rooms for Editor
+    if (!data?.isDemo) {
+      roomAPI.list()
+        .then(res => {
+          setRooms(res.data);
+          if (res.data.length > 0) {
+            setCurrentRoom(res.data[0]);
+          } else {
+            setIsLoading(false);
+            // Maybe prompt to join a room?
+            setIsRoomModalOpen(true);
+          }
+        })
+        .catch((err) => {
+          console.error(err);
+          setIsLoading(false);
+        });
     }
 
     // Fetch subscription
@@ -98,6 +125,13 @@ export default function EditorDashboard() {
     setTimeout(() => setPageLoaded(true), 100);
   }, [router]);
 
+  // Re-fetch videos whenever the selected room changes
+  useEffect(() => {
+    if (currentRoom) {
+      fetchVideos();
+    }
+  }, [currentRoom]);
+
 
   const fetchVideos = async () => {
     // Don't fetch if demo user
@@ -108,7 +142,8 @@ export default function EditorDashboard() {
 
     setIsLoading(true);
     try {
-      const response = await videoAPI.getVideos();
+      const params = currentRoom ? { roomId: currentRoom._id } : {};
+      const response = await videoAPI.getVideos(params);
       setVideos(response.data);
     } catch (error) {
       console.error("Failed to fetch videos:", error);
@@ -119,14 +154,10 @@ export default function EditorDashboard() {
 
   const handleUpload = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!file || !title) return;
+    if (!file) return;
 
-    if (!creatorId) {
-      setError(
-        "No creator associated with your account. Please contact support."
-      );
-      return;
-    }
+    // For raw edits, title/desc might be optional upkeep, but let's keep them
+    if (!title && !uploadEditId) return;
 
     setUploadLoading(true);
     setError("");
@@ -135,13 +166,31 @@ export default function EditorDashboard() {
     formData.append("video", file);
     formData.append("title", title);
     formData.append("description", description);
-    formData.append("creatorId", creatorId);
-    formData.append("editorId", userData?.id || "");
+
+    // Always send roomId so the video is associated with the correct room
+    if (currentRoom) {
+      formData.append("roomId", currentRoom._id);
+    }
+
+    // For new uploads (not editing an existing video)
+    if (!uploadEditId) {
+      if (creatorId) {
+        formData.append("creatorId", creatorId);
+      }
+      formData.append("editorId", userData?.id || "");
+    }
+
     formData.append("thumbnailUrl", selectedThumbnail);
 
     try {
-      await videoAPI.upload(formData);
+      if (uploadEditId) {
+        await videoAPI.uploadEdit(uploadEditId, formData);
+      } else {
+        await videoAPI.upload(formData);
+      }
+
       setIsUploadModalOpen(false);
+      setUploadEditId(null); // Reset
       setTitle("");
       setDescription("");
       setFile(null);
@@ -158,6 +207,28 @@ export default function EditorDashboard() {
       setUploadLoading(false);
     }
   };
+
+  const handleRawAccept = async (id: string) => {
+    try {
+      await videoAPI.reviewRaw(id, "accept");
+      fetchVideos();
+    } catch (err) { console.error(err); }
+  };
+
+  const handleRawReject = async (id: string) => {
+    // For MVP, using default reason. In real app, prompt for reason.
+    try {
+      await videoAPI.reviewRaw(id, "reject", "Editor unable to accept this request at this time.");
+      fetchVideos();
+    } catch (err) { console.error(err); }
+  };
+
+  const openUploadEditModal = (id: string) => {
+    setUploadEditId(id);
+    setTitle("Edited Version"); // Default title?
+    setIsUploadModalOpen(true);
+  };
+
 
   const handleLogout = () => {
     logout();
@@ -242,6 +313,42 @@ export default function EditorDashboard() {
             </div>
           </div>
 
+          {/* Room Switcher */}
+          <div className="flex items-center gap-2 ml-4 relative group">
+            <button className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-secondary/50 hover:bg-secondary border border-transparent hover:border-border transition-all">
+              <span className="font-medium text-xs">{currentRoom?.name || "Select Workspace"}</span>
+              <Wand2 className="w-3 h-3 text-muted-foreground" />
+            </button>
+            {/* Dropdown */}
+            <div className="absolute top-full left-0 mt-2 w-48 bg-popover border border-border rounded-lg shadow-xl overflow-hidden hidden group-focus-within:block group-hover:block z-50">
+              <div className="max-h-48 overflow-y-auto p-1">
+                {rooms.map(room => (
+                  <button
+                    key={room._id}
+                    onClick={() => setCurrentRoom(room)}
+                    className={cn(
+                      "w-full flex items-center gap-2 p-2 rounded-md text-xs transition-colors text-left",
+                      currentRoom?._id === room._id ? "bg-primary/10 text-primary" : "hover:bg-secondary text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    <span className="truncate">{room.name}</span>
+                    {currentRoom?._id === room._id && <CheckCircle className="w-3 h-3 ml-auto" />}
+                  </button>
+                ))}
+              </div>
+              <div className="p-1 border-t border-border">
+                <button
+                  onClick={() => setIsRoomModalOpen(true)}
+                  className="w-full flex items-center gap-2 p-2 rounded-md text-xs font-medium text-muted-foreground hover:text-primary hover:bg-primary/5 transition-colors"
+                >
+                  <Plus className="w-3 h-3" />
+                  Join Workspace
+                </button>
+              </div>
+            </div>
+          </div>
+
+
           <div className="flex items-center gap-2">
             <button
               onClick={() => router.push("/dashboard/editor/ai-studio")}
@@ -268,7 +375,7 @@ export default function EditorDashboard() {
               <LogOut className="w-4 h-4" />
             </button>
             <button
-              onClick={() => setIsUploadModalOpen(true)}
+              onClick={() => { setUploadEditId(null); setIsUploadModalOpen(true); }}
               className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg font-medium text-sm hover:opacity-90 transition-opacity cursor-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMiAyTDEwIDI2TDE0IDE2TDI2IDEyTDIgMloiIGZpbGw9IiMxMGI5ODEiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PC9zdmc+'),_pointer]"
             >
               <Plus className="w-4 h-4" />
@@ -276,7 +383,7 @@ export default function EditorDashboard() {
             </button>
           </div>
         </div>
-      </header>
+      </header >
 
       <main className="max-w-6xl mx-auto px-4 md:px-6 py-8">
         {/* Stats Row */}
@@ -437,48 +544,74 @@ export default function EditorDashboard() {
 
         {isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="bg-card border border-border rounded-xl overflow-hidden">
-                <div className="aspect-video bg-secondary animate-pulse" />
-                <div className="p-4 space-y-3">
-                  <div className="h-5 bg-secondary rounded animate-pulse w-3/4" />
-                  <div className="h-4 bg-secondary/70 rounded animate-pulse" />
-                </div>
-              </div>
-            ))}
+            {/* Skeletons */}
+            {[1, 2, 3].map(i => <div key={i} className="h-48 bg-secondary/30 rounded-xl animate-pulse" />)}
           </div>
-        ) : videos.length > 0 ? (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
-          >
-            {videos.map((video) => (
-              <VideoCard key={video._id} video={video} />
-            ))}
-          </motion.div>
         ) : (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="text-center py-16 bg-card border border-dashed border-border rounded-2xl"
-          >
-            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-secondary flex items-center justify-center">
-              <FileVideo className="w-7 h-7 text-muted-foreground" />
-            </div>
-            <h3 className="text-lg font-semibold mb-2">No videos submitted yet</h3>
-            <p className="text-muted-foreground text-sm mb-6 max-w-sm mx-auto">
-              Start your workflow by uploading your first draft for review.
-            </p>
-            <button
-              onClick={() => setIsUploadModalOpen(true)}
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-primary-foreground rounded-lg font-medium text-sm hover:opacity-90 transition-opacity"
-            >
-              <Upload className="w-4 h-4" />
-              Upload your first video
-            </button>
-          </motion.div>
+          <div className="space-y-10">
+            {/* Raw Requests Section */}
+            {videos.some(v => v.status === "raw_uploaded") && (
+              <section>
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="w-2 h-8 bg-purple-500 rounded-full" />
+                  <h3 className="text-lg font-semibold">New Raw Requests</h3>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {videos.filter(v => v.status === "raw_uploaded").map(video => (
+                    <VideoCard
+                      key={video._id}
+                      video={video}
+                      showEditorActions={true}
+                      onRawAccept={handleRawAccept}
+                      onRawReject={handleRawReject}
+                    />
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* In Progress Section */}
+            {videos.some(v => v.status === "editing_in_progress") && (
+              <section>
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="w-2 h-8 bg-blue-500 rounded-full" />
+                  <h3 className="text-lg font-semibold">Editing In Progress</h3>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {videos.filter(v => v.status === "editing_in_progress").map(video => (
+                    <VideoCard
+                      key={video._id}
+                      video={video}
+                      showEditorActions={true}
+                      onUploadEdit={openUploadEditModal}
+                    />
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* Submitted / History Section */}
+            <section>
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-2 h-8 bg-emerald-500 rounded-full" />
+                <h3 className="text-lg font-semibold">Submitted & History</h3>
+              </div>
+              {videos.filter(v => !["raw_uploaded", "editing_in_progress"].includes(v.status)).length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {videos.filter(v => !["raw_uploaded", "editing_in_progress"].includes(v.status)).map(video => (
+                    <VideoCard
+                      key={video._id}
+                      video={video}
+                      showEditorActions={video.status === "rejected"}
+                      onUploadEdit={openUploadEditModal}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-10 opacity-60 text-sm">No submission history yet.</div>
+              )}
+            </section>
+          </div>
         )}
       </main>
 
@@ -490,7 +623,7 @@ export default function EditorDashboard() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              onClick={() => setIsUploadModalOpen(false)}
+              onClick={() => { setIsUploadModalOpen(false); setUploadEditId(null); }}
               className="absolute inset-0 bg-black/60 backdrop-blur-sm"
             />
 
@@ -507,10 +640,10 @@ export default function EditorDashboard() {
                   <div className="bg-primary/10 p-1.5 rounded-md text-primary">
                     <Upload className="w-4 h-4" />
                   </div>
-                  <span className="font-semibold text-sm">New Submission</span>
+                  <span className="font-semibold text-sm">{uploadEditId ? "Submit Edited Version" : "New Submission"}</span>
                 </div>
                 <button
-                  onClick={() => setIsUploadModalOpen(false)}
+                  onClick={() => { setIsUploadModalOpen(false); setUploadEditId(null); }}
                   className="text-muted-foreground hover:text-foreground transition-colors"
                 >
                   <X className="w-4 h-4" />

@@ -87,4 +87,40 @@ router.put("/settings", require("../middlewares/userMiddleware"), async (req, re
   }
 });
 
+// Fetch editors associated with the current creator
+router.get("/editors", require("../middlewares/userMiddleware"), async (req, res) => {
+  try {
+    const editors = await userModel.find({
+      creatorId: req.userId,
+      role: "editor"
+    }).select("name email _id");
+
+    res.json(editors);
+  } catch (err) {
+    console.error("Error fetching editors:", err);
+    res.status(500).json({ message: "Failed to fetch editors" });
+  }
+});
+
+// Revoke editor access
+router.delete("/editors/:id", require("../middlewares/userMiddleware"), async (req, res) => {
+  try {
+    const editorId = req.params.id;
+    const editor = await userModel.findOne({ _id: editorId, creatorId: req.userId });
+
+    if (!editor) {
+      return res.status(404).json({ message: "Editor not found or not associated with you." });
+    }
+
+    // Unlink the editor
+    editor.creatorId = null;
+    await editor.save();
+
+    res.json({ message: "Editor removed successfully" });
+  } catch (err) {
+    console.error("Error removing editor:", err);
+    res.status(500).json({ message: "Failed to remove editor" });
+  }
+});
+
 module.exports = router;

@@ -48,7 +48,7 @@ export const videoAPI = {
       headers: { "Content-Type": "multipart/form-data" },
     }),
 
-  getVideos: () => api.get("/api/v1/videos"),
+  getVideos: (params?: any) => api.get("/api/v1/videos", { params }),
 
   getPending: () => api.get("/api/v1/videos/pending"),
 
@@ -69,6 +69,20 @@ export const videoAPI = {
     api.post(`/api/v1/videos/${id}/comments`, { text }),
 
   getVideo: (id: string) => api.get(`/api/v1/videos/${id}`),
+
+  // Raw Video Workflow
+  uploadRaw: (formData: FormData) =>
+    api.post("/api/v1/videos/upload-raw", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    }),
+
+  reviewRaw: (id: string, action: "accept" | "reject", reason?: string) =>
+    api.post(`/api/v1/videos/${id}/raw-review`, { action, reason }),
+
+  uploadEdit: (id: string, formData: FormData) =>
+    api.post(`/api/v1/videos/${id}/upload-edit`, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    }),
 };
 
 
@@ -85,6 +99,8 @@ export const userAPI = {
   getMe: () => api.get("/api/v1/user/me"),
   getSettings: () => api.get("/api/v1/user/get-settings"),
   updateSettings: (settings: any) => api.put("/api/v1/user/settings", { settings }),
+  getEditors: () => api.get("/api/v1/user/editors"),
+  removeEditor: (id: string) => api.delete(`/api/v1/user/editors/${id}`),
 };
 
 // Invite APIs
@@ -165,6 +181,15 @@ export const paymentAPI = {
   getPaymentHistory: () => api.get("/api/v1/payment/history"),
 
   createCryptoCharge: (plan: string) => api.post("/api/v1/payment/crypto/create-charge", { plan }),
+};
+
+// Room APIs
+export const roomAPI = {
+  create: (name: string) => api.post("/api/v1/rooms/create", { name }),
+  list: () => api.get("/api/v1/rooms/list"),
+  join: (token: string) => api.post("/api/v1/rooms/join", { token }),
+  get: (id: string) => api.get(`/api/v1/rooms/${id}`),
+  verify: (token: string) => api.get(`/api/v1/rooms/verify/${token}`),
 };
 
 // Razorpay Key for frontend

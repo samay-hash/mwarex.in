@@ -11,8 +11,8 @@ import {
   Lock,
   XCircle,
 } from "lucide-react";
-import { inviteAPI, authAPI } from "@/lib/api";
-import { setToken, setUserRole, setUserData } from "@/lib/auth";
+import { inviteAPI, authAPI, roomAPI } from "@/lib/api";
+import { setToken, setUserRole, setUserData, logout } from "@/lib/auth";
 import { MWareXLogo } from "@/components/mwarex-logo";
 import { NetworkMeshOverlay } from "@/components/ui/network-mesh-background";
 import { cn } from "@/lib/utils";
@@ -21,6 +21,7 @@ function JoinContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const token = searchParams.get("token");
+  const invitedEmail = searchParams.get("email"); // Email passed from Creator's invite link
 
   const [step, setStep] = useState<"verifying" | "signup" | "error">(
     "verifying"
@@ -30,50 +31,87 @@ function JoinContent() {
   const [password, setPassword] = useState("");
   const [creatorId, setCreatorId] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [roomName, setRoomName] = useState("");
   const [error, setError] = useState("");
 
   useEffect(() => {
+    // Clear any existing session to prevent confusion
+    logout();
+
     if (!token) {
       setStep("error");
       setError("Missing invitation token.");
       return;
     }
 
+    // Pre-fill email and name from invite link
+    if (invitedEmail) {
+      setEmail(invitedEmail);
+      // Derive a display name from the email (part before @), capitalize first letter
+      const namePart = invitedEmail.split("@")[0];
+      const displayName = namePart.charAt(0).toUpperCase() + namePart.slice(1);
+      setName(displayName);
+    }
+
     const verify = async () => {
       try {
-        const res = await inviteAPI.verifyInvite(token);
-        setEmail(res.data.email);
-        setCreatorId(res.data.creatorId);
-        setStep("signup");
+        // Try verifying as a Room token first
+        const roomRes = await roomAPI.verify(token);
+        if (roomRes.data.valid) {
+          setCreatorId(roomRes.data.roomId);
+          setRoomName(roomRes.data.roomName);
+          setStep("signup");
+          return;
+        }
       } catch (err) {
-        setStep("error");
-        setError("Invalid or expired invitation link.");
+        // Fallback to old invite (email specific)?
+        try {
+          const res = await inviteAPI.verifyInvite(token);
+          if (!invitedEmail) setEmail(res.data.email); // Only set if not already set from URL
+          setCreatorId(res.data.creatorId);
+          setStep("signup");
+        } catch (e) {
+          setStep("error");
+          setError("Invalid or expired invitation link.");
+        }
       }
     };
     verify();
-  }, [token]);
+  }, [token, invitedEmail]);
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     try {
+      // 1. Signup the user
       const signupRes = await authAPI.userSignup({
         email,
         password,
         name,
-        creatorId,
+        creatorId: creatorId, // Use creatorId field for legacy support or tracking, but we'll use join endpoint primarily
         role: "editor",
       });
 
+      // 2. Signin to get token
       const signinRes = await authAPI.userSignin({ email, password });
 
       setToken(signinRes.data.token);
       setUserRole("editor");
       setUserData({ email, id: signupRes.data.user._id, creatorId });
 
+      // 3. Join the room
+      if (token) {
+        try {
+          await roomAPI.join(token);
+        } catch (joinErr) {
+          console.error("Failed to auto-join room after signup", joinErr);
+          // potentially show a warning, but let them through to dashboard
+        }
+      }
+
       router.push("/dashboard/editor");
-    } catch (err) {
-      setError("Signup failed. Account might already exist.");
+    } catch (err: any) {
+      setError(err.response?.data?.message || "Signup failed. Account might already exist.");
     } finally {
       setIsLoading(false);
     }
@@ -116,7 +154,7 @@ function JoinContent() {
           <>
             <div className="text-center mb-8">
               <h2 className="text-3xl font-bold text-foreground mb-3">
-                Join Workspace
+                Join {roomName ? `"${roomName}"` : "Workspace"}
               </h2>
               <p className="text-muted-foreground text-sm">
                 Complete your editor profile to start collaborating.
@@ -153,9 +191,11 @@ function JoinContent() {
                   </div>
                   <input
                     type="email"
+                    required
                     value={email}
-                    disabled
-                    className="w-full bg-secondary/20 border border-border/20 text-muted-foreground rounded-xl py-3.5 pl-12 pr-4 outline-none cursor-not-allowed opacity-75"
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="name@example.com"
+                    className="w-full bg-secondary/30 border border-border/40 focus:border-primary/50 text-foreground rounded-xl py-3.5 pl-12 pr-4 outline-none transition-all placeholder:text-muted-foreground/50 hover:bg-secondary/50 focus:bg-secondary/60 focus:ring-4 focus:ring-primary/10"
                   />
                 </div>
               </div>

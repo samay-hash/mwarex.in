@@ -30,10 +30,11 @@ import {
   DollarSign,
   Wand2,
   MessageSquare,
-  Send
+  Send,
+  ChevronDown
 } from "lucide-react";
 import VideoCard from "@/components/VideoCard";
-import { videoAPI, inviteAPI, getGoogleAuthUrl, paymentAPI } from "@/lib/api";
+import { videoAPI, inviteAPI, getGoogleAuthUrl, paymentAPI, userAPI, roomAPI } from "@/lib/api";
 import { isAuthenticated, getUserData, logout, isDemoUser } from "@/lib/auth";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { MWareXLogo } from "@/components/mwarex-logo";
@@ -47,16 +48,18 @@ interface Video {
   title: string;
   description: string;
   fileUrl: string;
-  status: "pending" | "approved" | "rejected" | "uploaded";
+  status: "pending" | "approved" | "rejected" | "uploaded" | "raw_uploaded" | "raw_rejected" | "editing_in_progress";
   youtubeId?: string;
   rejectionReason?: string;
+  rawFileUrl?: string; // Add rawFileUrl
+  editorId?: { _id: string; name: string; email: string } | string;
 }
 
 export default function CreatorDashboard() {
   const router = useRouter();
   const [videos, setVideos] = useState<Video[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<"pending" | "all">("pending");
+  const [activeTab, setActiveTab] = useState<"pending" | "all" | "raw_uploaded">("pending");
   const [searchQuery, setSearchQuery] = useState("");
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");
@@ -71,6 +74,17 @@ export default function CreatorDashboard() {
   const [isDemo, setIsDemo] = useState(false);
   const [subscription, setSubscription] = useState<any>(null);
   const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
+
+  // Editor Selection State
+  const [editors, setEditors] = useState<{ _id: string; name: string; email: string }[]>([]);
+  const [selectedEditorId, setSelectedEditorId] = useState("");
+
+  // Room State
+  const [rooms, setRooms] = useState<{ _id: string; name: string; inviteToken?: string }[]>([]);
+  const [currentRoom, setCurrentRoom] = useState<{ _id: string; name: string; inviteToken?: string } | null>(null);
+  const [isRoomModalOpen, setIsRoomModalOpen] = useState(false);
+  const [newRoomName, setNewRoomName] = useState("");
+  const [isCreatingRoom, setIsCreatingRoom] = useState(false);
 
   // Rejection Modal State
   const [rejectModal, setRejectModal] = useState<{ isOpen: boolean; videoId: string | null }>({
@@ -104,6 +118,24 @@ export default function CreatorDashboard() {
       paymentAPI.getSubscription()
         .then(res => setSubscription(res.data.subscription))
         .catch(console.error);
+
+      // Fetch editors
+      userAPI.getEditors()
+        .then(res => setEditors(res.data))
+        .catch(err => console.error("Failed to load editors", err));
+
+      // Fetch Rooms
+      roomAPI.list()
+        .then(res => {
+          setRooms(res.data);
+          if (res.data.length > 0) {
+            setCurrentRoom(res.data[0]);
+          } else {
+            // Prompt to create first room
+            setIsRoomModalOpen(true);
+          }
+        })
+        .catch(err => console.error("Failed to load rooms", err));
     }
 
     // Page load animation
@@ -119,12 +151,52 @@ export default function CreatorDashboard() {
 
     setIsLoading(true);
     try {
-      const response = await videoAPI.getPending();
+      // Pass roomId if available
+      const params = currentRoom ? { roomId: currentRoom._id } : {};
+      const response = await videoAPI.getVideos(params);
       setVideos(response.data);
     } catch (error) {
       console.error("Failed to fetch videos:", error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+  const [uploadLoading, setUploadLoading] = useState(false);
+  const [uploadFile, setUploadFile] = useState<File | null>(null);
+  const [uploadTitle, setUploadTitle] = useState("");
+  const [uploadDesc, setUploadDesc] = useState("");
+
+  const handleUploadRaw = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!uploadFile) return;
+
+    setUploadLoading(true);
+    const formData = new FormData();
+    formData.append("video", uploadFile);
+    formData.append("title", uploadTitle);
+    formData.append("description", uploadDesc);
+    // If we have a specific editor assigned, append it here
+    if (selectedEditorId) formData.append("editorId", selectedEditorId);
+
+    // For now, let's rely on backend user association if any.
+    if (userData?.email) formData.append("creatorEmail", userData.email);
+
+    // Add Room ID
+    if (currentRoom) formData.append("roomId", currentRoom._id);
+
+    try {
+      await videoAPI.uploadRaw(formData);
+      setIsUploadModalOpen(false);
+      setUploadFile(null);
+      setUploadTitle("");
+      setUploadDesc("");
+      fetchVideos();
+    } catch (error) {
+      console.error("Failed to upload raw video:", error);
+    } finally {
+      setUploadLoading(false);
     }
   };
 
@@ -168,25 +240,24 @@ export default function CreatorDashboard() {
   };
 
   const handleInviteEditor = async () => {
-    if (!inviteEmail) return;
-    setIsInviting(true);
+    if (!currentRoom) return;
 
-    // For demo users, show a mock invite link
-    if (isDemo) {
-      setTimeout(() => {
-        setInviteLink(`https://mwarex.app/invite/demo-${Date.now()}`);
-        setIsInviting(false);
-      }, 1000);
-      return;
+    // Build invite link with the room token and the invited email
+    let link = `${window.location.origin}/join?token=${currentRoom.inviteToken}`;
+    if (inviteEmail.trim()) {
+      link += `&email=${encodeURIComponent(inviteEmail.trim())}`;
     }
+    setInviteLink(link);
+    setIsInviting(false);
+  };
 
+  const handleRemoveEditor = async (id: string) => {
+    if (!confirm("Are you sure you want to remove this editor? They will lose access to your dashboard.")) return;
     try {
-      const response = await inviteAPI.sendInvite(inviteEmail);
-      setInviteLink(response.data.inviteLink);
-    } catch (error) {
-      console.error("Failed to send invite:", error);
-    } finally {
-      setIsInviting(false);
+      await userAPI.removeEditor(id);
+      setEditors(editors.filter(e => e._id !== id));
+    } catch (err) {
+      console.error("Failed to remove editor", err);
     }
   };
 
@@ -206,7 +277,10 @@ export default function CreatorDashboard() {
       const matchesSearch =
         video.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         video.description?.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesTab = activeTab === "all" || video.status === activeTab;
+      const matchesTab =
+        activeTab === "all" ||
+        (activeTab === "raw_uploaded" && (video.status === "raw_uploaded" || video.status === "editing_in_progress")) ||
+        video.status === activeTab;
       return matchesSearch && matchesTab;
     });
   }, [videos, searchQuery, activeTab]);
@@ -220,6 +294,14 @@ export default function CreatorDashboard() {
         color: "text-amber-500",
         bg: "bg-amber-500/10",
         border: "border-amber-500/20",
+      },
+      {
+        label: "Active Requests",
+        value: videos.filter((v) => v.status === "raw_uploaded" || v.status === "editing_in_progress").length,
+        icon: VideoIcon,
+        color: "text-blue-500",
+        bg: "bg-blue-500/10",
+        border: "border-blue-500/20",
       },
       {
         label: "Approved",
@@ -248,6 +330,30 @@ export default function CreatorDashboard() {
     ],
     [videos]
   );
+
+  useEffect(() => {
+    if (currentRoom) {
+      fetchVideos();
+    }
+  }, [currentRoom]);
+
+  const handleCreateRoom = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newRoomName.trim()) return;
+
+    setIsCreatingRoom(true);
+    try {
+      const res = await roomAPI.create(newRoomName);
+      setRooms([...rooms, res.data]);
+      setCurrentRoom(res.data);
+      setIsRoomModalOpen(false);
+      setNewRoomName("");
+    } catch (err) {
+      console.error("Failed to create room", err);
+    } finally {
+      setIsCreatingRoom(false);
+    }
+  };
 
   const isRevenueLocked = subscription?.plan === "free" && !isDemo;
 
@@ -299,6 +405,49 @@ export default function CreatorDashboard() {
         {/* Logo Area */}
         <div className="p-5 border-b border-border">
           <MWareXLogo showText={true} size="md" />
+        </div>
+
+        {/* Workspace Switcher */}
+        <div className="px-3 pt-3 pb-1">
+          <div className="relative group">
+            <button className="w-full flex items-center justify-between p-2 rounded-lg bg-secondary/50 hover:bg-secondary border border-transparent hover:border-border transition-all">
+              <div className="flex items-center gap-3 overflow-hidden">
+                <div className="w-8 h-8 rounded-md bg-gradient-to-br from-primary to-violet-600 flex items-center justify-center text-white font-bold text-xs shrink-0">
+                  {currentRoom?.name?.[0] || "W"}
+                </div>
+                <span className="font-medium text-sm truncate">{currentRoom?.name || "Select Workspace"}</span>
+              </div>
+              <ChevronDown className="w-4 h-4 text-muted-foreground" />
+            </button>
+
+            {/* Dropdown */}
+            <div className="absolute top-full left-0 right-0 mt-2 bg-popover border border-border rounded-lg shadow-xl overflow-hidden hidden group-focus-within:block group-hover:block z-50">
+              <div className="max-h-48 overflow-y-auto p-1">
+                {rooms.map(room => (
+                  <button
+                    key={room._id}
+                    onClick={() => setCurrentRoom(room)}
+                    className={cn(
+                      "w-full flex items-center gap-2 p-2 rounded-md text-sm transition-colors text-left",
+                      currentRoom?._id === room._id ? "bg-primary/10 text-primary" : "hover:bg-secondary text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    <span className="truncate">{room.name}</span>
+                    {currentRoom?._id === room._id && <Check className="w-3 h-3 ml-auto" />}
+                  </button>
+                ))}
+              </div>
+              <div className="p-1 border-t border-border">
+                <button
+                  onClick={() => setIsRoomModalOpen(true)}
+                  className="w-full flex items-center gap-2 p-2 rounded-md text-xs font-medium text-muted-foreground hover:text-primary hover:bg-primary/5 transition-colors"
+                >
+                  <Plus className="w-3 h-3" />
+                  Create New Workspace
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Navigation */}
@@ -386,12 +535,21 @@ export default function CreatorDashboard() {
                 {videos.filter(v => v.status === 'pending').length} pending
               </div>
             )}
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setIsUploadModalOpen(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-secondary text-foreground rounded-lg font-medium text-sm hover:bg-secondary/80 transition-colors"
+            >
+              <VideoIcon className="w-4 h-4" />
+              <span className="hidden sm:inline">Upload Raw</span>
+            </button>
             <button
               onClick={() => setIsInviteModalOpen(true)}
               className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg font-medium text-sm hover:opacity-90 transition-opacity cursor-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMiAyTDEwIDI2TDE0IDE2TDI2IDEyTDIgMloiIGZpbGw9IiM2MzY2ZjEiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PC9zdmc+'),_pointer]"
             >
-              <Plus className="w-4 h-4" />
-              <span className="hidden sm:inline">Invite Editor</span>
+              <Users className="w-4 h-4" />
+              <span className="hidden sm:inline">Manage Team</span>
             </button>
           </div>
         </header>
@@ -574,7 +732,18 @@ export default function CreatorDashboard() {
                     : "bg-secondary text-muted-foreground hover:text-foreground"
                 )}
               >
-                Pending
+                Pending Review
+              </button>
+              <button
+                onClick={() => setActiveTab("raw_uploaded")}
+                className={cn(
+                  "px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap",
+                  activeTab === "raw_uploaded"
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-secondary text-muted-foreground hover:text-foreground"
+                )}
+              >
+                Active Requests
               </button>
               <button
                 onClick={() => setActiveTab("all")}
@@ -658,6 +827,100 @@ export default function CreatorDashboard() {
         </div>
       </main>
 
+      {/* Upload Modal */}
+      <AnimatePresence>
+        {isUploadModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsUploadModalOpen(false)}
+              className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="relative w-full max-w-md bg-card border border-border rounded-xl p-6 shadow-xl"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold">Upload Raw Video</h3>
+                <button onClick={() => setIsUploadModalOpen(false)}><X className="w-5 h-5" /></button>
+              </div>
+              <form onSubmit={handleUploadRaw} className="space-y-4">
+                <div>
+                  <label className="text-sm font-medium mb-1 block">Title</label>
+                  <input
+                    type="text"
+                    required
+                    value={uploadTitle}
+                    onChange={(e) => setUploadTitle(e.target.value)}
+                    className="w-full bg-secondary border border-border rounded-lg px-3 py-2 text-sm outline-none focus:border-primary"
+                    placeholder="Video title"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium mb-1 block">Notes for Editor</label>
+                  <textarea
+                    value={uploadDesc}
+                    onChange={(e) => setUploadDesc(e.target.value)}
+                    className="w-full bg-secondary border border-border rounded-lg px-3 py-2 text-sm outline-none focus:border-primary resize-none h-20"
+                    placeholder="Instructions..."
+                  />
+                </div>
+
+                {editors.length > 0 && (
+                  <div>
+                    <label className="text-sm font-medium mb-1 block">Assign Editor (Optional)</label>
+                    <select
+                      value={selectedEditorId}
+                      onChange={(e) => setSelectedEditorId(e.target.value)}
+                      className="w-full bg-secondary border border-border rounded-lg px-3 py-2 text-sm outline-none focus:border-primary appearance-none"
+                    >
+                      <option value="">Specific Editor...</option>
+                      {editors.map((editor) => (
+                        <option key={editor._id} value={editor._id}>
+                          {editor.name || editor.email}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
+                <div className="border-2 border-dashed border-border rounded-lg p-6 text-center cursor-pointer hover:bg-secondary/50 transition-colors relative">
+                  <input
+                    type="file"
+                    accept="video/*"
+                    required
+                    onChange={(e) => setUploadFile(e.target.files?.[0] || null)}
+                    className="absolute inset-0 opacity-0 cursor-pointer"
+                  />
+                  {uploadFile ? (
+                    <div className="flex flex-col items-center gap-2">
+                      <VideoIcon className="w-8 h-8 text-primary" />
+                      <span className="text-sm font-medium">{uploadFile.name}</span>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center gap-2">
+                      <VideoIcon className="w-8 h-8 text-muted-foreground" />
+                      <span className="text-sm text-muted-foreground">Click to select video</span>
+                    </div>
+                  )}
+                </div>
+                <button
+                  type="submit"
+                  disabled={uploadLoading}
+                  className="w-full py-2.5 bg-primary text-primary-foreground rounded-lg font-medium flex items-center justify-center gap-2 disabled:opacity-50"
+                >
+                  {uploadLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Upload Raw Video"}
+                </button>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
       {/* Invite Editor Modal */}
       <AnimatePresence>
         {isInviteModalOpen && (
@@ -680,107 +943,116 @@ export default function CreatorDashboard() {
               {/* Header */}
               <div className="p-5 border-b border-border flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
-                    <Users className="w-5 h-5" />
+                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Users className="w-5 h-5 text-primary" />
                   </div>
                   <div>
-                    <h2 className="text-lg font-semibold">Invite Editor</h2>
-                    <p className="text-xs text-muted-foreground">Send a secure invite link</p>
+                    <h3 className="font-semibold">Manage Team</h3>
+                    <p className="text-xs text-muted-foreground">{editors.length} active editors</p>
                   </div>
                 </div>
-                <button
-                  onClick={() => setIsInviteModalOpen(false)}
-                  className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground transition-colors"
-                >
-                  <X className="w-4 h-4" />
-                </button>
+                <button onClick={() => setIsInviteModalOpen(false)}><X className="w-5 h-5 text-muted-foreground" /></button>
               </div>
 
-              <div className="p-5">
-                {!inviteLink ? (
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Editor's Email</label>
+              <div className="p-5 space-y-6">
+                {/* Active Team List */}
+                <div className="space-y-3">
+                  <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Active Editors</h4>
+
+                  {editors.length === 0 ? (
+                    <div className="text-center py-4 bg-secondary/30 rounded-xl border border-dashed border-border">
+                      <p className="text-sm text-muted-foreground">No editors in your team yet.</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-2 max-h-40 overflow-y-auto pr-1">
+                      {editors.map((editor) => (
+                        <div key={editor._id} className="flex items-center justify-between p-2 rounded-lg bg-secondary/50 border border-border/50">
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold">
+                              {editor.name?.[0] || editor.email?.[0] || 'E'}
+                            </div>
+                            <div className="overflow-hidden">
+                              <p className="text-sm font-medium truncate w-[140px]">{editor.name || "Editor"}</p>
+                              <p className="text-[10px] text-muted-foreground truncate w-[140px]">{editor.email}</p>
+                            </div>
+                          </div>
+                          <button
+                            onClick={() => handleRemoveEditor(editor._id)}
+                            className="p-1.5 text-muted-foreground hover:text-red-500 hover:bg-red-500/10 rounded-md transition-colors"
+                            title="Remove Editor"
+                          >
+                            <LogOut className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <div className="border-t border-border pt-4">
+                  <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">Invite New Editor</h4>
+
+                  {!inviteLink ? (
+                    <div className="space-y-3">
                       <div className="relative">
                         <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                         <input
                           type="email"
                           value={inviteEmail}
                           onChange={(e) => setInviteEmail(e.target.value)}
-                          placeholder="name@example.com"
-                          className="w-full bg-secondary/50 border border-border focus:border-primary/50 rounded-lg pl-10 pr-4 py-3 outline-none transition-colors focus:bg-background"
+                          placeholder="editor@example.com"
+                          className="w-full bg-secondary border border-border rounded-lg pl-10 pr-4 py-2.5 text-sm outline-none focus:border-primary"
                         />
                       </div>
+                      <button
+                        onClick={handleInviteEditor}
+                        disabled={isInviting || !inviteEmail}
+                        className="w-full py-2.5 bg-primary text-primary-foreground rounded-lg font-medium text-sm flex items-center justify-center gap-2 hover:opacity-90 transition-opacity disabled:opacity-50"
+                      >
+                        {isInviting ? <Loader2 className="w-4 h-4 animate-spin" /> : "Send Invite & Generate Link"}
+                      </button>
                     </div>
-
-                    <button
-                      onClick={handleInviteEditor}
-                      disabled={!inviteEmail || isInviting}
-                      className="w-full py-3 bg-primary text-primary-foreground rounded-lg font-medium flex items-center justify-center gap-2 hover:opacity-90 transition-opacity disabled:opacity-50"
-                    >
-                      {isInviting ? (
-                        <>
-                          <Loader2 className="w-4 h-4 animate-spin" />
-                          Generating...
-                        </>
-                      ) : (
-                        <>
-                          Send Invite
-                          <ChevronRight className="w-4 h-4" />
-                        </>
-                      )}
-                    </button>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    <div className="p-4 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-center">
-                      <div className="flex items-center justify-center gap-2 text-emerald-600 dark:text-emerald-400 font-medium mb-1">
-                        <CheckCircle className="w-4 h-4" />
-                        Invite Generated!
+                  ) : (
+                    <div className="space-y-4">
+                      <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-3 flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center">
+                          <Check className="w-4 h-4 text-emerald-500" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-emerald-500">Invite Generated!</p>
+                          <p className="text-xs text-muted-foreground">Share this link with your editor</p>
+                        </div>
                       </div>
-                      <p className="text-xs text-muted-foreground">Share this link with your editor</p>
-                    </div>
 
-                    <div className="space-y-2">
-                      <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Invite Link</label>
-                      <div className="relative">
-                        <input
-                          type="text"
-                          value={inviteLink}
-                          readOnly
-                          className="w-full bg-secondary/50 border border-border rounded-lg pl-3 pr-20 py-3 text-sm font-mono outline-none"
-                        />
-                        <button
-                          onClick={copyInviteLink}
-                          className="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-1.5 bg-background border border-border rounded text-xs font-medium flex items-center gap-1 hover:bg-secondary transition-colors"
-                        >
-                          {isCopied ? (
-                            <>
-                              <Check className="w-3 h-3 text-emerald-500" />
-                              Copied
-                            </>
-                          ) : (
-                            <>
-                              <Copy className="w-3 h-3" />
-                              Copy
-                            </>
-                          )}
-                        </button>
+                      <div className="space-y-1">
+                        <div className="flex gap-2">
+                          <code className="flex-1 bg-secondary border border-border rounded-lg px-3 py-2 text-xs font-mono text-muted-foreground truncate">
+                            {inviteLink}
+                          </code>
+                          <button
+                            onClick={copyInviteLink}
+                            className={cn(
+                              "flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-colors border",
+                              isCopied
+                                ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
+                                : "bg-secondary text-foreground border-border hover:bg-secondary/80"
+                            )}
+                          >
+                            {isCopied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                            {isCopied ? "Copied" : "Copy"}
+                          </button>
+                        </div>
                       </div>
-                    </div>
 
-                    <button
-                      onClick={() => {
-                        setInviteLink("");
-                        setInviteEmail("");
-                        setIsInviteModalOpen(false);
-                      }}
-                      className="w-full py-3 bg-secondary text-foreground rounded-lg font-medium hover:bg-secondary/80 transition-colors"
-                    >
-                      Done
-                    </button>
-                  </div>
-                )}
+                      <button
+                        onClick={() => { setInviteLink(""); setInviteEmail(""); }}
+                        className="w-full py-2 text-xs text-muted-foreground hover:text-foreground underline transition-colors"
+                      >
+                        Invite another editor
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
             </motion.div>
           </div>
@@ -838,6 +1110,65 @@ export default function CreatorDashboard() {
                   </button>
                 </div>
               </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {isRoomModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+              onClick={() => rooms.length > 0 && setIsRoomModalOpen(false)}
+            />
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="relative w-full max-w-sm bg-card border border-border rounded-xl p-6 shadow-xl"
+            >
+              <h3 className="text-lg font-semibold mb-2">Create New Workspace</h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                Workspaces help you organize your videos and team.
+              </p>
+
+              <form onSubmit={handleCreateRoom} className="space-y-4">
+                <div>
+                  <label className="text-sm font-medium mb-1 block">Workspace Name</label>
+                  <input
+                    type="text"
+                    required
+                    value={newRoomName}
+                    onChange={(e) => setNewRoomName(e.target.value)}
+                    className="w-full bg-secondary border border-border rounded-lg px-3 py-2 text-sm outline-none focus:border-primary"
+                    placeholder="e.g. My Vlog Channel"
+                    autoFocus
+                  />
+                </div>
+
+                <div className="flex justify-end gap-2 pt-2">
+                  {rooms.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => setIsRoomModalOpen(false)}
+                      className="px-4 py-2 text-sm font-medium hover:bg-secondary rounded-lg transition-colors"
+                    >
+                      Cancel
+                    </button>
+                  )}
+                  <button
+                    type="submit"
+                    disabled={isCreatingRoom || !newRoomName.trim()}
+                    className="px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:opacity-90 disabled:opacity-50 flex items-center gap-2"
+                  >
+                    {isCreatingRoom ? <Loader2 className="w-4 h-4 animate-spin" /> : "Create Workspace"}
+                  </button>
+                </div>
+              </form>
             </motion.div>
           </div>
         )}

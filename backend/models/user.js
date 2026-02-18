@@ -3,6 +3,10 @@ const userSchema = new mongoose.Schema({
   email: String,
   password: String,
   name: String,
+  joinedRooms: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Room"
+  }],
   googleId: String, // For Google OAuth users
   profilePicture: String, // Google profile picture URL
   creatorId: {
@@ -37,5 +41,5 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-const userModel = mongoose.model("User", userSchema);
+const userModel = mongoose.models.User || mongoose.model("User", userSchema);
 module.exports = userModel;
