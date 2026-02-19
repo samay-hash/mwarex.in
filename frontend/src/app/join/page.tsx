@@ -82,36 +82,58 @@ function JoinContent() {
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setError("");
     try {
-      // 1. Signup the user
-      const signupRes = await authAPI.userSignup({
-        email,
-        password,
-        name,
-        creatorId: creatorId, // Use creatorId field for legacy support or tracking, but we'll use join endpoint primarily
-        role: "editor",
-      });
+      let userId = "";
 
-      // 2. Signin to get token
+      // 1. Try Signup first
+      try {
+        const signupRes = await authAPI.userSignup({
+          email,
+          password,
+          name,
+          creatorId: creatorId,
+          role: "editor",
+        });
+        userId = signupRes.data.user._id;
+      } catch (signupErr: any) {
+        // If user already exists, try to sign in instead
+        if (signupErr.response?.status === 400 &&
+          signupErr.response?.data?.message?.toLowerCase().includes("already exists")) {
+          console.log("User already exists, signing in instead...");
+          // Fall through to signin below
+        } else {
+          throw signupErr; // Re-throw if it's a different error
+        }
+      }
+
+      // 2. Sign in to get token
       const signinRes = await authAPI.userSignin({ email, password });
-
       setToken(signinRes.data.token);
       setUserRole("editor");
-      setUserData({ email, id: signupRes.data.user._id, creatorId });
+      setUserData({ email, id: userId || "", creatorId });
 
       // 3. Join the room
       if (token) {
         try {
           await roomAPI.join(token);
-        } catch (joinErr) {
-          console.error("Failed to auto-join room after signup", joinErr);
-          // potentially show a warning, but let them through to dashboard
+          console.log("Joined room successfully");
+        } catch (joinErr: any) {
+          // "Already a member" is fine — not an error
+          if (!joinErr.response?.data?.message?.includes("Already")) {
+            console.error("Failed to join room:", joinErr);
+          }
         }
       }
 
       router.push("/dashboard/editor");
     } catch (err: any) {
-      setError(err.response?.data?.message || "Signup failed. Account might already exist.");
+      const msg = err.response?.data?.message || "Something went wrong.";
+      if (msg.toLowerCase().includes("invalid")) {
+        setError("Incorrect password. If you already have an account, use your existing password.");
+      } else {
+        setError(msg);
+      }
     } finally {
       setIsLoading(false);
     }
