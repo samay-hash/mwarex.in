@@ -40,7 +40,7 @@ export function ProductPreview() {
                         transition={{ delay: 0.2 }}
                         className="text-muted-foreground text-lg max-w-2xl mx-auto"
                     >
-                        Enterprise-grade infrastructure designed to handle your entire video production workflow without breaking a sweat.
+                        Every workspace runs in isolation with OAuth 2.0 authentication, role-based access, and encrypted cloud storage — so creators and editors collaborate without compromise.
                     </motion.p>
                 </div>
 
@@ -49,8 +49,8 @@ export function ProductPreview() {
 
                     {/* Card 1: Protected & Secure */}
                     <FeatureCard
-                        title="Protected & Secure"
-                        description="Your data is safe. All assets are stored in segregated, encrypted cloud environments with bank-grade security protocols."
+                        title="Isolated Workspaces"
+                        description="Every creator gets a private, sandboxed workspace. Video assets, drafts, and credentials are stored in encrypted cloud environments — no cross-tenant data leaks, ever."
                         delay={0.1}
                         direction="left"
                     >
@@ -85,8 +85,8 @@ export function ProductPreview() {
 
                     {/* Card 2: Regulated & Compliant */}
                     <FeatureCard
-                        title="Regulated & Compliant"
-                        description="We operate under strict supervision of data protection regulations, ensuring your content rights are fully managed."
+                        title="Role-Based Access Control"
+                        description="Creators own the channel. Editors get scoped access — upload edits, leave comments, but never touch publish settings. OAuth 2.0 tokens ensure only authorized actions reach YouTube."
                         delay={0.2}
                         direction="right"
                     >
@@ -117,8 +117,8 @@ export function ProductPreview() {
 
                     {/* Card 3: Professional Support */}
                     <FeatureCard
-                        title="Professional Support"
-                        description="Our customer service team is available around the clock to assist you instantly. No bots, just expert humans."
+                        title="Cloud-Native Pipeline"
+                        description="Videos flow through a managed pipeline — raw upload, AI-assisted editing, creator review, one-click YouTube publish. All processed on cloud infrastructure, nothing runs on your device."
                         delay={0.3}
                         direction="left"
                     >
@@ -141,8 +141,8 @@ export function ProductPreview() {
 
                     {/* Card 4: Reliable Infrastructure */}
                     <FeatureCard
-                        title="99.99% Reliability"
-                        description="Built on a global edge network. Your workspace is available 24/7 with zero downtime and lightning-fast speeds."
+                        title="Real-Time Sync"
+                        description="Live room-based collaboration between creators and editors. Instant notifications, comment threads on timelines, and status tracking — your team stays in sync, not in chaos."
                         delay={0.4}
                         direction="right"
                     >
