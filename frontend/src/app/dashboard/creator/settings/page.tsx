@@ -60,6 +60,14 @@ export default function SettingsPage() {
                 if (subRes.data.success) {
                     setSubscription(subRes.data.subscription);
                 }
+
+                // Check YouTube connection status
+                try {
+                    const ytStatus = await videoAPI.getYouTubeStatus();
+                    setIsYoutubeConnected(ytStatus.data.connected === true);
+                } catch (err) {
+                    console.error("Failed to check YouTube status", err);
+                }
             } catch (error) {
                 console.error("Failed to fetch settings", error);
             } finally {

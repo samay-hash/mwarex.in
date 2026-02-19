@@ -196,20 +196,30 @@ router.post("/:id/approve", userAuth, async (req, res) => {
       return res.status(404).json({ message: "Video Not Found" });
     }
 
-    const user = await userModel.findById(req.userId);
-    if (!user || !user.youtubeTokens || !user.youtubeTokens.refreshToken) {
+    // The YouTube upload should use the CREATOR's (video owner's) tokens
+    const creatorId = video.creatorId || req.userId;
+    const creator = await userModel.findById(creatorId);
+    if (!creator || !creator.youtubeTokens || !creator.youtubeTokens.refreshToken) {
       return res.status(400).json({
         message: "YouTube account not connected. Please go to Settings and connect your channel."
       });
     }
 
+    // Pre-flight: Try to get a fresh OAuth client (this triggers token refresh if needed)
+    try {
+      const testClient = await getOAuth2Client(creatorId);
+      await testClient.getAccessToken(); // Force token refresh check
+    } catch (tokenErr) {
+      console.error("Token pre-flight failed:", tokenErr.message);
+      // Don't block — the upload function will try again
+    }
+
     video.status = "processing";
     await video.save();
 
-
     res.json({ message: "Video approved. Uploading to YouTube in background..." });
 
-    uploadToYoutube(video, req.userId)
+    uploadToYoutube(video, creatorId)
       .then(async (yt) => {
         console.log("YouTube Upload Success:", yt.id);
         video.status = "uploaded";
@@ -240,6 +250,23 @@ router.post("/:id/reject", userAuth, async (req, res) => {
   await video.save();
 
   res.json({ message: "Video Rejected" });
+});
+
+// Check if YouTube is connected
+router.get("/youtube-status", userAuth, async (req, res) => {
+  try {
+    const user = await userModel.findById(req.userId);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    const isConnected = !!(user.youtubeTokens && user.youtubeTokens.refreshToken);
+    res.json({
+      connected: isConnected,
+      updatedAt: user.youtubeTokens?.updatedAt || null,
+    });
+  } catch (error) {
+    console.error("YouTube status check error:", error);
+    res.status(500).json({ message: "Failed to check status" });
+  }
 });
 
 // Store YouTube tokens for user
