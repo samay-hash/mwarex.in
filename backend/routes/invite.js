@@ -37,7 +37,7 @@ router.post("/invite", creatorAuth, async (req, res) => {
     if (email) {
       console.log("[Invite] Sending email to:", email);
       try {
-        await sendInviteEmail(email, inviteLink, creatorName, req.userId);
+        await sendInviteEmail(email, inviteLink, creatorName);
         console.log("[Invite] Email sent successfully to:", email);
         emailSent = true;
       } catch (emailErr) {
