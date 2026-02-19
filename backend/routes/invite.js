@@ -34,18 +34,16 @@ router.post("/invite", creatorAuth, async (req, res) => {
     // Send email BEFORE responding (critical for Render — 
     // if we respond first, the process might get killed before email completes)
     let emailSent = false;
-    if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+    if (email) {
       console.log("[Invite] Sending email to:", email);
       try {
-        await sendInviteEmail(email, inviteLink, creatorName);
+        await sendInviteEmail(email, inviteLink, creatorName, req.userId);
         console.log("[Invite] Email sent successfully to:", email);
         emailSent = true;
       } catch (emailErr) {
-        console.error("[Invite] EMAIL ERROR:", emailErr.code, emailErr.message);
+        console.error("[Invite] EMAIL ERROR:", emailErr.message);
         // Don't fail the whole invite — link still works
       }
-    } else {
-      console.log(`[Invite] Email skip. User: ${!!process.env.EMAIL_USER}, Pass: ${!!process.env.EMAIL_PASS}`);
     }
 
     res.json({
