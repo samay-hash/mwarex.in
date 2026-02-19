@@ -4,43 +4,55 @@ const EditorAssignment = require("../models/EditorAssignment");
 const userModel = require("../models/user");
 const { creatorAuth } = require("../middlewares/creatorMiddleware");
 const { sendInviteEmail } = require("../services/emailService");
-const { error } = require("console");
 
 router.post("/invite", creatorAuth, async (req, res) => {
   try {
-    const { email } = req.body;
+    const { email, inviteLink: providedLink } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ message: "Email is required" });
+    }
+
+    // Generate a token for the EditorAssignment record
     const token = crypto.randomBytes(32).toString("hex");
 
-    const invite = await EditorAssignment.create({
+    await EditorAssignment.create({
       creatorId: req.userId,
       editorEmail: email,
       inviteToken: token,
     });
+
+    // Use the provided invite link (from Room-based system) or generate one
     const frontendUrl = (process.env.FRONTEND_URL || "https://www.mwarex.in").replace(/\/$/, "");
-    const inviteLink = `${frontendUrl}/join?token=${token}`;
+    const inviteLink = providedLink || `${frontendUrl}/join?token=${token}`;
 
     const creator = await userModel.findById(req.userId);
     const creatorName = creator ? creator.name : "A Creator";
 
-    console.log("Invite link generated:", inviteLink);
+    console.log("Invite link for email:", inviteLink);
 
-    res.json({
-      message: "Invite link generated!",
-      inviteLink,
-    });
-
-    if (process.env.EMAIL_USER && process.env.EMAIL_PASS && email) {
-      console.log("Environment variables present. Sending email...");
-debugger
+    // Send email BEFORE responding (critical for Render — 
+    // if we respond first, the process might get killed before email completes)
+    let emailSent = false;
+    if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+      console.log("[Invite] Sending email to:", email);
       try {
         await sendInviteEmail(email, inviteLink, creatorName);
-        console.log("Email sent successfully to:", email);
+        console.log("[Invite] Email sent successfully to:", email);
+        emailSent = true;
       } catch (emailErr) {
-        console.error("FULL EMAIL ERROR:", emailErr);
+        console.error("[Invite] EMAIL ERROR:", emailErr.code, emailErr.message);
+        // Don't fail the whole invite — link still works
       }
     } else {
-      console.log(`Email skip. User: ${!!process.env.EMAIL_USER}, Pass: ${!!process.env.EMAIL_PASS}, To: ${email}`);
+      console.log(`[Invite] Email skip. User: ${!!process.env.EMAIL_USER}, Pass: ${!!process.env.EMAIL_PASS}`);
     }
+
+    res.json({
+      message: emailSent ? "Invite sent via email!" : "Invite link generated!",
+      inviteLink,
+      emailSent,
+    });
 
   } catch (err) {
     console.error(err);

@@ -248,6 +248,20 @@ export default function CreatorDashboard() {
       link += `&email=${encodeURIComponent(inviteEmail.trim())}`;
     }
     setInviteLink(link);
+
+    // Also send invite email via backend
+    if (inviteEmail.trim()) {
+      try {
+        const res = await inviteAPI.sendInvite(inviteEmail.trim(), link);
+        if (res.data.emailSent) {
+          console.log("Invite email sent successfully");
+        }
+      } catch (err) {
+        console.error("Failed to send invite email:", err);
+        // Don't block — the link is still available for copy-paste
+      }
+    }
+
     setIsInviting(false);
   };
 

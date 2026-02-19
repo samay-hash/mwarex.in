@@ -107,7 +107,7 @@ export const userAPI = {
 
 // Invite APIs
 export const inviteAPI = {
-  sendInvite: (email: string) => api.post("/api/v1/invite", { email }),
+  sendInvite: (email: string, inviteLink?: string) => api.post("/api/v1/invite", { email, inviteLink }),
 
   verifyInvite: (token: string) => api.get(`/api/v1/verify?token=${token}`),
 };

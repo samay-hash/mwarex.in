@@ -1,18 +1,40 @@
 const nodemailer = require("nodemailer");
 
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 465,
-  secure: true, // true for 465, false for other ports
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-});
+// Create transporter lazily (only when needed) to ensure env vars are loaded
+let _transporter = null;
+
+const getTransporter = () => {
+  if (!_transporter) {
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+      console.error("[Email] EMAIL_USER or EMAIL_PASS not set in environment!");
+      return null;
+    }
+
+    _transporter = nodemailer.createTransport({
+      service: "gmail", // Using 'service' instead of host/port — more reliable across environments
+      connectionTimeout: 10000, // 10 second connection timeout
+      greetingTimeout: 10000,
+      socketTimeout: 15000,
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+
+    console.log("[Email] Transporter created for:", process.env.EMAIL_USER);
+  }
+  return _transporter;
+};
 
 const sendInviteEmail = async (toEmail, inviteLink, creatorName) => {
+  const transporter = getTransporter();
+  if (!transporter) {
+    console.error("[Email] Cannot send — transporter not available");
+    return null;
+  }
+
   const mailOptions = {
-    from: process.env.EMAIL_USER,
+    from: `"MwareX" <${process.env.EMAIL_USER}>`,
     to: toEmail,
     subject: "You've been invited to join a MwareX Workspace",
     html: `
@@ -40,26 +62,34 @@ const sendInviteEmail = async (toEmail, inviteLink, creatorName) => {
     `,
   };
 
-  console.log(`Attempting to send email to ${toEmail} from ${process.env.EMAIL_USER}...`);
+  console.log(`[Email] Attempting to send to ${toEmail} from ${process.env.EMAIL_USER}...`);
   try {
     const info = await transporter.sendMail(mailOptions);
-    console.log("Email sent info:", info.response);
+    console.log("[Email] Sent successfully:", info.response);
     return info;
   } catch (error) {
-    console.error("Transporter Send Error:", error);
+    console.error("[Email] Send Error:", error.code, error.message);
+    // Reset transporter so it's recreated on next attempt
+    _transporter = null;
     throw error;
   }
 };
 
 const verifyConnection = async () => {
+  const transporter = getTransporter();
+  if (!transporter) {
+    console.error("❌ SMTP: No transporter — EMAIL_USER or EMAIL_PASS missing");
+    return;
+  }
+
   try {
-    const success = await transporter.verify();
-    if (success) {
-      console.log("✅ SMTP Connection Verified (Ready to send emails)");
-    }
+    await transporter.verify();
+    console.log("✅ SMTP Connection Verified (Ready to send emails)");
   } catch (error) {
-    console.error("❌ SMTP Connection Failed:", error);
+    console.error("❌ SMTP Connection Failed:", error.code, error.message);
     console.error("   Hint: Check EMAIL_USER, EMAIL_PASS, and ensure App Password is used.");
+    // Reset transporter so it's recreated on next attempt
+    _transporter = null;
   }
 };
 
