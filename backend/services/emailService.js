@@ -26,7 +26,7 @@ const sendInviteEmail = async (toEmail, inviteLink, creatorName) => {
 
   try {
     const { data, error } = await client.emails.send({
-      from: "MwareX <team@mwarex.in>",
+      from: "MwareX <team-Samay@mwarex.in>",
       to: [toEmail],
       subject: "You've been invited to join a MwareX Workspace",
       html: `
