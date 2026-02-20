@@ -11,6 +11,14 @@ export const metadata: Metadata = {
         url: "https://mwarex.in/about",
         siteName: "Mwarex",
         type: "website",
+        images: [
+            {
+                url: "https://mwarex.in/images/samay-samrat.jpg",
+                width: 1200,
+                height: 630,
+                alt: "Samay Samrat - Founder of MwareX",
+            },
+        ],
     },
     twitter: {
         card: "summary_large_image",
@@ -23,7 +31,7 @@ export const metadata: Metadata = {
 };
 
 export default function AboutPage() {
- 
+
     const orgSchema = {
         "@context": "https://schema.org",
         "@type": "Organization",

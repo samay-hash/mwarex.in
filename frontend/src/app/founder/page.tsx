@@ -14,9 +14,27 @@ export const metadata: Metadata = {
         images: [
             {
                 url: "https://mwarex.in/images/samay-samrat.jpg",
-                width: 800,
-                height: 600,
-                alt: "Samay Samrat - Founder of Mwarex",
+                width: 1200,
+                height: 630,
+                alt: "Samay Samrat - Founder of MwareX",
+            },
+            {
+                url: "https://mwarex.in/images/samay-samrat-nvidia.jpg",
+                width: 1200,
+                height: 630,
+                alt: "Samay Samrat at NVIDIA Tech Summit",
+            },
+            {
+                url: "https://mwarex.in/images/samay-samrat-ai-impact-summit.jpg",
+                width: 1200,
+                height: 630,
+                alt: "Samay Samrat at AI Impact Summit 2026",
+            },
+            {
+                url: "https://mwarex.in/images/samay-samrat-ai-summit.jpg",
+                width: 1200,
+                height: 630,
+                alt: "Samay Samrat at AI Summit",
             },
         ],
     },
@@ -24,7 +42,7 @@ export const metadata: Metadata = {
         card: "summary_large_image",
         title: "Samay Samrat – Founder of Mwarex | YouTuber | Tech & Creator Tools",
         description: "Samay Samrat is an Indian YouTuber and founder of Mwarex.",
-        images: ["https://mwarex.in/images/samay-samrat.jpg"],
+        images: ["https://mwarex.in/images/samay-samrat.jpg", "https://mwarex.in/images/samay-samrat-nvidia.jpg", "https://mwarex.in/images/samay-samrat-ai-impact-summit.jpg"],
     },
     alternates: {
         canonical: "https://mwarex.in/founder",
@@ -37,7 +55,12 @@ export default function FounderPage() {
         "@context": "https://schema.org",
         "@type": "Person",
         name: "Samay Samrat",
-        image: "https://mwarex.in/images/samay-samrat.jpg",
+        image: [
+            "https://mwarex.in/images/samay-samrat.jpg",
+            "https://mwarex.in/images/samay-samrat-nvidia.jpg",
+            "https://mwarex.in/images/samay-samrat-ai-summit.jpg",
+            "https://mwarex.in/images/samay-samrat-ai-impact-summit.jpg"
+        ],
         jobTitle: "Founder of Mwarex",
         worksFor: {
             "@type": "Organization",

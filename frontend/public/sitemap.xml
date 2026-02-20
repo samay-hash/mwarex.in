@@ -1,25 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
 
   <url>
     <loc>https://mwarex.in/</loc>
-    <lastmod>2026-02-07</lastmod>
+    <lastmod>2026-02-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://mwarex.in/images/samay-samrat.jpg</image:loc>
+      <image:title>Samay Samrat - Founder of MWareX</image:title>
+      <image:caption>Samay Samrat, Indian entrepreneur and founder of MwareX, a creator-editor video collaboration platform</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://mwarex.in/images/samay-samrat-nvidia.jpg</image:loc>
+      <image:title>Samay Samrat at NVIDIA Tech Summit</image:title>
+      <image:caption>MwareX founder Samay Samrat at the NVIDIA technology summit</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://mwarex.in/images/samay-samrat-ai-summit.jpg</image:loc>
+      <image:title>Samay Samrat at AI Summit</image:title>
+      <image:caption>Samay Samrat, founder of MwareX, at an AI technology summit</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://mwarex.in/images/samay-samrat-ai-impact-summit.jpg</image:loc>
+      <image:title>Samay Samrat at AI Impact Summit 2026</image:title>
+      <image:caption>MwareX founder Samay Samrat at the AI Impact Summit 2026 India</image:caption>
+    </image:image>
   </url>
 
   <url>
     <loc>https://mwarex.in/about</loc>
-    <lastmod>2026-02-07</lastmod>
+    <lastmod>2026-02-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://mwarex.in/images/samay-samrat.jpg</image:loc>
+      <image:title>Samay Samrat - Founder of MWareX</image:title>
+    </image:image>
   </url>
 
   <url>
     <loc>https://mwarex.in/founder</loc>
-    <lastmod>2026-02-07</lastmod>
+    <lastmod>2026-02-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://mwarex.in/images/samay-samrat.jpg</image:loc>
+      <image:title>Samay Samrat - Founder of MWareX</image:title>
+      <image:caption>Samay Samrat is an Indian YouTuber and founder of MwareX</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://mwarex.in/images/samay-samrat-nvidia.jpg</image:loc>
+      <image:title>Samay Samrat at NVIDIA Tech Summit</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://mwarex.in/images/samay-samrat-ai-summit.jpg</image:loc>
+      <image:title>Samay Samrat at AI Summit</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://mwarex.in/images/samay-samrat-ai-impact-summit.jpg</image:loc>
+      <image:title>Samay Samrat at AI Impact Summit 2026 India</image:title>
+    </image:image>
   </url>
 
   <url>
@@ -52,9 +94,13 @@
 
   <url>
     <loc>https://mwarex.in/blog/who-founded-mwarex</loc>
-    <lastmod>2026-02-07</lastmod>
+    <lastmod>2026-02-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://mwarex.in/images/samay-samrat.jpg</image:loc>
+      <image:title>Samay Samrat - Who Founded MWareX</image:title>
+    </image:image>
   </url>
 
 </urlset>

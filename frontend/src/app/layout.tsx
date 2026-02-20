@@ -19,9 +19,53 @@ const playfair = Playfair_Display({
 
 export const metadata: Metadata = {
   title: "MWareX | Streamline Your Video Workflow",
-  description: "The ultimate platform for YouTubers and editors to collaborate seamlessly. Upload, review, approve, and publish videos with ease.",
+  description: "The ultimate platform for YouTubers and editors to collaborate seamlessly. Upload, review, approve, and publish videos with ease. Founded by Samay Samrat.",
+  keywords: ["MwareX", "Samay Samrat", "YouTube collaboration", "video workflow", "creator platform", "editor management", "video production", "content creation"],
+  authors: [{ name: "Samay Samrat", url: "https://mwarex.in/founder" }],
+  creator: "Samay Samrat",
   verification: {
     google: "1QUHEi3OUs7QONfHD6jNW2m-k_KxQRFhy61jgkbDAv4",
+  },
+  openGraph: {
+    title: "MWareX | Streamline Your Video Workflow",
+    description: "The ultimate platform for YouTubers and editors to collaborate seamlessly. Upload, review, approve, and publish videos with ease.",
+    url: "https://mwarex.in",
+    siteName: "MWareX",
+    type: "website",
+    locale: "en_IN",
+    images: [
+      {
+        url: "https://mwarex.in/images/samay-samrat.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Samay Samrat - Founder of MWareX",
+      },
+      {
+        url: "https://mwarex.in/images/samay-samrat-nvidia.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Samay Samrat at NVIDIA Tech Summit",
+      },
+      {
+        url: "https://mwarex.in/images/samay-samrat-ai-summit.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Samay Samrat at AI Summit",
+      },
+      {
+        url: "https://mwarex.in/images/samay-samrat-ai-impact-summit.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Samay Samrat at AI Impact Summit 2026",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "MWareX | Streamline Your Video Workflow",
+    description: "The ultimate platform for YouTubers and editors. Founded by Samay Samrat.",
+    images: ["https://mwarex.in/images/samay-samrat.jpg"],
+    creator: "@ChemistGamer1",
   },
   icons: {
     icon: [
