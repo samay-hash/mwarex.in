@@ -1,14 +1,15 @@
 const mongoose = require("mongoose");
+
 const userSchema = new mongoose.Schema({
   email: String,
   password: String,
   name: String,
   joinedRooms: [{
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Room"
+    ref: "Room",
   }],
-  googleId: String, // For Google OAuth users
-  profilePicture: String, // Google profile picture URL
+  googleId: String,
+  profilePicture: String,
   creatorId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
@@ -27,14 +28,14 @@ const userSchema = new mongoose.Schema({
   settings: {
     aiAutoSuggest: { type: Boolean, default: true },
     aiThumbnailGen: { type: Boolean, default: true },
-    contentModeration: { type: String, default: 'medium' },
-    defaultStyle: { type: String, default: 'modern' },
+    contentModeration: { type: String, default: "medium" },
+    defaultStyle: { type: String, default: "modern" },
     emailNotifications: { type: Boolean, default: true },
-    pushNotifications: { type: Boolean, default: false }
+    pushNotifications: { type: Boolean, default: false },
   },
   subscription: {
-    plan: { type: String, enum: ['free', 'pro', 'team'], default: 'free' },
-    status: { type: String, enum: ['active', 'expired', 'cancelled'], default: 'active' },
+    plan: { type: String, enum: ["free", "pro", "team"], default: "free" },
+    status: { type: String, enum: ["active", "expired", "cancelled"], default: "active" },
     startDate: { type: Date, default: null },
     endDate: { type: Date, default: null },
     paymentId: { type: String, default: null },

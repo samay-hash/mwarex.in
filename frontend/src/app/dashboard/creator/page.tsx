@@ -36,12 +36,14 @@ import {
 import VideoCard from "@/components/VideoCard";
 import { videoAPI, inviteAPI, getGoogleAuthUrl, paymentAPI, userAPI, roomAPI } from "@/lib/api";
 import { isAuthenticated, getUserData, logout, isDemoUser } from "@/lib/auth";
+import { getSocket } from "@/lib/socket";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { MWareXLogo } from "@/components/mwarex-logo";
 import { SubscriptionModal } from "@/components/subscription-modal";
 import { cn } from "@/lib/utils";
 import { DashboardOnboarding } from "@/components/onboarding";
 import { SeasonSwitcher } from "@/components/seasonal-background";
+import { toast } from "sonner";
 
 interface Video {
   _id: string;
@@ -51,7 +53,8 @@ interface Video {
   status: "pending" | "approved" | "rejected" | "uploaded" | "raw_uploaded" | "raw_rejected" | "editing_in_progress";
   youtubeId?: string;
   rejectionReason?: string;
-  rawFileUrl?: string; // Add rawFileUrl
+  editorRejectionReason?: string;
+  rawFileUrl?: string;
   editorId?: { _id: string; name: string; email: string } | string;
 }
 
@@ -348,6 +351,31 @@ export default function CreatorDashboard() {
   useEffect(() => {
     if (currentRoom) {
       fetchVideos();
+
+      // Join socket room for real-time updates
+      const socket = getSocket();
+      socket.emit("join_room", currentRoom._id);
+
+      const handleVideoEvent = (data: any) => {
+        const action = data?.action || "video_updated";
+        const messages: Record<string, string> = {
+          video_uploaded: "📹 Editor uploaded a new video!",
+          video_approved: "✅ Video approved!",
+          video_rejected: "❌ Video was rejected",
+          video_accepted: "👍 Editor accepted your raw video!",
+          video_updated: "🔄 Video status updated",
+          youtube_uploaded: "🎉 Video is live on YouTube!",
+        };
+        toast.info(messages[action] || "Video list updated");
+        fetchVideos();
+      };
+
+      const events = ["video_uploaded", "video_updated", "video_approved", "video_rejected", "video_accepted"];
+      events.forEach(evt => socket.on(evt, handleVideoEvent));
+
+      return () => {
+        events.forEach(evt => socket.off(evt, handleVideoEvent));
+      };
     }
   }, [currentRoom]);
 

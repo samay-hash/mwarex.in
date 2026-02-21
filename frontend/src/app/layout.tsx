@@ -6,6 +6,7 @@ import { OnboardingProvider } from "@/contexts/OnboardingContext";
 import { SmoothScrollProvider } from "@/components/smooth-scroll-provider";
 import { SeasonProvider } from "@/contexts/SeasonContext";
 import { SeasonalBackground } from "@/components/seasonal-background";
+import { Toaster } from "sonner";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -127,6 +128,7 @@ export default function RootLayout({
               </SeasonProvider>
             </SmoothScrollProvider>
           </OnboardingProvider>
+          <Toaster position="top-right" richColors closeButton />
         </ThemeProvider>
       </body>
     </html>

@@ -4,30 +4,26 @@ const editorAssignmentSchema = new mongoose.Schema({
   creatorId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
-    required: true
+    required: true,
   },
-
   editorEmail: {
     type: String,
-    required: true
+    required: true,
   },
-
   editorId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
-    default: null
+    default: null,
   },
-
   status: {
     type: String,
     enum: ["invited", "accepted", "rejected"],
-    default: "invited"
+    default: "invited",
   },
-
   inviteToken: {
     type: String,
-    required: true
-  }
+    required: true,
+  },
 }, { timestamps: true });
 
 module.exports = mongoose.model("EditorAssignment", editorAssignmentSchema);

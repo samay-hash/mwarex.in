@@ -15,9 +15,12 @@ import {
   Loader2,
   MessageSquare,
   Quote,
-  RefreshCw
+  RefreshCw,
+  Download,
+  ArrowRight
 } from "lucide-react";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 interface VideoCardProps {
@@ -31,12 +34,13 @@ interface VideoCardProps {
     editorId?: string | { _id: string; name: string; email: string };
     youtubeId?: string;
     rejectionReason?: string;
-    rawFileUrl?: string; // Add rawFileUrl
+    editorRejectionReason?: string;
+    rawFileUrl?: string;
   };
   onApprove?: (id: string) => void;
   onReject?: (id: string) => void;
   showActions?: boolean;
-  showEditorActions?: boolean; // New prop for Editor Dashboard
+  showEditorActions?: boolean;
   onRawAccept?: (id: string) => void;
   onRawReject?: (id: string) => void;
   onUploadEdit?: (id: string) => void;
@@ -54,6 +58,7 @@ export default function VideoCard({
   onUploadEdit,
   isLoading = false,
 }: VideoCardProps) {
+  const router = useRouter();
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
   const [videoError, setVideoError] = useState(false);
 
@@ -132,7 +137,7 @@ export default function VideoCard({
       className="glass-card rounded-2xl overflow-visible card-hover group flex flex-col h-full border border-border/40 hover:border-border/80 bg-card transition-all duration-300 shadow-sm hover:shadow-lg relative"
     >
       {/* Rejection Note - "Hanging" effect */}
-      {(video.status === "rejected" || video.status === "raw_rejected") && (video.rejectionReason) && (
+      {(video.status === "rejected" || video.status === "raw_rejected") && (video.rejectionReason || video.editorRejectionReason) && (
         <div className="absolute -top-4 -right-4 z-30 max-w-[250px] animate-in fade-in zoom-in duration-300 group-hover:scale-105 transition-transform">
           <div className="relative bg-red-50 dark:bg-red-950/90 text-red-900 dark:text-red-100 text-xs p-3 rounded-tr-xl rounded-bl-xl rounded-tl-xl shadow-xl border border-red-200 dark:border-red-900">
             <div className="absolute -bottom-1.5 right-0 w-3 h-3 bg-red-50 dark:bg-red-950/90 border-r border-b border-red-200 dark:border-red-900 rotate-45 transform origin-center"></div>
@@ -140,7 +145,7 @@ export default function VideoCard({
               <Quote className="w-4 h-4 text-red-400 rotate-180 flex-shrink-0" />
               <div>
                 <span className="font-bold block text-[10px] uppercase tracking-wider text-red-500 mb-0.5">Feedback</span>
-                <p className="italic leading-snug">"{video.rejectionReason}"</p>
+                <p className="italic leading-snug">"{video.rejectionReason || video.editorRejectionReason}"</p>
               </div>
             </div>
           </div>
@@ -151,9 +156,7 @@ export default function VideoCard({
       <div
         className="relative aspect-video bg-muted/30 overflow-hidden cursor-pointer group/thumb rounded-t-2xl"
         onClick={() => {
-          // If purely raw video request, maybe just open modal instead of generic studio logic
-          // But generic studio might work if it handles the url
-          setIsVideoModalOpen(true);
+          router.push(`/dashboard/video/${video._id}`);
         }}
       >
         <div className="absolute inset-0 flex items-center justify-center z-10 transition-transform duration-500 group-hover/thumb:scale-110">
@@ -248,24 +251,67 @@ export default function VideoCard({
 
           {/* Actions - Editor View (In Progress) */}
           {showEditorActions && video.status === "editing_in_progress" && (
-            <div className="grid grid-cols-2 gap-3 pt-4 border-t border-border/40">
-              <a
-                href={video.rawFileUrl ? getVideoUrl(video.rawFileUrl) : "#"}
-                download
-                onClick={(e) => e.stopPropagation()}
-                target="_blank"
-                className="flex items-center justify-center gap-2 py-2.5 rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400 hover:bg-blue-500/20 transition-colors text-xs font-bold uppercase tracking-wide border border-blue-500/20 disabled:opacity-50"
-              >
-                <ExternalLink className="w-3.5 h-3.5" />
-                Download
-              </a>
+            <div className="space-y-2 pt-4 border-t border-border/40">
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  onClick={async (e) => {
+                    e.stopPropagation();
+                    const url = video.rawFileUrl ? getVideoUrl(video.rawFileUrl) : getVideoUrl(video.fileUrl);
+
+                    // For Cloudinary URLs, inject fl_attachment to force download
+                    if (url.includes("res.cloudinary.com")) {
+                      const downloadUrl = url.replace("/upload/", "/upload/fl_attachment/");
+                      window.location.href = downloadUrl;
+                      return;
+                    }
+
+                    // For local/other URLs, use fetch + blob
+                    try {
+                      const btn = e.currentTarget;
+                      const originalContent = btn.innerHTML;
+                      btn.textContent = "Downloading...";
+                      btn.setAttribute("disabled", "true");
+
+                      const response = await fetch(url);
+                      const blob = await response.blob();
+                      const blobUrl = URL.createObjectURL(blob);
+
+                      const link = document.createElement("a");
+                      link.href = blobUrl;
+                      link.download = `${video.title || "video"}.mp4`;
+                      document.body.appendChild(link);
+                      link.click();
+                      document.body.removeChild(link);
+
+                      setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
+                      btn.innerHTML = originalContent;
+                      btn.removeAttribute("disabled");
+                    } catch (err) {
+                      console.error("Download failed:", err);
+                      window.open(url, "_blank");
+                    }
+                  }}
+                  className="flex items-center justify-center gap-2 py-2.5 rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400 hover:bg-blue-500/20 transition-colors text-xs font-bold uppercase tracking-wide border border-blue-500/20 disabled:opacity-50"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  Download
+                </button>
+                <button
+                  onClick={(e) => { e.stopPropagation(); onUploadEdit?.(video._id); }}
+                  disabled={isLoading}
+                  className="flex items-center justify-center gap-2 py-2.5 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition-colors text-xs font-bold uppercase tracking-wide border border-primary/20 disabled:opacity-50"
+                >
+                  <Youtube className="w-4 h-4" />
+                  Upload Edit
+                </button>
+              </div>
               <button
-                onClick={(e) => { e.stopPropagation(); onUploadEdit?.(video._id); }}
-                disabled={isLoading}
-                className="flex items-center justify-center gap-2 py-2.5 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition-colors text-xs font-bold uppercase tracking-wide border border-primary/20 disabled:opacity-50"
+                onClick={(e) => { e.stopPropagation(); router.push(`/dashboard/video/${video._id}`); }}
+                className="w-full flex items-center justify-center gap-2 py-2 rounded-xl bg-secondary/50 text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors text-xs font-medium border border-border/40"
               >
-                <Youtube className="w-4 h-4" />
-                Upload Edit
+                <MessageSquare className="w-3.5 h-3.5" />
+                Open Chat & Studio
+                <ArrowRight className="w-3 h-3" />
               </button>
             </div>
           )}

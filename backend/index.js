@@ -13,7 +13,7 @@ const editorRoutes = require("./routes/editor");
 const inviteRoutes = require("./routes/invite");
 const settingsRoutes = require("./routes/settings");
 const paymentRoutes = require("./routes/payment");
-const cryptoRoutes = require("./routes/crypto"); // Import crypto routes
+const cryptoRoutes = require("./routes/crypto");
 const { verifyConnection } = require("./services/emailService");
 
 const { google } = require("googleapis");
@@ -22,15 +22,13 @@ const googleAuthRoutes = require("./routes/googleAuth");
 const http = require("http");
 const { Server } = require("socket.io");
 
-// Keep-alive configuration
 const SELF_PING_URL = process.env.BACKEND_URL || "https://mwarex-in.onrender.com";
-const PING_INTERVAL = 14 * 60 * 1000; // 14 minutes (before Render's 15 min sleep)
+const PING_INTERVAL = 14 * 60 * 1000;
 
 const app = express();
 const server = http.createServer(app);
 
 const frontend = (process.env.FRONTEND_URL || "http://localhost:3000").replace(/\/$/, "");
-console.log("CORS Origin Allowed:", frontend);
 
 const allowedOrigins = [
   frontend,
@@ -40,15 +38,15 @@ const allowedOrigins = [
   "http://127.0.0.1:3000",
   "http://localhost:5173",
   "http://127.0.0.1:5173",
-  "https://mware-x.vercel.app"
+  "https://mware-x.vercel.app",
 ];
 
 const io = new Server(server, {
   cors: {
     origin: allowedOrigins,
     methods: ["GET", "POST"],
-    credentials: true
-  }
+    credentials: true,
+  },
 });
 
 io.on("connection", (socket) => {
@@ -56,7 +54,11 @@ io.on("connection", (socket) => {
 
   socket.on("join_video", (videoId) => {
     socket.join(`video_${videoId}`);
-    console.log(`Socket ${socket.id} joined video_${videoId}`);
+  });
+
+  socket.on("join_room", (roomId) => {
+    socket.join(`room_${roomId}`);
+    console.log(`Socket ${socket.id} joined room_${roomId}`);
   });
 
   socket.on("disconnect", () => {
@@ -64,13 +66,10 @@ io.on("connection", (socket) => {
   });
 });
 
-// Inject IO
 app.use((req, res, next) => {
   req.io = io;
   next();
 });
-
-console.log("Allowed Origins:", allowedOrigins);
 
 app.use(
   cors({
@@ -93,52 +92,42 @@ app.use("/api/v1/ai", aiRoutes);
 app.use("/api/editor", editorRoutes);
 app.use("/api/v1", inviteRoutes);
 app.use("/api/v1/payment", paymentRoutes);
-app.use("/api/v1/payment/crypto", cryptoRoutes); // Use crypto routes
+app.use("/api/v1/payment/crypto", cryptoRoutes);
 app.use("/api/v1/rooms", require("./routes/room"));
 app.use("/auth", googleAuthRoutes);
 
-// ========================
-// HEALTH CHECK & KEEP-ALIVE
-// ========================
-
-// Fast health check endpoint (responds in milliseconds)
 app.get("/health", (req, res) => {
   res.status(200).json({
     status: "ok",
     timestamp: new Date().toISOString(),
-    uptime: process.uptime()
+    uptime: process.uptime(),
   });
 });
 
-// Health check for API v1 (used by frontend warmup)
 app.get("/api/v1/health", (req, res) => {
   res.status(200).json({
     status: "ok",
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
-    version: "1.0.0"
+    version: "1.0.0",
   });
 });
 
-// Also add /ping as an alias
 app.get("/ping", (req, res) => {
   res.status(200).send("pong");
 });
 
-// Self-ping function to keep the server awake
 const keepServerAlive = () => {
   const pingUrl = `${SELF_PING_URL}/health`;
 
   setInterval(async () => {
     try {
       const response = await axios.get(pingUrl, { timeout: 10000 });
-      console.log(`[Keep-Alive] Pinged ${pingUrl} at ${new Date().toISOString()} - Status: ${response.status}`);
+      console.log(`[Keep-Alive] Pinged at ${new Date().toISOString()} - Status: ${response.status}`);
     } catch (error) {
       console.log(`[Keep-Alive] Ping failed: ${error.message}`);
     }
   }, PING_INTERVAL);
-
-  console.log(`[Keep-Alive] Self-ping enabled, pinging ${pingUrl} every ${PING_INTERVAL / 60000} minutes`);
 };
 
 app.get("/oauth2callback", async (req, res) => {
@@ -153,22 +142,17 @@ app.get("/oauth2callback", async (req, res) => {
 
     const { tokens } = await oauth2Client.getToken(code);
 
-    console.log("TOKENS ===>", tokens);
-
-    // Redirect to frontend callback with tokens (frontend should handle storing securely)
-    // Use the state parameter if it exists (it contains the origin), otherwise fallback
     const origin = req.query.state;
-    const frontend = origin || process.env.FRONTEND_URL || "https://www.mwarex.in";
+    const frontendUrl = origin || process.env.FRONTEND_URL || "https://www.mwarex.in";
 
     const params = new URLSearchParams();
 
     if (tokens.access_token) params.append("access_token", tokens.access_token);
-    if (tokens.refresh_token)
-      params.append("refresh_token", tokens.refresh_token);
+    if (tokens.refresh_token) params.append("refresh_token", tokens.refresh_token);
     if (tokens.scope) params.append("scope", tokens.scope);
 
     return res.redirect(
-      `${frontend.replace(/\/$/, "")}/oauth2callback?${params.toString()}`
+      `${frontendUrl.replace(/\/$/, "")}/oauth2callback?${params.toString()}`
     );
   } catch (err) {
     console.error(err);
@@ -183,7 +167,6 @@ const PORT = process.env.PORT || 8000;
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 
-  // Start keep-alive only in production (when BACKEND_URL is set)
   if (process.env.NODE_ENV === "production" || process.env.BACKEND_URL) {
     keepServerAlive();
   }

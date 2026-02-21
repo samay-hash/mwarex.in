@@ -13,7 +13,6 @@ router.post("/invite", creatorAuth, async (req, res) => {
       return res.status(400).json({ message: "Email is required" });
     }
 
-    // Generate a token for the EditorAssignment record
     const token = crypto.randomBytes(32).toString("hex");
 
     await EditorAssignment.create({
@@ -22,27 +21,19 @@ router.post("/invite", creatorAuth, async (req, res) => {
       inviteToken: token,
     });
 
-    // Use the provided invite link (from Room-based system) or generate one
     const frontendUrl = (process.env.FRONTEND_URL || "https://www.mwarex.in").replace(/\/$/, "");
     const inviteLink = providedLink || `${frontendUrl}/join?token=${token}`;
 
     const creator = await userModel.findById(req.userId);
     const creatorName = creator ? creator.name : "A Creator";
 
-    console.log("Invite link for email:", inviteLink);
-
-    // Send email BEFORE responding (critical for Render — 
-    // if we respond first, the process might get killed before email completes)
     let emailSent = false;
     if (email) {
-      console.log("[Invite] Sending email to:", email);
       try {
         await sendInviteEmail(email, inviteLink, creatorName);
-        console.log("[Invite] Email sent successfully to:", email);
         emailSent = true;
       } catch (emailErr) {
-        console.error("[Invite] EMAIL ERROR:", emailErr.message);
-        // Don't fail the whole invite — link still works
+        console.error("Email Error:", emailErr.message);
       }
     }
 
@@ -51,7 +42,6 @@ router.post("/invite", creatorAuth, async (req, res) => {
       inviteLink,
       emailSent,
     });
-
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "something went wrong" });
@@ -59,18 +49,22 @@ router.post("/invite", creatorAuth, async (req, res) => {
 });
 
 router.get("/verify", async (req, res) => {
-  const token = req.query.token;
-  const invite = await EditorAssignment.findOne({
-    inviteToken: token,
-  });
-  if (!invite) {
-    return res.status(404).json({ message: "Invalid invite link" });
+  try {
+    const token = req.query.token;
+    const invite = await EditorAssignment.findOne({ inviteToken: token });
+
+    if (!invite) {
+      return res.status(404).json({ message: "Invalid invite link" });
+    }
+
+    res.json({
+      message: "invite valid, proceed to signup",
+      email: invite.editorEmail,
+      creatorId: invite.creatorId,
+    });
+  } catch (err) {
+    res.status(500).json({ message: "Server Error" });
   }
-  res.json({
-    message: "invite valid, proceed to signup",
-    email: invite.editorEmail,
-    creatorId: invite.creatorId,
-  });
 });
 
 module.exports = router;

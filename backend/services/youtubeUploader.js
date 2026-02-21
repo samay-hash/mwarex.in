@@ -4,10 +4,12 @@ const axios = require("axios");
 
 async function uploadToYoutube(video, userId) {
   const oauth2Client = await getOAuth2Client(userId);
+
   const youtube = google.youtube({
     version: "v3",
     auth: oauth2Client,
   });
+
   const res = await youtube.videos.insert({
     part: "snippet,status",
     requestBody: {
@@ -28,10 +30,8 @@ async function uploadToYoutube(video, userId) {
     },
   });
 
-  // Upload Thumbnail if exists
   if (video.thumbnailUrl) {
     try {
-      console.log("Uploading thumbnail...", video.thumbnailUrl);
       const thumbRes = await axios({
         method: "get",
         url: video.thumbnailUrl,
@@ -41,10 +41,9 @@ async function uploadToYoutube(video, userId) {
       await youtube.thumbnails.set({
         videoId: res.data.id,
         media: {
-          body: thumbRes.data
-        }
+          body: thumbRes.data,
+        },
       });
-      console.log("Thumbnail set successfully");
     } catch (err) {
       console.error("Thumbnail upload failed:", err.message);
     }

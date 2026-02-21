@@ -27,11 +27,13 @@ import {
 import VideoCard from "@/components/VideoCard";
 import { videoAPI, aiAPI, paymentAPI, roomAPI } from "@/lib/api";
 import { isAuthenticated, getUserData, logout, isDemoUser } from "@/lib/auth";
+import { getSocket } from "@/lib/socket";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { MWareXLogo } from "@/components/mwarex-logo";
 import { SubscriptionModal } from "@/components/subscription-modal";
 import { cn } from "@/lib/utils";
 import { SeasonSwitcher } from "@/components/seasonal-background";
+import { toast } from "sonner";
 
 interface Video {
   _id: string;
@@ -40,7 +42,8 @@ interface Video {
   fileUrl: string;
   status: "pending" | "approved" | "rejected" | "uploaded" | "processing" | "raw_uploaded" | "raw_rejected" | "editing_in_progress";
   rejectionReason?: string;
-  rawFileUrl?: string; // Add rawFileUrl
+  editorRejectionReason?: string;
+  rawFileUrl?: string;
   editorId?: { _id: string; name: string; email: string } | string;
 }
 
@@ -69,7 +72,13 @@ export default function EditorDashboard() {
   const [description, setDescription] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [error, setError] = useState("");
-  const [uploadEditId, setUploadEditId] = useState<string | null>(null); // Track if uploading an edit for a raw video
+  const [uploadEditId, setUploadEditId] = useState<string | null>(null);
+
+  // Reject Modal State
+  const [rejectModal, setRejectModal] = useState<{ isOpen: boolean; videoId: string | null }>({
+    isOpen: false, videoId: null
+  });
+  const [rejectionReason, setRejectionReason] = useState("");
 
   // AI Thumbnail State
   const [thumbnailPrompt, setThumbnailPrompt] = useState("");
@@ -125,10 +134,34 @@ export default function EditorDashboard() {
     setTimeout(() => setPageLoaded(true), 100);
   }, [router]);
 
-  // Re-fetch videos whenever the selected room changes
+  // Re-fetch videos whenever the selected room changes + real-time socket
   useEffect(() => {
     if (currentRoom) {
       fetchVideos();
+
+      const socket = getSocket();
+      socket.emit("join_room", currentRoom._id);
+
+      const handleVideoEvent = (data: any) => {
+        const action = data?.action || "video_updated";
+        const messages: Record<string, string> = {
+          video_uploaded: "📹 New video received!",
+          video_approved: "✅ A video was approved!",
+          video_rejected: "❌ A video was rejected",
+          video_accepted: "👍 Raw video was accepted",
+          video_updated: "🔄 Video status updated",
+          youtube_uploaded: "🎉 Video is live on YouTube!",
+        };
+        toast.info(messages[action] || "Video list updated");
+        fetchVideos();
+      };
+
+      const events = ["video_uploaded", "video_updated", "video_approved", "video_rejected", "video_accepted"];
+      events.forEach(evt => socket.on(evt, handleVideoEvent));
+
+      return () => {
+        events.forEach(evt => socket.off(evt, handleVideoEvent));
+      };
     }
   }, [currentRoom]);
 
@@ -215,10 +248,17 @@ export default function EditorDashboard() {
     } catch (err) { console.error(err); }
   };
 
-  const handleRawReject = async (id: string) => {
-    // For MVP, using default reason. In real app, prompt for reason.
+  const handleRawReject = (id: string) => {
+    setRejectModal({ isOpen: true, videoId: id });
+    setRejectionReason("");
+  };
+
+  const submitRawReject = async () => {
+    if (!rejectModal.videoId) return;
     try {
-      await videoAPI.reviewRaw(id, "reject", "Editor unable to accept this request at this time.");
+      await videoAPI.reviewRaw(rejectModal.videoId, "reject", rejectionReason || "Editor unable to accept this request at this time.");
+      setRejectModal({ isOpen: false, videoId: null });
+      setRejectionReason("");
       fetchVideos();
     } catch (err) { console.error(err); }
   };
@@ -807,6 +847,70 @@ export default function EditorDashboard() {
         onClose={() => setIsUpgradeModalOpen(false)}
         currentPlan={subscription?.plan || "free"}
       />
+
+      {/* Rejection Reason Modal */}
+      <AnimatePresence>
+        {rejectModal.isOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setRejectModal({ isOpen: false, videoId: null })}
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ scale: 0.9, y: 30, opacity: 0 }}
+              animate={{ scale: 1, y: 0, opacity: 1 }}
+              exit={{ scale: 0.9, y: 30, opacity: 0 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              className="relative w-full max-w-sm bg-card border border-border rounded-xl overflow-hidden shadow-2xl"
+            >
+              <div className="px-4 py-3 border-b border-border flex items-center justify-between bg-red-500/5">
+                <div className="flex items-center gap-2">
+                  <div className="bg-red-500/10 p-1.5 rounded-md text-red-500">
+                    <XCircle className="w-4 h-4" />
+                  </div>
+                  <span className="font-semibold text-sm">Reject Raw Video</span>
+                </div>
+                <button
+                  onClick={() => setRejectModal({ isOpen: false, videoId: null })}
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+              <div className="p-4 space-y-3">
+                <p className="text-xs text-muted-foreground">
+                  Let the creator know why you're rejecting this video request:
+                </p>
+                <textarea
+                  rows={3}
+                  value={rejectionReason}
+                  onChange={(e) => setRejectionReason(e.target.value)}
+                  className="w-full bg-secondary/30 border border-border focus:border-red-500/50 rounded-lg px-3 py-2 text-sm outline-none transition-all resize-none focus:bg-background placeholder:text-muted-foreground/70"
+                  placeholder="e.g. Video quality is too low, please re-record..."
+                  autoFocus
+                />
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setRejectModal({ isOpen: false, videoId: null })}
+                    className="flex-1 py-2 rounded-lg text-sm font-medium bg-secondary hover:bg-secondary/80 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={submitRawReject}
+                    className="flex-1 py-2 rounded-lg text-sm font-medium bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-colors border border-red-500/20"
+                  >
+                    Reject
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div >
   );
 }

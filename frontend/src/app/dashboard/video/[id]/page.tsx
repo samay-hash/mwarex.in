@@ -151,6 +151,22 @@ export default function VideoStudioPage() {
 
     const isCreator = userData?.role === "creator" || (video?.creatorId && userData?.id === video.creatorId?._id);
 
+    const getVideoUrl = (path: string) => {
+        if (!path) return "";
+        if (path.startsWith("http") || path.startsWith("blob")) return path;
+        const cleanPath = path.replace(/\\/g, "/");
+        const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+        const safeBase = baseUrl.endsWith("/") ? baseUrl.slice(0, -1) : baseUrl;
+        const safePath = cleanPath.startsWith("/") ? cleanPath : `/${cleanPath}`;
+        return `${safeBase}${safePath}`;
+    };
+
+    const currentVideoPath = (video?.status === "raw_uploaded" || video?.status === "editing_in_progress") && video?.rawFileUrl
+        ? video.rawFileUrl
+        : video?.fileUrl || "";
+
+    const videoSrc = getVideoUrl(currentVideoPath);
+
     if (loading) {
         return (
             <div className="min-h-screen bg-black flex items-center justify-center">
@@ -229,7 +245,7 @@ export default function VideoStudioPage() {
                 <div className="flex-1 bg-black/95 relative flex items-center justify-center p-8">
                     <div className="relative w-full max-w-5xl aspect-video bg-black rounded-lg shadow-2xl overflow-hidden border border-white/10">
                         <video
-                            src={video.fileUrl}
+                            src={videoSrc}
                             className="w-full h-full object-contain"
                             controls
                             style={bgStyle}

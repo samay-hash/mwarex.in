@@ -28,35 +28,36 @@ const videoSchema = new mongoose.Schema({
   },
   rejectionReason: String,
 
-  // Raw Video Workflow Fields
-  rawFileUrl: String, // If creator uploads a raw video
+  rawFileUrl: String,
   hasRawVideo: { type: Boolean, default: false },
   editorReviewStatus: {
     type: String,
     enum: ["pending", "accepted", "rejected"],
-    default: "pending" // Only relevant if hasRawVideo is true
+    default: "pending",
   },
   editorRejectionReason: String,
 
-  // Messaging / Feedback
   comments: [{
     senderId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     text: String,
-    createdAt: { type: Date, default: Date.now }
+    createdAt: { type: Date, default: Date.now },
   }],
 
-  // Video Editing / Color Grading Metadata
   editSettings: {
     brightness: { type: Number, default: 100 },
     contrast: { type: Number, default: 100 },
     saturation: { type: Number, default: 100 },
     grayscale: { type: Number, default: 0 },
     sepia: { type: Number, default: 0 },
-    trimStart: { type: Number, default: 0 }, // In seconds
-    trimEnd: { type: Number, default: 0 }     // In seconds
-  }
-});
+    trimStart: { type: Number, default: 0 },
+    trimEnd: { type: Number, default: 0 },
+  },
+}, { timestamps: true });
 
 const videoModel = mongoose.models.Video || mongoose.model("Video", videoSchema);
-
 module.exports = videoModel;
+
+
+// raw_uploaded → editing_in_progress → pending → processing → uploaded
+//                                           ↓
+//                                       rejected
