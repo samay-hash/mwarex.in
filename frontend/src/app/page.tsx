@@ -14,6 +14,7 @@ import { Layers, ArrowRight, Github, Twitter, Linkedin, Sparkles, Youtube, Play 
 import { MWareXLogo } from '@/components/mwarex-logo';
 import { LandingPageOnboarding } from "@/components/onboarding";
 import { CrackedButton } from "@/components/cracked-button";
+import { FounderSection } from "@/components/founder-section";
 
 
 export default function LandingPage() {
@@ -71,6 +72,8 @@ export default function LandingPage() {
           <PricingSection />
 
           <Testimonials />
+
+          <FounderSection />
 
           {/* Enhanced Final CTA Section */}
           <section className="py-36 md:py-44 relative overflow-hidden bg-transparent">
