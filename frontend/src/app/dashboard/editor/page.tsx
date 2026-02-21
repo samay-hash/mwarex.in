@@ -391,7 +391,7 @@ export default function EditorDashboard() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8"
+          className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4 mb-8"
         >
           {stats.map((stat, i) => (
             <motion.div
@@ -400,19 +400,19 @@ export default function EditorDashboard() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.05 }}
               className={cn(
-                "bg-card border rounded-xl p-5 hover:shadow-md transition-all duration-200",
+                "bg-card border rounded-xl p-3 md:p-5 hover:shadow-md transition-all duration-200",
                 stat.border
               )}
             >
-              <div className="flex items-center justify-between mb-3">
-                <span className={cn("text-xs font-semibold uppercase tracking-wider", stat.color)}>
+              <div className="flex items-center justify-between mb-2 md:mb-3">
+                <span className={cn("text-[10px] md:text-xs font-semibold uppercase tracking-wider", stat.color)}>
                   {stat.label}
                 </span>
-                <div className={cn("w-9 h-9 rounded-lg flex items-center justify-center", stat.bg)}>
-                  <stat.icon className={cn("w-4 h-4", stat.color)} />
+                <div className={cn("w-7 h-7 md:w-9 md:h-9 rounded-lg flex items-center justify-center", stat.bg)}>
+                  <stat.icon className={cn("w-3.5 h-3.5 md:w-4 md:h-4", stat.color)} />
                 </div>
               </div>
-              <p className="text-3xl font-bold">{stat.value}</p>
+              <p className="text-2xl md:text-3xl font-bold">{stat.value}</p>
             </motion.div>
           ))}
 
@@ -423,38 +423,38 @@ export default function EditorDashboard() {
             transition={{ delay: 0.25 }}
             onClick={() => isRevenueLocked && setIsUpgradeModalOpen(true)}
             className={cn(
-              "bg-card border rounded-xl p-5 transition-all duration-200 relative group",
+              "bg-card border rounded-xl p-3 md:p-5 transition-all duration-200 relative group",
               isRevenueLocked
                 ? "cursor-pointer border-indigo-500/30 hover:shadow-lg hover:shadow-indigo-500/10 cursor-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMiAyTDEwIDI2TDE0IDE2TDI2IDEyTDIgMloiIGZpbGw9IiMxMGI5ODEiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PC9zdmc+'),_pointer]"
                 : "cursor-default border-indigo-500/20"
             )}
           >
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-semibold uppercase tracking-wider text-indigo-500">
+            <div className="flex items-center justify-between mb-2 md:mb-3">
+              <span className="text-[10px] md:text-xs font-semibold uppercase tracking-wider text-indigo-500">
                 My Revenue Look
               </span>
-              <div className="flex items-center gap-2">
-                <div className="group/info relative" onClick={(e) => e.stopPropagation()}>
+              <div className="flex items-center gap-1 md:gap-2">
+                <div className="group/info relative hidden md:block" onClick={(e) => e.stopPropagation()}>
                   <Eye className="w-4 h-4 text-muted-foreground/50 hover:text-indigo-500 transition-colors cursor-pointer" />
                   <div className="absolute right-0 top-6 w-48 p-2 bg-popover border border-border rounded-lg shadow-lg text-[10px] text-muted-foreground opacity-0 group-hover/info:opacity-100 pointer-events-none transition-opacity z-10">
                     Editor and creator can get instant payment after approve to youtube and all.
                   </div>
                 </div>
-                <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-indigo-500/10">
-                  <DollarSign className="w-4 h-4 text-indigo-500" />
+                <div className="w-7 h-7 md:w-9 md:h-9 rounded-lg flex items-center justify-center bg-indigo-500/10">
+                  <DollarSign className="w-3.5 h-3.5 md:w-4 md:h-4 text-indigo-500" />
                 </div>
               </div>
             </div>
 
             <div className="flex items-center justify-between">
               {isRevenueLocked ? (
-                <p className="text-3xl font-bold blur-sm select-none">$650.00</p>
+                <p className="text-xl md:text-3xl font-bold blur-sm select-none">$650.00</p>
               ) : (
-                <p className="text-3xl font-bold">$0.00</p>
+                <p className="text-xl md:text-3xl font-bold">$0.00</p>
               )}
 
               {isRevenueLocked && (
-                <div className="bg-amber-500/10 text-amber-500 p-1.5 rounded-full">
+                <div className="bg-amber-500/10 text-amber-500 p-1 md:p-1.5 rounded-full">
                   <Lock className="w-3 h-3" />
                 </div>
               )}
@@ -476,38 +476,38 @@ export default function EditorDashboard() {
             transition={{ delay: 0.3 }}
             onClick={() => isRevenueLocked && setIsUpgradeModalOpen(true)}
             className={cn(
-              "bg-card border rounded-xl p-5 transition-all duration-200 relative group",
+              "bg-card border rounded-xl p-3 md:p-5 transition-all duration-200 relative group",
               isRevenueLocked
                 ? "cursor-pointer border-violet-500/30 hover:shadow-lg hover:shadow-violet-500/10 cursor-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMiAyTDEwIDI2TDE0IDE2TDI2IDEyTDIgMloiIGZpbGw9IiMxMGI5ODEiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PC9zdmc+'),_pointer]"
                 : "cursor-default border-violet-500/20"
             )}
           >
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-semibold uppercase tracking-wider text-violet-500">
+            <div className="flex items-center justify-between mb-2 md:mb-3">
+              <span className="text-[10px] md:text-xs font-semibold uppercase tracking-wider text-violet-500">
                 Editing Tools
               </span>
-              <div className="flex items-center gap-2">
-                <div className="group/info relative" onClick={(e) => e.stopPropagation()}>
+              <div className="flex items-center gap-1 md:gap-2">
+                <div className="group/info relative hidden md:block" onClick={(e) => e.stopPropagation()}>
                   <Eye className="w-4 h-4 text-muted-foreground/50 hover:text-violet-500 transition-colors cursor-pointer" />
                   <div className="absolute right-0 top-6 w-48 p-2 bg-popover border border-border rounded-lg shadow-lg text-[10px] text-muted-foreground opacity-0 group-hover/info:opacity-100 pointer-events-none transition-opacity z-10">
                     You will get access to premium editing platform for edit your videos and all.
                   </div>
                 </div>
-                <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-violet-500/10">
-                  <Wand2 className="w-4 h-4 text-violet-500" />
+                <div className="w-7 h-7 md:w-9 md:h-9 rounded-lg flex items-center justify-center bg-violet-500/10">
+                  <Wand2 className="w-3.5 h-3.5 md:w-4 md:h-4 text-violet-500" />
                 </div>
               </div>
             </div>
 
             <div className="flex items-center justify-between">
               {isRevenueLocked ? (
-                <p className="text-xl font-bold blur-sm select-none">Premium Access</p>
+                <p className="text-base md:text-xl font-bold blur-sm select-none">Premium Access</p>
               ) : (
-                <p className="text-xl font-bold">Access Granted</p>
+                <p className="text-base md:text-xl font-bold">Access Granted</p>
               )}
 
               {isRevenueLocked && (
-                <div className="bg-amber-500/10 text-amber-500 p-1.5 rounded-full">
+                <div className="bg-amber-500/10 text-amber-500 p-1 md:p-1.5 rounded-full">
                   <Lock className="w-3 h-3" />
                 </div>
               )}

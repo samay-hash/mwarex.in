@@ -234,9 +234,9 @@ export default function LandingPage() {
         {/* Footer - Compact & Professional */}
         <footer className="py-10 border-t border-border bg-background relative z-10">
           <div className="max-w-7xl mx-auto px-6">
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-8 md:gap-12">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-8 md:gap-12">
               {/* Brand */}
-              <div className="col-span-1 md:col-span-2">
+              <div className="col-span-2 md:col-span-2">
                 <div className="mb-4">
                   <MWareXLogo showText={true} size="md" href="/" />
                 </div>
