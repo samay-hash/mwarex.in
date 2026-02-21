@@ -1,11 +1,25 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight, Youtube, Twitter, Github, Mail, Sparkles, Rocket, Users, Globe } from 'lucide-react';
 
+const founderImages = [
+    '/images/samay-samrat.jpg',
+    '/images/samay-samrat-nvidia.jpg',
+];
+
 export function FounderSection() {
+    const [currentImage, setCurrentImage] = useState(0);
+
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setCurrentImage((prev) => (prev + 1) % founderImages.length);
+        }, 3000);
+        return () => clearInterval(timer);
+    }, []);
     return (
         <section className="relative py-28 md:py-36 overflow-hidden">
             {/* Background Effects */}
@@ -53,22 +67,48 @@ export function FounderSection() {
                             <div className="absolute -inset-1 rounded-2xl bg-gradient-to-br from-primary/20 via-violet-500/10 to-indigo-500/20 blur-sm opacity-60 group-hover:opacity-100 transition-opacity duration-700" />
 
                             {/* Photo */}
+                            {/* Photo Slider */}
                             <div className="relative w-72 h-80 sm:w-80 sm:h-[22rem] rounded-2xl overflow-hidden border border-border/50 shadow-2xl shadow-black/10 dark:shadow-black/30">
-                                <Image
-                                    src="/images/samay-samrat.jpg"
-                                    alt="Samay Samrat – Founder of MwareX"
-                                    fill
-                                    className="object-cover object-top transition-transform duration-700 group-hover:scale-[1.03]"
-                                    priority
-                                    sizes="(max-width: 768px) 288px, 320px"
-                                />
+                                <AnimatePresence mode="wait">
+                                    <motion.div
+                                        key={currentImage}
+                                        initial={{ opacity: 0, x: 40 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        exit={{ opacity: 0, x: -40 }}
+                                        transition={{ duration: 0.6, ease: "easeInOut" }}
+                                        className="absolute inset-0"
+                                    >
+                                        <Image
+                                            src={founderImages[currentImage]}
+                                            alt="Samay Samrat – Founder of MwareX"
+                                            fill
+                                            className="object-cover object-top"
+                                            priority
+                                            sizes="(max-width: 768px) 288px, 320px"
+                                        />
+                                    </motion.div>
+                                </AnimatePresence>
+
                                 {/* Subtle gradient overlay at bottom */}
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent z-10 pointer-events-none" />
 
                                 {/* Name overlay on photo */}
-                                <div className="absolute bottom-0 inset-x-0 p-5">
+                                <div className="absolute bottom-0 inset-x-0 p-5 z-20">
                                     <p className="text-white font-bold text-lg tracking-tight">Samay Samrat</p>
                                     <p className="text-white/70 text-sm">Founder & CEO</p>
+                                </div>
+
+                                {/* Slide indicators */}
+                                <div className="absolute top-4 right-4 z-20 flex gap-1.5">
+                                    {founderImages.map((_, i) => (
+                                        <div
+                                            key={i}
+                                            className={`h-1.5 rounded-full transition-all duration-500 ${i === currentImage
+                                                ? "w-5 bg-white"
+                                                : "w-1.5 bg-white/40"
+                                                }`}
+                                        />
+                                    ))}
                                 </div>
                             </div>
                         </div>
