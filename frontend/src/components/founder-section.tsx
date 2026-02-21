@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowRight, Youtube, Twitter, Github, Sparkles, Rocket, Users, Globe } from 'lucide-react';
+import { ArrowRight, Youtube, Twitter, Github, Mail, Sparkles, Rocket, Users, Globe } from 'lucide-react';
 
 export function FounderSection() {
     return (
@@ -85,6 +85,7 @@ export function FounderSection() {
                                 { icon: Youtube, href: 'https://www.youtube.com/@futxsamay', label: 'YouTube', hoverColor: 'hover:text-red-500 hover:border-red-500/30' },
                                 { icon: Twitter, href: 'https://x.com/ChemistGamer1', label: 'Twitter', hoverColor: 'hover:text-sky-500 hover:border-sky-500/30' },
                                 { icon: Github, href: 'https://github.com/samay-hash', label: 'GitHub', hoverColor: 'hover:text-foreground hover:border-foreground/30' },
+                                { icon: Mail, href: 'mailto:founder.samay@gmail.com', label: 'Email', hoverColor: 'hover:text-red-400 hover:border-red-400/30' },
 
                             ].map((social) => (
                                 <a
