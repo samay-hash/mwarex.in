@@ -94,6 +94,7 @@ app.use("/api/v1", inviteRoutes);
 app.use("/api/v1/payment", paymentRoutes);
 app.use("/api/v1/payment/crypto", cryptoRoutes);
 app.use("/api/v1/rooms", require("./routes/room"));
+app.use("/api/v1/feedback", require("./routes/feedback"));
 app.use("/auth", googleAuthRoutes);
 
 app.get("/health", (req, res) => {

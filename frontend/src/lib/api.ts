@@ -198,6 +198,13 @@ export const roomAPI = {
   verify: (token: string) => api.get(`/api/v1/rooms/verify/${token}`),
 };
 
+// Feedback APIs
+export const feedbackAPI = {
+  addFeedback: (data: { name: string; role: string; rating: number; message: string; avatarUrl?: string }) =>
+    api.post("/api/v1/feedback", data),
+  getFeedbacks: () => api.get("/api/v1/feedback"),
+};
+
 // Razorpay Key for frontend
 export const RAZORPAY_KEY_ID = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_live_S9APuUYcsOCve3";
 

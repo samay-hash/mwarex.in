@@ -15,7 +15,7 @@ import { MWareXLogo } from '@/components/mwarex-logo';
 import { LandingPageOnboarding } from "@/components/onboarding";
 import { CrackedButton } from "@/components/cracked-button";
 import { FounderSection } from "@/components/founder-section";
-
+import { WallOfLove } from "@/components/wall-of-love";
 
 export default function LandingPage() {
   return (
@@ -71,9 +71,9 @@ export default function LandingPage() {
 
           <PricingSection />
 
-          <Testimonials />
-
           <FounderSection />
+
+          <WallOfLove />
 
           {/* Enhanced Final CTA Section */}
           <section className="py-36 md:py-44 relative overflow-hidden bg-transparent">
@@ -273,7 +273,7 @@ export default function LandingPage() {
               <div>
                 <h4 className="font-semibold text-foreground mb-4 text-sm">Resources</h4>
                 <ul className="space-y-2.5 text-muted-foreground text-sm">
-                  <li><Link href="#" className="hover:text-foreground transition-colors">Documentation</Link></li>
+                  <li><Link href="/#wall-of-love" className="hover:text-foreground transition-colors">Wall of Love (Feedback)</Link></li>
                   <li><Link href="#" className="hover:text-foreground transition-colors">API Reference</Link></li>
                   <li><Link href="#" className="hover:text-foreground transition-colors">Support</Link></li>
                 </ul>

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { useThemeToggle } from "@/components/theme-toggle";
 import { MWareXLogo } from "@/components/mwarex-logo";
-import { Menu, X, Snowflake, Sun, Moon } from "lucide-react";
+import { Menu, X, Snowflake, Sun, Moon, Sparkles } from "lucide-react";
 import React, { useState } from "react";
 import { useSeason } from "@/contexts/SeasonContext";
 import { cn } from "@/lib/utils";
@@ -30,14 +30,18 @@ export function SiteHeader() {
 
 
                     {/* Desktop Navigation */}
-                    <nav className="hidden md:flex items-center gap-8 bg-background/50 backdrop-blur-md px-8 py-3 rounded-full border border-border/40 shadow-sm">
-                        <Link href="#workflow" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Workflow</Link>
-                        <Link href="#features" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Features</Link>
-                        <Link href="#pricing" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Pricing</Link>
+                    <nav className="hidden lg:flex items-center gap-6 bg-background/50 backdrop-blur-md px-6 py-3 rounded-full border border-border/40 shadow-sm">
+                        <Link href="/#workflow" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap">Workflow</Link>
+                        <Link href="/#features" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap">Features</Link>
+                        <Link href="/#pricing" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap">Pricing</Link>
+                        <Link href="/#wall-of-love" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1 whitespace-nowrap">
+                            <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                            <span>Wall of Love</span>
+                        </Link>
                     </nav>
 
                     {/* Desktop Actions */}
-                    <div className="hidden md:flex items-center gap-4 z-10">
+                    <div className="hidden lg:flex items-center gap-4 z-10">
                         <div className="flex items-center gap-2">
                             <button
                                 onClick={toggleTheme}
@@ -78,7 +82,7 @@ export function SiteHeader() {
 
                     {/* Mobile Menu Toggle */}
                     <button
-                        className="md:hidden z-50 p-2 text-foreground"
+                        className="lg:hidden z-50 p-2 text-foreground pointer-events-auto"
                         onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                     >
                         {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -94,7 +98,7 @@ export function SiteHeader() {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -20 }}
                         transition={{ duration: 0.2 }}
-                        className="fixed inset-0 z-40 bg-background/95 backdrop-blur-xl md:hidden flex flex-col items-center justify-center p-6 space-y-8"
+                        className="fixed inset-0 z-40 bg-background/95 backdrop-blur-xl lg:hidden flex flex-col items-center justify-center p-6 space-y-8 pointer-events-auto"
                     >
                         <nav className="flex flex-col items-center gap-6 w-full">
                             <Link
@@ -117,6 +121,14 @@ export function SiteHeader() {
                                 className="text-2xl font-medium text-foreground hover:text-primary transition-colors"
                             >
                                 Pricing
+                            </Link>
+                            <Link
+                                href="/#wall-of-love"
+                                onClick={() => setIsMobileMenuOpen(false)}
+                                className="text-2xl font-medium text-foreground hover:text-primary transition-colors flex items-center gap-2"
+                            >
+                                <Sparkles className="w-5 h-5 text-amber-500" />
+                                Wall of Love
                             </Link>
                         </nav>
 
