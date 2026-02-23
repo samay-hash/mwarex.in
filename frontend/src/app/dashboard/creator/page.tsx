@@ -215,6 +215,29 @@ export default function CreatorDashboard() {
     }
   };
 
+  const handleDeleteForMe = async (id: string) => {
+    try {
+      await videoAPI.deleteForMe(id);
+      toast.success("Video deleted for you");
+      fetchVideos();
+    } catch (error) {
+      console.error("Failed to delete video:", error);
+      toast.error("Failed to delete video");
+    }
+  };
+
+  const handleDeleteForEveryone = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this video for everyone? This action cannot be undone.")) return;
+    try {
+      await videoAPI.deleteForEveryone(id);
+      toast.success("Video deleted for everyone");
+      fetchVideos();
+    } catch (error) {
+      console.error("Failed to delete video for everyone:", error);
+      toast.error("Failed to delete video for everyone");
+    }
+  };
+
   const handleReject = (id: string) => {
     setRejectModal({ isOpen: true, videoId: id });
     setRejectionReason("");
@@ -359,9 +382,9 @@ export default function CreatorDashboard() {
       const handleVideoEvent = (data: any) => {
         const action = data?.action || "video_updated";
         const messages: Record<string, string> = {
-          video_uploaded: "📹 Editor uploaded a new video!",
+          video_uploaded: "📹Raw Video Uploaded",
           video_approved: "✅ Video approved!",
-          video_rejected: "❌ Video was rejected",
+          video_rejected: "❌ Video rejected",
           video_accepted: "👍 Editor accepted your raw video!",
           video_updated: "🔄 Video status updated",
           youtube_uploaded: "🎉 Video is live on YouTube!",
@@ -839,6 +862,12 @@ export default function CreatorDashboard() {
                   onReject={handleReject}
                   showActions={video.status === "pending"}
                   isLoading={actionLoading === video._id}
+                  onDeleteForMe={handleDeleteForMe}
+                  onDeleteForEveryone={
+                    ["raw_uploaded", "raw_rejected", "editing_in_progress"].includes(video.status)
+                      ? handleDeleteForEveryone
+                      : undefined
+                  }
                 />
               ))}
             </motion.div>

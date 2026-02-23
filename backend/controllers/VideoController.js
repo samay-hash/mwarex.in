@@ -245,6 +245,27 @@ class VideoController extends BaseController {
             return this.handleError(res, err);
         }
     }
+
+    async deleteForEveryone(req, res) {
+        try {
+            const result = await this.videoService.deleteForEveryone(req.params.id, req.userId);
+            if (req.io) {
+                req.io.emit("video_deleted_everyone", { videoId: req.params.id });
+            }
+            return this.success(res, result);
+        } catch (err) {
+            return this.handleError(res, err);
+        }
+    }
+
+    async deleteForMe(req, res) {
+        try {
+            const result = await this.videoService.deleteForMe(req.params.id, req.userId);
+            return this.success(res, result);
+        } catch (err) {
+            return this.handleError(res, err);
+        }
+    }
 }
 
 module.exports = new VideoController(VideoService);

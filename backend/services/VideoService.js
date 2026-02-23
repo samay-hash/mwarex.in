@@ -79,7 +79,7 @@ class VideoService {
     }
 
     async getVideos(userId, role, roomId) {
-        let filter = {};
+        let filter = { deletedFor: { $ne: userId } };
 
         if (roomId) {
             filter.roomId = roomId;
@@ -128,7 +128,7 @@ class VideoService {
     }
 
     async getPendingVideos(userId, role) {
-        let filter = { status: "pending" };
+        let filter = { status: "pending", deletedFor: { $ne: userId } };
 
         if (role === "creator") {
             filter.creatorId = userId;
@@ -280,6 +280,34 @@ class VideoService {
         await user.save();
 
         return { message: "YouTube tokens stored successfully" };
+    }
+
+    async deleteForEveryone(videoId, userId) {
+        const video = await this.videoRepository.findById(videoId);
+        if (!video) throw { status: 404, message: "Video not found" };
+
+        if (!video.creatorId || video.creatorId.toString() !== userId.toString()) {
+            throw { status: 403, message: "Only the creator can delete this video for everyone" };
+        }
+
+        await this.videoRepository.deleteById(videoId);
+        return { message: "Video deleted for everyone" };
+    }
+
+    async deleteForMe(videoId, userId) {
+        const video = await this.videoRepository.findById(videoId);
+        if (!video) throw { status: 404, message: "Video not found" };
+
+        if (!video.deletedFor) {
+            video.deletedFor = [];
+        }
+
+        if (!video.deletedFor.includes(userId)) {
+            video.deletedFor.push(userId);
+            await video.save();
+        }
+
+        return { message: "Video deleted for me" };
     }
 }
 

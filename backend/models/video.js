@@ -28,6 +28,8 @@ const videoSchema = new mongoose.Schema({
   },
   rejectionReason: String,
 
+  deletedFor: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+
   rawFileUrl: String,
   hasRawVideo: { type: Boolean, default: false },
   editorReviewStatus: {

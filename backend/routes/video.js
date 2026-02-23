@@ -35,5 +35,7 @@ router.post("/:id/comments", userAuth, (req, res) => VideoController.addComment(
 router.put("/:id/thumbnail", userAuth, (req, res) => VideoController.updateThumbnail(req, res));
 router.put("/:id/edit-settings", userAuth, (req, res) => VideoController.updateEditSettings(req, res));
 router.get("/:id", userAuth, (req, res) => VideoController.getById(req, res));
+router.delete("/:id/delete-for-everyone", userAuth, (req, res) => VideoController.deleteForEveryone(req, res));
+router.delete("/:id/delete-for-me", userAuth, (req, res) => VideoController.deleteForMe(req, res));
 
 module.exports = router;

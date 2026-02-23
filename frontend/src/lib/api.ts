@@ -56,6 +56,10 @@ export const videoAPI = {
 
   reject: (id: string, reason?: string) => api.post(`/api/v1/videos/${id}/reject`, { reason }),
 
+  deleteForMe: (id: string) => api.delete(`/api/v1/videos/${id}/delete-for-me`),
+
+  deleteForEveryone: (id: string) => api.delete(`/api/v1/videos/${id}/delete-for-everyone`),
+
   storeYouTubeTokens: (data: { accessToken: string; refreshToken?: string }) =>
     api.post("/api/v1/videos/store-youtube-tokens", data),
 

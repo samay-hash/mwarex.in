@@ -17,7 +17,8 @@ import {
   Quote,
   RefreshCw,
   Download,
-  ArrowRight
+  ArrowRight,
+  Trash2
 } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -45,6 +46,8 @@ interface VideoCardProps {
   onRawReject?: (id: string) => void;
   onUploadEdit?: (id: string) => void;
   isLoading?: boolean;
+  onDeleteForMe?: (id: string) => void;
+  onDeleteForEveryone?: (id: string) => void;
 }
 
 export default function VideoCard({
@@ -57,6 +60,8 @@ export default function VideoCard({
   onRawReject,
   onUploadEdit,
   isLoading = false,
+  onDeleteForMe,
+  onDeleteForEveryone,
 }: VideoCardProps) {
   const router = useRouter();
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
@@ -183,6 +188,42 @@ export default function VideoCard({
             {getLabel()}
           </span>
         </div>
+
+        {/* Delete Options Button */}
+        {(onDeleteForMe || onDeleteForEveryone) && (
+          <div className="absolute top-3 right-3 z-30" onClick={(e) => e.stopPropagation()}>
+            <div className="relative group/delete">
+              <button
+                className="w-8 h-8 rounded-full bg-black/50 backdrop-blur-md border border-white/20 flex items-center justify-center text-white hover:text-red-400 hover:bg-black/70 transition-colors shadow-sm"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+
+              <div className="absolute top-full right-0 mt-2 w-48 bg-popover border border-border rounded-xl shadow-2xl overflow-hidden opacity-0 invisible group-hover/delete:opacity-100 group-hover/delete:visible focus-within:opacity-100 focus-within:visible transition-all duration-200 origin-top-right z-50">
+                <div className="p-1.5 space-y-0.5">
+                  {onDeleteForMe && (
+                    <button
+                      onClick={(e) => { e.stopPropagation(); onDeleteForMe(video._id); }}
+                      className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-lg text-foreground hover:bg-secondary transition-colors"
+                    >
+                      <Trash2 className="w-3.5 h-3.5 text-muted-foreground" />
+                      Delete for Me
+                    </button>
+                  )}
+                  {onDeleteForEveryone && (
+                    <button
+                      onClick={(e) => { e.stopPropagation(); onDeleteForEveryone(video._id); }}
+                      className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-lg text-red-500 hover:bg-red-500/10 transition-colors"
+                    >
+                      <Trash2 className="w-3.5 h-3.5 border border-transparent shadow-sm" />
+                      Delete for Everyone
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Content */}

@@ -145,10 +145,10 @@ export default function EditorDashboard() {
       const handleVideoEvent = (data: any) => {
         const action = data?.action || "video_updated";
         const messages: Record<string, string> = {
-          video_uploaded: "📹 New video received!",
+          video_uploaded: "📹 Edited Video uploaded",
           video_approved: "✅ A video was approved!",
           video_rejected: "❌ A video was rejected",
-          video_accepted: "👍 Raw video was accepted",
+          video_accepted: "👍 Raw video accepted",
           video_updated: "🔄 Video status updated",
           youtube_uploaded: "🎉 Video is live on YouTube!",
         };
@@ -267,6 +267,17 @@ export default function EditorDashboard() {
     setUploadEditId(id);
     setTitle("Edited Version"); // Default title?
     setIsUploadModalOpen(true);
+  };
+
+  const handleDeleteForMe = async (id: string) => {
+    try {
+      await videoAPI.deleteForMe(id);
+      toast.success("Video deleted for you");
+      fetchVideos();
+    } catch (error) {
+      console.error("Failed to delete video:", error);
+      toast.error("Failed to delete video");
+    }
   };
 
 
@@ -604,6 +615,7 @@ export default function EditorDashboard() {
                       showEditorActions={true}
                       onRawAccept={handleRawAccept}
                       onRawReject={handleRawReject}
+                      onDeleteForMe={handleDeleteForMe}
                     />
                   ))}
                 </div>
@@ -624,6 +636,7 @@ export default function EditorDashboard() {
                       video={video}
                       showEditorActions={true}
                       onUploadEdit={openUploadEditModal}
+                      onDeleteForMe={handleDeleteForMe}
                     />
                   ))}
                 </div>
@@ -644,6 +657,7 @@ export default function EditorDashboard() {
                       video={video}
                       showEditorActions={video.status === "rejected"}
                       onUploadEdit={openUploadEditModal}
+                      onDeleteForMe={handleDeleteForMe}
                     />
                   ))}
                 </div>
