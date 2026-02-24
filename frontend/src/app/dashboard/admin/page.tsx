@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import { isAuthenticated, getUserData, logout } from "@/lib/auth";
 import { videoAPI } from "@/lib/api";
+import { MWareXLogo } from "@/components/mwarex-logo";
 
 interface Video {
   _id: string;
@@ -152,14 +153,7 @@ export default function AdminDashboard() {
       <aside className="fixed left-0 top-0 bottom-0 w-64 glass border-r border-white/5 hidden lg:flex flex-col">
         {/* Logo */}
         <div className="p-6 border-b border-white/5">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-red-500 to-red-700 rounded-xl flex items-center justify-center">
-              <Play className="w-5 h-5 text-white fill-white" />
-            </div>
-            <span className="text-lg font-bold text-white">
-              Admin<span className="text-red-500">Panel</span>
-            </span>
-          </div>
+          <MWareXLogo size="lg" />
         </div>
 
         {/* Navigation */}

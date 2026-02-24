@@ -1,7 +1,6 @@
-"use client";
-
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 interface MWareXLogoProps {
@@ -13,48 +12,33 @@ interface MWareXLogoProps {
 
 export function MWareXLogo({ className, showText = true, size = "md", href }: MWareXLogoProps) {
     const sizes = {
-        sm: { container: "w-7 h-7", tick: "w-4 h-4" },
-        md: { container: "w-9 h-9", tick: "w-5 h-5" },
-        lg: { container: "w-12 h-12", tick: "w-7 h-7" },
+        sm: { w: 100, h: 60 },
+        md: { w: 150, h: 90 },
+        lg: { w: 200, h: 120 },
     };
 
-    const logoContent = (
-        <div className={cn("flex items-center gap-2.5", href && "cursor-pointer", className)}>
-            {/* Logo Icon - Tick Mark with YouTube color scheme (half white, half red) */}
-            <div className={cn(
-                "relative flex items-center justify-center bg-gradient-to-br from-zinc-900 to-black rounded-xl shadow-lg border border-zinc-800/50",
-                sizes[size].container
-            )}>
-                {/* Custom Tick SVG - Half White, Half Red */}
-                <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    className={sizes[size].tick}
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                >
-                    {/* Left part of tick (downward stroke) - White */}
-                    <path
-                        d="M5 13l4 4"
-                        stroke="white"
-                        strokeWidth="3"
-                        strokeLinecap="round"
-                    />
-                    {/* Right part of tick (upward stroke) - Red like YouTube */}
-                    <path
-                        d="M9 17L19 7"
-                        stroke="#FF0000"
-                        strokeWidth="3"
-                        strokeLinecap="round"
-                    />
-                </svg>
-            </div>
+    const currentSize = sizes[size] || sizes.md;
 
-            {showText && (
-                <span className="text-xl font-bold tracking-tight text-foreground">
-                    MWareX<span className="text-primary">.</span>
-                </span>
-            )}
+    const logoContent = (
+        <div className={cn("flex items-center justify-center shrink-0", href && "cursor-pointer", className)}>
+            {/* Light mode logo */}
+            <Image
+                src="/mwarexin.png"
+                alt="MWareX Logo Light"
+                width={currentSize.w}
+                height={currentSize.h}
+                priority
+                className="object-contain dark:hidden"
+            />
+            {/* Dark mode logo */}
+            <Image
+                src="/blackmwarex.png"
+                alt="MWareX Logo Dark"
+                width={currentSize.w}
+                height={currentSize.h}
+                priority
+                className="object-contain hidden dark:block"
+            />
         </div>
     );
 
