@@ -1,11 +1,19 @@
 User-agent: *
 Allow: /
+Allow: /founder
+Allow: /about
+Allow: /blog/
+Allow: /privacy-policy
+Allow: /terms
 
-# Sitemap
-Sitemap: https://mwarex.in/sitemap.xml
-
-# Block sensitive paths
+# Block private/app paths
 Disallow: /api/
 Disallow: /dashboard/
 Disallow: /_next/
 Disallow: /oauth2callback/
+Disallow: /auth/
+Disallow: /onboarding/
+Disallow: /join/
+
+# Sitemap
+Sitemap: https://mwarex.in/sitemap.xml

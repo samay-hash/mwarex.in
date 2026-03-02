@@ -7,6 +7,7 @@ import { SmoothScrollProvider } from "@/components/smooth-scroll-provider";
 import { SeasonProvider } from "@/contexts/SeasonContext";
 import { SeasonalBackground } from "@/components/seasonal-background";
 import { Toaster } from "sonner";
+import { HomeStructuredData } from "@/components/home-structured-data";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -19,11 +20,15 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://mwarex.in"),
   title: "MWareX | Streamline Your Video Workflow",
   description: "The ultimate platform for YouTubers and editors to collaborate seamlessly. Upload, review, approve, and publish videos with ease. Founded by Samay Samrat.",
-  keywords: ["MwareX", "Samay Samrat", "YouTube collaboration", "video workflow", "creator platform", "editor management", "video production", "content creation"],
+  keywords: ["MwareX", "Samay Samrat", "YouTube collaboration", "video workflow", "creator platform", "editor management", "video production", "content creation", "Samay Samrat founder"],
   authors: [{ name: "Samay Samrat", url: "https://mwarex.in/founder" }],
   creator: "Samay Samrat",
+  alternates: {
+    canonical: "https://mwarex.in",
+  },
   verification: {
     google: "1QUHEi3OUs7QONfHD6jNW2m-k_KxQRFhy61jgkbDAv4",
   },
@@ -90,6 +95,7 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${playfair.variable} antialiased bg-background text-foreground font-sans selection:bg-primary/20 selection:text-primary`}
       >
+        <HomeStructuredData />
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
