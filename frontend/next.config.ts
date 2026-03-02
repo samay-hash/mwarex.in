@@ -9,13 +9,6 @@ const nextConfig: NextConfig = {
         destination: "/auth/signin",
         permanent: true, // 301 redirect — tells Google permanently moved
       },
-      // Fix: www → non-www canonical redirect
-      {
-        source: "/:path*",
-        has: [{ type: "host", value: "www.mwarex.in" }],
-        destination: "https://mwarex.in/:path*",
-        permanent: true,
-      },
     ];
   },
 };
