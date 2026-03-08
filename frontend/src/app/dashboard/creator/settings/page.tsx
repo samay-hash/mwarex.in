@@ -133,9 +133,9 @@ export default function SettingsPage() {
     return (
         <div
             style={{ willChange: "transform", transform: "translateZ(0)" }}
-            className="min-h-screen bg-transparent p-6 lg:p-12"
+            className="min-h-screen p-6 lg:p-12"
         >
-            <div className="max-w-4xl mx-auto">
+            <div className="max-w-4xl mx-auto relative z-10">
                 <header className="mb-8 flex justify-between items-center">
                     <div>
                         <h1 className="text-3xl font-bold text-foreground mb-2 flex items-center gap-3">

@@ -37,7 +37,6 @@ import VideoCard from "@/components/VideoCard";
 import { videoAPI, inviteAPI, getGoogleAuthUrl, paymentAPI, userAPI, roomAPI } from "@/lib/api";
 import { isAuthenticated, getUserData, logout, isDemoUser } from "@/lib/auth";
 import { getSocket } from "@/lib/socket";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { MWareXLogo } from "@/components/mwarex-logo";
 import { SubscriptionModal } from "@/components/subscription-modal";
 import { cn } from "@/lib/utils";
@@ -561,7 +560,6 @@ export default function CreatorDashboard() {
               <p className="text-sm font-medium truncate">{userData?.name || "Creator"}</p>
               <p className="text-[11px] text-muted-foreground truncate">{userData?.email}</p>
             </div>
-            <ThemeToggle />
             <button onClick={handleLogout} className="p-1.5 text-muted-foreground hover:text-red-500 transition-colors" title="Logout">
               <LogOut className="w-4 h-4" />
             </button>

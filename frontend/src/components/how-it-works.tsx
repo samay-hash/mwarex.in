@@ -11,21 +11,18 @@ const workflowSteps = [
         title: "Sign up with Google",
         description: "Create your account instantly with one-click Google authentication. No lengthy forms, no waiting.",
         icon: UserPlus,
-        color: "from-blue-500 to-cyan-500",
     },
     {
         step: 2,
         title: "Invite Editors",
         description: "Send secure invite links to your editing team. They get controlled access without seeing your credentials.",
         icon: Users,
-        color: "from-violet-500 to-purple-500",
     },
     {
         step: 3,
         title: "Upload Footage",
         description: "Editors upload video files directly to your secure workspace. All uploads require your approval.",
         icon: Upload,
-        color: "from-orange-500 to-amber-500",
         badge: "Pending Approval"
     },
     {
@@ -33,14 +30,12 @@ const workflowSteps = [
         title: "Connect YouTube",
         description: "Link your YouTube channel securely via the official API. Your credentials stay protected.",
         icon: Youtube,
-        color: "from-red-500 to-rose-500",
     },
     {
         step: 5,
         title: "Approve & Publish",
         description: "Review the content, add notes if needed, and publish directly to your channel with one click.",
         icon: CheckCircle,
-        color: "from-emerald-500 to-green-500",
     },
 ];
 
@@ -63,79 +58,64 @@ export function HowItWorks() {
     return (
         <section
             ref={containerRef}
-            className="py-32 relative bg-background overflow-hidden"
+            className="py-32 relative bg-[#111111] overflow-hidden border-t border-white/5"
             id="workflow"
         >
-            {/* Background Elements - Static */}
-            <div className="absolute inset-0 overflow-hidden">
-                <div
-                    className="absolute inset-0 opacity-[0.02]"
-                    style={{
-                        backgroundImage: `
-                            linear-gradient(var(--foreground) 1px, transparent 1px),
-                            linear-gradient(90deg, var(--foreground) 1px, transparent 1px)
-                        `,
-                        backgroundSize: '40px 40px',
-                    }}
-                />
-                <div className="absolute top-1/4 -left-32 w-[400px] h-[400px] bg-primary/5 rounded-full blur-[100px]" />
-                <div className="absolute bottom-1/4 -right-32 w-[400px] h-[400px] bg-violet-500/5 rounded-full blur-[100px]" />
+            {/* Background Elements - Minimalist */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                <div className="absolute top-1/2 right-[-20%] w-[600px] h-[600px] bg-[#C8A97E]/5 rounded-full blur-[150px] opacity-30" />
             </div>
 
             <div className="max-w-6xl mx-auto px-6 relative z-10">
                 {/* Section Header */}
-                <div className="text-center mb-24">
+                <div className="text-center mb-32 flex flex-col items-center">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
-                        className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/5 border border-primary/10 mb-6"
+                        className="flex items-center gap-4 text-[#C8A97E] text-[10px] font-bold tracking-[0.25em] mb-8 uppercase"
                     >
-                        <span className="text-primary font-medium text-sm">How It Works</span>
+                        <span className="w-8 h-[1px] bg-[#C8A97E] opacity-50"></span>
+                        How It Works
+                        <span className="w-8 h-[1px] bg-[#C8A97E] opacity-50"></span>
                     </motion.div>
 
                     <motion.h2
-                        initial={{ opacity: 0, y: 20 }}
+                        initial={{ opacity: 0, y: 30 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
-                        transition={{ delay: 0.1 }}
-                        className="text-4xl md:text-5xl font-bold text-foreground mb-6"
+                        transition={{ delay: 0.1, duration: 0.8 }}
+                        className="text-4xl md:text-5xl lg:text-6xl font-serif text-[#ffffff] font-normal tracking-tight mb-8"
                     >
-                        From Upload to{" "}
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-violet-500">
-                            Published
-                        </span>
+                        From Upload to <span className="italic text-[#C8A97E]">Published.</span>
                     </motion.h2>
 
                     <motion.p
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
-                        transition={{ delay: 0.2 }}
-                        className="text-muted-foreground max-w-xl mx-auto text-lg"
+                        transition={{ delay: 0.3, duration: 0.8 }}
+                        className="text-white/40 max-w-xl mx-auto text-[15px] font-light leading-relaxed"
                     >
                         A streamlined 5-step workflow that keeps your channel secure while empowering your team.
                     </motion.p>
                 </div>
 
                 {/* Timeline Container */}
-                <div className="relative">
-                    {/* Center Vertical Line - Static Track */}
-                    <div className="absolute left-6 md:left-1/2 top-0 bottom-0 w-[2px] md:-translate-x-1/2 bg-border/30 rounded-full" />
+                <div className="relative max-w-4xl mx-auto">
+                    {/* Center Vertical Line - Subtle static line */}
+                    <div className="absolute left-8 md:left-1/2 top-0 bottom-0 w-px md:-translate-x-1/2 bg-white/5" />
 
-                    {/* Animated Progress Line - Scroll Based Only */}
+                    {/* Animated Progress Line */}
                     <motion.div
-                        className="absolute left-6 md:left-1/2 top-0 w-[2px] md:-translate-x-1/2 rounded-full overflow-hidden"
+                        className="absolute left-8 md:left-1/2 top-0 w-px md:-translate-x-1/2 overflow-hidden bg-[#C8A97E]"
                         style={{ height: lineHeight }}
                     >
-                        {/* Glowing animated line */}
-                        <div className="w-full h-full bg-gradient-to-b from-primary via-violet-500 to-primary relative">
-                            <div className="absolute inset-0 bg-gradient-to-b from-primary via-violet-500 to-primary blur-sm" />
-                        </div>
+                        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-4 h-4 bg-[#C8A97E] blur-[4px]" />
                     </motion.div>
 
                     {/* Steps */}
-                    <div className="space-y-16 md:space-y-24">
+                    <div className="space-y-24 md:space-y-32">
                         {workflowSteps.map((step, index) => {
                             const isEven = index % 2 === 0;
 
@@ -144,112 +124,69 @@ export function HowItWorks() {
                                     key={step.step}
                                     initial={{ opacity: 0, y: 30 }}
                                     whileInView={{ opacity: 1, y: 0 }}
-                                    viewport={{ once: true, margin: "-50px" }}
-                                    transition={{ duration: 0.5 }}
+                                    viewport={{ once: true, margin: "-100px" }}
+                                    transition={{ duration: 0.8, ease: "easeOut", delay: index * 0.1 }}
                                     className={cn(
-                                        "relative flex gap-8 items-start md:items-center",
-                                        isEven ? "md:flex-row" : "md:flex-row-reverse"
+                                        "relative flex flex-col md:flex-row gap-8 md:gap-0 items-start md:items-center",
+                                        isEven ? "" : "md:flex-row-reverse"
                                     )}
                                 >
-                                    {/* Horizontal Connector Line - From Node to Card */}
+                                    {/* Timeline Node - Elegant hollow circle */}
                                     <div
-                                        className={cn(
-                                            "hidden md:block absolute top-1/2 -translate-y-1/2 h-[2px] z-10",
-                                            isEven
-                                                ? "left-[calc(50%+24px)] right-[calc(50%+60px)]"
-                                                : "right-[calc(50%+24px)] left-[calc(50%+60px)]"
-                                        )}
+                                        className="absolute left-8 md:left-1/2 w-3 h-3 -translate-x-[5px] md:-translate-x-[5px] rounded-full border border-[#C8A97E] bg-[#111111] z-20 flex items-center justify-center transition-all duration-500 hover:scale-150 hover:bg-[#C8A97E]"
                                     >
-                                        {/* Glowing line effect */}
-                                        <div className={cn(
-                                            "absolute inset-0 rounded-full",
-                                            `bg-gradient-to-${isEven ? 'l' : 'r'} ${step.color}`
-                                        )} />
-                                        <div className={cn(
-                                            "absolute inset-0 rounded-full blur-sm opacity-50",
-                                            `bg-gradient-to-${isEven ? 'l' : 'r'} ${step.color}`
-                                        )} />
                                     </div>
 
-                                    {/* Timeline Node - Enhanced with Glow */}
-                                    <div
-                                        className={cn(
-                                            "absolute left-6 md:left-1/2 w-12 h-12 -translate-x-1/2 rounded-full flex items-center justify-center z-20",
-                                            `bg-gradient-to-br ${step.color}`
-                                        )}
-                                    >
-                                        {/* Outer glow ring */}
-                                        <div className={cn(
-                                            "absolute inset-[-4px] rounded-full blur-md opacity-40",
-                                            `bg-gradient-to-br ${step.color}`
-                                        )} />
-                                        {/* Pulse animation ring */}
-                                        <motion.div
-                                            className={cn(
-                                                "absolute inset-[-2px] rounded-full border-2 opacity-50",
-                                                step.color.includes("blue") ? "border-blue-400" :
-                                                    step.color.includes("violet") ? "border-violet-400" :
-                                                        step.color.includes("orange") ? "border-orange-400" :
-                                                            step.color.includes("red") ? "border-red-400" :
-                                                                "border-green-400"
-                                            )}
-                                            animate={{
-                                                scale: [1, 1.2, 1],
-                                                opacity: [0.5, 0, 0.5]
-                                            }}
-                                            transition={{
-                                                duration: 2,
-                                                repeat: Infinity,
-                                                ease: "easeInOut"
-                                            }}
-                                        />
-                                        <step.icon className="w-5 h-5 text-white relative z-10" />
-                                    </div>
-
-                                    {/* Content Card */}
+                                    {/* Content Area */}
                                     <div className={cn(
-                                        "pl-20 md:pl-0 w-full md:w-[calc(50%-60px)]",
-                                        isEven ? "md:pr-8" : "md:pl-8"
+                                        "pl-20 md:pl-0 w-full md:w-1/2 flex flex-col relative group",
+                                        isEven ? "md:pr-16 md:items-end text-left md:text-right" : "md:pl-16 md:items-start text-left"
                                     )}>
-                                        <div className="p-6 md:p-8 rounded-2xl border border-border bg-card/80 backdrop-blur-sm hover:border-primary/20 hover:shadow-lg hover:shadow-primary/5 transition-all group">
-                                            {/* Step Number & Badge */}
+                                        {/* Massive Background Number */}
+                                        <div className={cn(
+                                            "absolute top-1/2 -translate-y-1/2 text-[120px] font-serif font-bold text-white/[0.02] pointer-events-none select-none z-0 transition-colors duration-700 group-hover:text-white/[0.04]",
+                                            isEven ? "right-12" : "left-12"
+                                        )}>
+                                            0{step.step}
+                                        </div>
+
+                                        <div className="relative z-10 w-full">
+                                            {/* Badge & Step Indicator */}
                                             <div className={cn(
-                                                "flex items-center gap-3 mb-4",
-                                                isEven ? "" : "md:justify-end"
+                                                "flex items-center gap-3 mb-6",
+                                                isEven ? "md:justify-end" : "justify-start"
                                             )}>
-                                                <span className={cn(
-                                                    "text-xs font-bold tracking-wider uppercase px-3 py-1 rounded-full",
-                                                    `bg-gradient-to-r ${step.color} text-white`
-                                                )}>
-                                                    Step {step.step}
+                                                <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#C8A97E]">
+                                                    Phase 0{step.step}
                                                 </span>
                                                 {step.badge && (
-                                                    <span className="text-xs font-medium text-orange-500 bg-orange-500/10 px-2 py-1 rounded-full border border-orange-500/20">
+                                                    <span className="text-[9px] font-medium text-black bg-[#C8A97E] px-2 py-0.5 uppercase tracking-wider">
                                                         {step.badge}
                                                     </span>
                                                 )}
                                             </div>
 
                                             {/* Title */}
-                                            <h3 className={cn(
-                                                "text-xl md:text-2xl font-bold mb-3 text-foreground",
-                                                isEven ? "" : "md:text-right"
-                                            )}>
+                                            <h3 className="text-2xl md:text-3xl font-serif text-white mb-4 group-hover:text-[#C8A97E] transition-colors duration-500">
                                                 {step.title}
                                             </h3>
 
                                             {/* Description */}
-                                            <p className={cn(
-                                                "text-muted-foreground leading-relaxed",
-                                                isEven ? "" : "md:text-right"
-                                            )}>
+                                            <p className="text-[14px] text-white/40 leading-[1.8] font-light max-w-sm">
                                                 {step.description}
                                             </p>
                                         </div>
                                     </div>
 
-                                    {/* Empty Space for Layout */}
-                                    <div className="hidden md:block md:w-[calc(50%-60px)]" />
+                                    {/* Icon Container for Visual Balance - Opposite to Content */}
+                                    <div className={cn(
+                                        "hidden md:flex w-1/2 items-center",
+                                        isEven ? "pl-16 justify-start" : "pr-16 justify-end"
+                                    )}>
+                                        <div className="w-16 h-16 rounded-full border border-white/5 bg-white/[0.02] flex items-center justify-center transition-all duration-700 hover:border-[#C8A97E]/30 hover:bg-[#C8A97E]/5">
+                                            <step.icon className="w-6 h-6 text-white/20" strokeWidth={1} />
+                                        </div>
+                                    </div>
                                 </motion.div>
                             );
                         })}

@@ -24,7 +24,6 @@ import {
     Eye,
 } from "lucide-react";
 import { getUserData, logout, isAuthenticated } from "@/lib/auth";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { MWareXLogo } from "@/components/mwarex-logo";
 import { cn } from "@/lib/utils";
 import { aiAPI, videoAPI } from "@/lib/api";
@@ -195,7 +194,6 @@ export default function AIStudioPage() {
                         </div>
                     </div>
                     <div className="flex items-center gap-3">
-                        <ThemeToggle />
                         <button
                             onClick={handleLogout}
                             className="p-2 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"

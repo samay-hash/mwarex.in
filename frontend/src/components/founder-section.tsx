@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+
+import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight, Youtube, Twitter, Github, Mail, Sparkles, Rocket, Users, Globe } from 'lucide-react';
@@ -12,121 +12,100 @@ const founderImages = [
 ];
 
 export function FounderSection() {
-    const [currentImage, setCurrentImage] = useState(0);
-
-    useEffect(() => {
-        const timer = setInterval(() => {
-            setCurrentImage((prev) => (prev + 1) % founderImages.length);
-        }, 3000);
-        return () => clearInterval(timer);
-    }, []);
     return (
-        <section className="relative py-28 md:py-36 overflow-hidden">
-            {/* Background Effects */}
-            <div className="absolute inset-0 -z-10 pointer-events-none">
-                {/* Soft radial glow behind photo area */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full bg-primary/[0.04] dark:bg-primary/[0.06] blur-3xl" />
-                {/* Subtle grid overlay */}
-                <div
-                    className="absolute inset-0 opacity-[0.02] dark:opacity-[0.04]"
-                    style={{
-                        backgroundImage: `linear-gradient(var(--foreground) 1px, transparent 1px), linear-gradient(90deg, var(--foreground) 1px, transparent 1px)`,
-                        backgroundSize: '80px 80px',
-                    }}
-                />
+        <section className="relative py-32 md:py-48 overflow-hidden bg-[#111111] border-t border-white/5">
+            {/* Background Minimalist Ambiance */}
+            <div className="absolute inset-0 pointer-events-none">
+                <div className="absolute top-1/2 left-0 -translate-y-1/2 w-[600px] h-[600px] bg-[#C8A97E]/[0.02] blur-[120px] rounded-full" />
+                <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.015] mix-blend-overlay"></div>
             </div>
 
-            <div className="max-w-6xl mx-auto px-6">
+            {/* Premium corner net grid — top corners only, fades inward */}
+            <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
+                {/* Top-left */}
+                <div className="absolute top-0 left-0 w-[50%] h-[60%]" style={{
+                    backgroundImage: 'linear-gradient(rgba(200,169,126,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(200,169,126,0.08) 1px, transparent 1px)',
+                    backgroundSize: '36px 36px',
+                    maskImage: 'radial-gradient(ellipse at top left, black 0%, transparent 65%)',
+                    WebkitMaskImage: 'radial-gradient(ellipse at top left, black 0%, transparent 65%)'
+                }} />
+                {/* Top-right */}
+                <div className="absolute top-0 right-0 w-[50%] h-[60%]" style={{
+                    backgroundImage: 'linear-gradient(rgba(200,169,126,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(200,169,126,0.08) 1px, transparent 1px)',
+                    backgroundSize: '36px 36px',
+                    maskImage: 'radial-gradient(ellipse at top right, black 0%, transparent 65%)',
+                    WebkitMaskImage: 'radial-gradient(ellipse at top right, black 0%, transparent 65%)'
+                }} />
+            </div>
+
+            <div className="max-w-7xl mx-auto px-6 relative z-10">
+
                 {/* Section Badge */}
                 <motion.div
                     initial={{ opacity: 0, y: 15 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.6 }}
-                    className="text-center mb-16"
+                    className="flex items-center gap-4 text-[#C8A97E] text-[10px] font-bold tracking-[0.25em] mb-16 uppercase"
                 >
-                    <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/5 border border-primary/10 text-primary text-sm font-medium">
-                        <Sparkles className="w-3.5 h-3.5" />
-                        Meet the Founder
-                    </span>
+                    <span className="w-8 h-[1px] bg-[#C8A97E] opacity-50"></span>
+                    The Vision
                 </motion.div>
 
-                {/* Main Content – Asymmetric Layout */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
-                    {/* Left: Photo + Social */}
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24 items-center">
+
+                    {/* Left: Classic Fine-Art Style Photo Showcase */}
                     <motion.div
                         initial={{ opacity: 0, x: -30 }}
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.8, ease: 'easeOut' }}
-                        className="lg:col-span-5 flex flex-col items-center lg:items-start"
+                        className="lg:col-span-5 relative mx-auto w-full max-w-md lg:max-w-none flex flex-col items-center lg:items-start"
                     >
-                        {/* Photo Container */}
-                        <div className="relative group">
-                            {/* Glow ring */}
-                            <div className="absolute -inset-1 rounded-2xl bg-gradient-to-br from-primary/20 via-violet-500/10 to-indigo-500/20 blur-sm opacity-60 group-hover:opacity-100 transition-opacity duration-700" />
+                        {/* Frame Border */}
+                        <div className="absolute -inset-4 md:-inset-6 border border-white/10 rounded-sm z-0 pointer-events-none" />
+                        <div className="absolute -inset-4 md:-inset-6 border border-[#C8A97E]/20 rounded-sm z-0 pointer-events-none scale-[1.02] opacity-50" />
 
-                            {/* Photo */}
-                            {/* Photo Slider */}
-                            <div className="relative w-72 h-80 sm:w-80 sm:h-[22rem] rounded-2xl overflow-hidden border border-border/50 shadow-2xl shadow-black/10 dark:shadow-black/30">
-                                <AnimatePresence mode="wait">
-                                    <motion.div
-                                        key={currentImage}
-                                        initial={{ opacity: 0, x: 40 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        exit={{ opacity: 0, x: -40 }}
-                                        transition={{ duration: 0.6, ease: "easeInOut" }}
-                                        className="absolute inset-0"
-                                    >
-                                        <Image
-                                            src={founderImages[currentImage]}
-                                            alt="Samay Samrat – Founder of MwareX"
-                                            fill
-                                            className="object-cover object-top"
-                                            priority
-                                            sizes="(max-width: 768px) 288px, 320px"
-                                        />
-                                    </motion.div>
-                                </AnimatePresence>
+                        {/* Corner Accents */}
+                        <div className="absolute -top-6 -left-6 w-3 h-3 border-t border-l border-[#C8A97E]" />
+                        <div className="absolute -top-6 -right-6 w-3 h-3 border-t border-r border-[#C8A97E]" />
+                        <div className="absolute -bottom-6 -left-6 w-3 h-3 border-b border-l border-[#C8A97E]" />
+                        <div className="absolute -bottom-6 -right-6 w-3 h-3 border-b border-r border-[#C8A97E]" />
 
-                                {/* Subtle gradient overlay at bottom */}
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent z-10 pointer-events-none" />
+                        <div className="relative w-full aspect-[4/3] sm:aspect-[3/2] overflow-hidden bg-[#111111] z-10">
+                            <div className="absolute inset-0">
+                                <Image
+                                    src={founderImages[0]}
+                                    alt="Samay Samrat – Founder of MwareX"
+                                    fill
+                                    className="object-cover object-center opacity-80"
+                                    priority
+                                    sizes="(max-width: 768px) 100vw, 400px"
+                                />
+                                {/* Vignette Overlay */}
+                                <div className="absolute inset-0 shadow-[inset_0_0_100px_#050505] mix-blend-multiply" />
+                            </div>
 
-                                {/* Name overlay on photo */}
-                                <div className="absolute bottom-0 inset-x-0 p-5 z-20">
-                                    <p className="text-white font-bold text-lg tracking-tight">Samay Samrat</p>
-                                    <p className="text-white/70 text-sm">Founder & CEO</p>
-                                </div>
-
-                                {/* Slide indicators */}
-                                <div className="absolute top-4 right-4 z-20 flex gap-1.5">
-                                    {founderImages.map((_, i) => (
-                                        <div
-                                            key={i}
-                                            className={`h-1.5 rounded-full transition-all duration-500 ${i === currentImage
-                                                ? "w-5 bg-white"
-                                                : "w-1.5 bg-white/40"
-                                                }`}
-                                        />
-                                    ))}
-                                </div>
+                            {/* Minimalist Name Plate */}
+                            <div className="absolute bottom-6 left-6 z-20">
+                                <p className="text-[#C8A97E] font-serif text-2xl tracking-wide mb-1">Samay Samrat</p>
+                                <p className="text-white/40 text-[10px] uppercase tracking-[0.2em]">Founder & CEO</p>
                             </div>
                         </div>
 
-                        {/* Social Links */}
+                        {/* Minimalist Social Links */}
                         <motion.div
                             initial={{ opacity: 0, y: 10 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.4, duration: 0.5 }}
-                            className="flex items-center gap-3 mt-6"
+                            className="flex items-center gap-6 mt-12 justify-center lg:justify-start"
                         >
                             {[
-                                { icon: Youtube, href: 'https://www.youtube.com/@futxsamay', label: 'YouTube', hoverColor: 'hover:text-red-500 hover:border-red-500/30' },
-                                { icon: Twitter, href: 'https://x.com/ChemistGamer1', label: 'Twitter', hoverColor: 'hover:text-sky-500 hover:border-sky-500/30' },
-                                { icon: Github, href: 'https://github.com/samay-hash', label: 'GitHub', hoverColor: 'hover:text-foreground hover:border-foreground/30' },
-                                { icon: Mail, href: 'mailto:founder.samay@gmail.com', label: 'Email', hoverColor: 'hover:text-red-400 hover:border-red-400/30' },
-
+                                { icon: Youtube, href: 'https://www.youtube.com/@futxsamay', label: 'YouTube' },
+                                { icon: Twitter, href: 'https://x.com/ChemistGamer1', label: 'Twitter' },
+                                { icon: Github, href: 'https://github.com/samay-hash', label: 'GitHub' },
+                                { icon: Mail, href: 'mailto:founder.samay@gmail.com', label: 'Email' },
                             ].map((social) => (
                                 <a
                                     key={social.label}
@@ -134,50 +113,48 @@ export function FounderSection() {
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     aria-label={social.label}
-                                    className={`w-10 h-10 rounded-xl bg-secondary/60 border border-border/50 flex items-center justify-center text-muted-foreground transition-all duration-300 ${social.hoverColor} hover:bg-background hover:shadow-md`}
+                                    className="text-white/30 hover:text-[#C8A97E] transition-colors duration-300"
                                 >
-                                    <social.icon className="w-4 h-4" />
+                                    <social.icon className="w-5 h-5" strokeWidth={1.5} />
                                 </a>
                             ))}
                         </motion.div>
                     </motion.div>
 
-                    {/* Right: Text Content */}
+                    {/* Right: Elegant Typography Content */}
                     <motion.div
                         initial={{ opacity: 0, x: 30 }}
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.8, delay: 0.15, ease: 'easeOut' }}
-                        className="lg:col-span-7 text-center lg:text-left"
+                        className="lg:col-span-7 lg:pl-8"
                     >
-                        {/* Headline */}
-                        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground leading-[1.15] tracking-tight mb-6">
-                            Building the future of{' '}
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-violet-500 to-indigo-500">
-                                creator collaboration
-                            </span>
+                        <h2 className="text-4xl sm:text-5xl md:text-6xl font-serif text-[#ffffff] font-normal leading-[1.1] tracking-tight mb-8">
+                            Building the future of <br className="hidden md:block" />
+                            <span className="italic text-[#C8A97E]">creator collaboration.</span>
                         </h2>
 
-                        {/* Story */}
-                        <div className="space-y-4 text-muted-foreground text-base md:text-lg leading-relaxed mb-10">
+                        <div className="w-12 h-px bg-[#C8A97E]/50 mb-8" />
+
+                        <div className="space-y-6 text-white/50 text-[15px] leading-[1.8] font-light mb-16 max-w-2xl">
                             <p>
-                                <strong className="text-foreground">Samay Samrat</strong> is an Indian entrepreneur, YouTuber, and the founder of MwareX — a platform designed to bridge the gap between creators and editors.
+                                <strong className="text-white font-normal">Samay Samrat</strong> is an Indian entrepreneur, YouTuber, and the founder of MwareX — a platform designed to bridge the gap between creators and editors.
                             </p>
                             <p>
                                 Frustrated by the broken workflows of managing editors, reviewing drafts, and publishing content,
                                 Samay built MwareX to streamline the entire video production pipeline — from raw upload to one-click YouTube publish.
                             </p>
-                            <p className="text-foreground/80">
-                                &ldquo;Every creator deserves a team that works in sync. MwareX makes that possible — securely, seamlessly, and at scale.&rdquo;
-                            </p>
+                            <blockquote className="pl-6 border-l leading-relaxed border-[#C8A97E]/30 italic text-white/70 py-2">
+                                "Every creator deserves a team that works in sync. MwareX makes that possible — securely, seamlessly, and at scale."
+                            </blockquote>
                         </div>
 
-                        {/* Highlight Stats */}
-                        <div className="grid grid-cols-3 gap-4 mb-10">
+                        {/* Refined Stats */}
+                        <div className="grid grid-cols-3 gap-8 mb-16 max-w-xl">
                             {[
-                                { icon: Rocket, value: '2026', label: 'Founded', color: 'text-primary' },
-                                { icon: Users, value: '500+', label: 'Early Users', color: 'text-violet-500' },
-                                { icon: Globe, value: 'India', label: 'Headquartered', color: 'text-indigo-500' },
+                                { value: '2026', label: 'Founded' },
+                                { value: '500+', label: 'Early Users' },
+                                { value: 'India', label: 'Global HQ' },
                             ].map((stat, i) => (
                                 <motion.div
                                     key={stat.label}
@@ -185,16 +162,14 @@ export function FounderSection() {
                                     whileInView={{ opacity: 1, y: 0 }}
                                     viewport={{ once: true }}
                                     transition={{ delay: 0.3 + i * 0.1, duration: 0.5 }}
-                                    className="group p-4 rounded-xl bg-card/50 dark:bg-card/30 border border-border/40 hover:border-primary/20 transition-all duration-300 hover:shadow-lg hover:shadow-primary/5 text-center"
+                                    className="border-t border-white/10 pt-4"
                                 >
-                                    <stat.icon className={`w-4 h-4 ${stat.color} mx-auto mb-2 opacity-70 group-hover:opacity-100 transition-opacity`} />
-                                    <p className="text-xl sm:text-2xl font-bold text-foreground">{stat.value}</p>
-                                    <p className="text-xs text-muted-foreground mt-0.5">{stat.label}</p>
+                                    <p className="text-2xl font-serif text-white mb-2">{stat.value}</p>
+                                    <p className="text-[10px] text-[#C8A97E] uppercase tracking-widest">{stat.label}</p>
                                 </motion.div>
                             ))}
                         </div>
 
-                        {/* CTA */}
                         <motion.div
                             initial={{ opacity: 0, y: 10 }}
                             whileInView={{ opacity: 1, y: 0 }}
@@ -203,10 +178,12 @@ export function FounderSection() {
                         >
                             <Link
                                 href="/founder"
-                                className="group inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-primary to-violet-600 text-white font-semibold text-sm hover:shadow-xl hover:shadow-primary/25 hover:scale-[1.02] transition-all duration-300"
+                                className="group inline-flex items-center gap-4 text-xs font-bold tracking-[0.2em] text-[#C8A97E] uppercase hover:text-white transition-colors duration-300"
                             >
                                 Read Full Story
-                                <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                                <span className="w-8 h-[1px] bg-[#C8A97E] group-hover:w-12 group-hover:bg-white transition-all duration-300 relative">
+                                    <span className="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 border-t border-r border-current rotate-45" />
+                                </span>
                             </Link>
                         </motion.div>
                     </motion.div>

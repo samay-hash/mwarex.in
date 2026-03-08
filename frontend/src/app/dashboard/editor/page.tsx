@@ -28,7 +28,6 @@ import VideoCard from "@/components/VideoCard";
 import { videoAPI, aiAPI, paymentAPI, roomAPI } from "@/lib/api";
 import { isAuthenticated, getUserData, logout, isDemoUser } from "@/lib/auth";
 import { getSocket } from "@/lib/socket";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { MWareXLogo } from "@/components/mwarex-logo";
 import { SubscriptionModal } from "@/components/subscription-modal";
 import { cn } from "@/lib/utils";
@@ -417,7 +416,6 @@ export default function EditorDashboard() {
             >
               <Settings className="w-4 h-4" />
             </button>
-            <ThemeToggle />
             <button
               onClick={handleLogout}
               className="p-2 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"

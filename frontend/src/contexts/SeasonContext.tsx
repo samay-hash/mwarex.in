@@ -17,12 +17,11 @@ export function SeasonProvider({ children }: { children: React.ReactNode }) {
 
     useEffect(() => {
         const savedSeason = localStorage.getItem('dashboard_season_v3') as Season;
-
         if (savedSeason) {
             setSeasonState(savedSeason);
         } else {
-            // Default Logic: Always Winter
-            setSeasonState('winter');
+            // Default for landing page: none (no effects)
+            setSeasonState('none');
         }
         setMounted(true);
     }, []);

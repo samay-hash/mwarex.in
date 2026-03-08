@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Playfair_Display } from "next/font/google";
+import { Inter, Playfair_Display, Orbitron, Oswald } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { OnboardingProvider } from "@/contexts/OnboardingContext";
@@ -17,6 +17,16 @@ const inter = Inter({
 const playfair = Playfair_Display({
   subsets: ["latin"],
   variable: "--font-playfair",
+});
+
+const orbitron = Orbitron({
+  subsets: ["latin"],
+  variable: "--font-orbitron",
+});
+
+const oswald = Oswald({
+  subsets: ["latin"],
+  variable: "--font-oswald",
 });
 
 export const metadata: Metadata = {
@@ -93,7 +103,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${inter.variable} ${playfair.variable} antialiased bg-background text-foreground font-sans selection:bg-primary/20 selection:text-primary`}
+        className={`${inter.variable} ${playfair.variable} ${orbitron.variable} ${oswald.variable} antialiased bg-background text-foreground font-sans selection:bg-primary/20 selection:text-primary`}
       >
         <HomeStructuredData />
         <ThemeProvider
@@ -106,25 +116,42 @@ export default function RootLayout({
           <OnboardingProvider>
             <SmoothScrollProvider>
               <SeasonProvider>
-                <div className="min-h-screen w-full relative noise bg-white dark:bg-black">
-                  {/* Light Mode: Indigo Radial Gradient Background (Matches Landing Page) */}
-                  <div
-                    className="fixed inset-0 z-0 pointer-events-none transition-opacity duration-500 dark:opacity-0"
-                    style={{
-                      background: "radial-gradient(125% 125% at 50% 10%, #fff 40%, #6366f1 100%)",
-                      transform: 'translateZ(0)', // Force GPU acceleration
-                      willChange: 'opacity',
-                    }}
-                  />
-                  {/* Dark Mode: X Organizations Black Background with Top Glow */}
-                  <div
-                    className="fixed inset-0 z-0 pointer-events-none transition-opacity duration-500 opacity-0 dark:opacity-100"
-                    style={{
-                      background: "radial-gradient(ellipse 80% 60% at 50% 0%, rgba(120, 180, 255, 0.25), transparent 70%), #000000",
-                      transform: 'translateZ(0)', // Force GPU acceleration
-                      willChange: 'opacity',
-                    }}
-                  />
+                <div className="min-h-screen w-full relative bg-[#111111] text-[#fafafa]">
+                  {/* Subtle noise texture over pure dark background */}
+                  <div className="absolute inset-0 pointer-events-none opacity-20 filter contrast-[120%] z-0" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 256 256\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noise\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'1.5\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noise)\'/%3E%3C/svg%3E")' }} />
+
+                  {/* Premium corner net/grid — 4 individual corners fading inward */}
+                  <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+                    {/* Top-left corner */}
+                    <div className="absolute top-0 left-0 w-[55%] h-[55%]" style={{
+                      backgroundImage: 'linear-gradient(rgba(200,169,126,0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(200,169,126,0.07) 1px, transparent 1px)',
+                      backgroundSize: '40px 40px',
+                      maskImage: 'radial-gradient(ellipse at top left, black 0%, transparent 65%)',
+                      WebkitMaskImage: 'radial-gradient(ellipse at top left, black 0%, transparent 65%)'
+                    }} />
+                    {/* Top-right corner */}
+                    <div className="absolute top-0 right-0 w-[55%] h-[55%]" style={{
+                      backgroundImage: 'linear-gradient(rgba(200,169,126,0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(200,169,126,0.07) 1px, transparent 1px)',
+                      backgroundSize: '40px 40px',
+                      maskImage: 'radial-gradient(ellipse at top right, black 0%, transparent 65%)',
+                      WebkitMaskImage: 'radial-gradient(ellipse at top right, black 0%, transparent 65%)'
+                    }} />
+                    {/* Bottom-left corner */}
+                    <div className="absolute bottom-0 left-0 w-[55%] h-[55%]" style={{
+                      backgroundImage: 'linear-gradient(rgba(200,169,126,0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(200,169,126,0.07) 1px, transparent 1px)',
+                      backgroundSize: '40px 40px',
+                      maskImage: 'radial-gradient(ellipse at bottom left, black 0%, transparent 65%)',
+                      WebkitMaskImage: 'radial-gradient(ellipse at bottom left, black 0%, transparent 65%)'
+                    }} />
+                    {/* Bottom-right corner */}
+                    <div className="absolute bottom-0 right-0 w-[55%] h-[55%]" style={{
+                      backgroundImage: 'linear-gradient(rgba(200,169,126,0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(200,169,126,0.07) 1px, transparent 1px)',
+                      backgroundSize: '40px 40px',
+                      maskImage: 'radial-gradient(ellipse at bottom right, black 0%, transparent 65%)',
+                      WebkitMaskImage: 'radial-gradient(ellipse at bottom right, black 0%, transparent 65%)'
+                    }} />
+                  </div>
+
                   <SeasonalBackground />
                   <div className="relative z-10 flex flex-col min-h-screen">
                     {children}

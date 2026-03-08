@@ -243,7 +243,7 @@ export function SeasonalBackground() {
     if (!mounted || season === 'none') return null;
 
     return (
-        <div className="fixed inset-0 pointer-events-none z-0 transition-colors duration-1000">
+        <div className="fixed inset-0 pointer-events-none z-[5] transition-colors duration-1000">
             <AnimatePresence mode="wait">
                 {season === 'autumn' && (
                     <motion.div

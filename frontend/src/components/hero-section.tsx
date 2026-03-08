@@ -1,151 +1,185 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { ArrowRight } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowRight, Play } from "lucide-react";
 import Link from "next/link";
-import { BlurReveal } from "@/components/blur-reveal";
-import { HeroVideo } from "@/components/hero-video";
+import { useState, useEffect } from "react";
+import { toast } from "sonner";
+
+const BACKGROUNDS = [
+    "/images/mwarexplay.jpg",
+    "/images/IMG_20260308_193407.png"
+];
 
 export function HeroSection() {
+    const [currentBg, setCurrentBg] = useState(1);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setCurrentBg((prev) => (prev + 1) % BACKGROUNDS.length);
+        }, 6500);
+        return () => clearInterval(interval);
+    }, []);
 
     return (
-        <section className="relative min-h-screen flex items-center overflow-hidden pt-20 lg:pt-0">
-            {/* Premium Net/Mesh Background - Optimized for performance */}
-            <div className="absolute inset-0 -z-10 overflow-hidden">
-                {/* Static Grid Pattern - Simplified mask for better mobile performance */}
-                <div
-                    className="absolute inset-0 opacity-[0.08] dark:opacity-[0.05]"
-                    style={{
-                        backgroundImage: `
-                            linear-gradient(rgba(99, 102, 241, 0.4) 1px, transparent 1px),
-                            linear-gradient(90deg, rgba(99, 102, 241, 0.4) 1px, transparent 1px)
-                        `,
-                        backgroundSize: '60px 60px',
-                        maskImage: 'radial-gradient(ellipse at center, black 40%, transparent 80%)',
-                        WebkitMaskImage: 'radial-gradient(ellipse at center, black 40%, transparent 80%)',
-                    }}
-                />
+        <section className="relative min-h-screen flex items-center overflow-hidden pt-24 pb-12">
+            {/* Base Background Color */}
+            <div className="absolute inset-0 -z-30 w-full h-full bg-[#0a0a0a]"></div>
 
-                {/* Gradient Orbs - Reduced blur on mobile, enabled hardware acceleration */}
-                <div className="absolute top-0 right-0 w-[300px] md:w-[600px] h-[300px] md:h-[600px] bg-gradient-to-br from-violet-500/10 to-indigo-500/10 rounded-full blur-[40px] md:blur-[80px] translate-x-1/3 -translate-y-1/4" style={{ willChange: 'transform', transform: 'translateZ(0)' }} />
-                <div className="absolute bottom-0 left-0 w-[250px] md:w-[500px] h-[250px] md:h-[500px] bg-gradient-to-tr from-blue-500/10 to-cyan-500/10 rounded-full blur-[30px] md:blur-[60px] -translate-x-1/4 translate-y-1/4" style={{ willChange: 'transform', transform: 'translateZ(0)' }} />
-                {/* Central orb removed on mobile to save resources, added back on desktop */}
-                <div className="hidden md:block absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-radial from-primary/5 to-transparent rounded-full" style={{ willChange: 'transform', transform: 'translateZ(0)' }} />
+            {/* Absolute Background Image Slider - Professional Smooth Merge */}
+            <div className="absolute inset-0 -z-20 w-full h-full overflow-hidden bg-black">
+                <AnimatePresence>
+                    <motion.div
+                        key={currentBg}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 2.5, ease: "easeInOut" }}
+                        className={`absolute inset-0 w-full h-full ${currentBg === 1
+                            ? "lg:left-auto lg:right-0 lg:w-[75%] [mask-image:linear-gradient(to_right,transparent_10%,black_40%)]"
+                            : ""
+                            }`}
+                    >
+                        <img
+                            src={BACKGROUNDS[currentBg]}
+                            alt="Background"
+                            className={`w-full h-full object-cover opacity-50 ${currentBg === 1 ? 'object-right lg:object-center' : 'object-center'}`}
+                        />
+                    </motion.div>
+                </AnimatePresence>
             </div>
 
-            <div className="max-w-7xl mx-auto px-6 w-full z-10">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+            {/* Dark gradient overlay for deep contrast and blending */}
+            <div className="absolute inset-0 -z-10 bg-gradient-to-r from-[#111111] via-[#111111]/80 to-[#111111]/30 pointer-events-none" />
+            <div className="absolute inset-0 -z-10 bg-gradient-to-t from-[#111111] via-transparent to-[#111111]/50 pointer-events-none" />
 
+            <div className="max-w-7xl mx-auto px-6 md:px-12 w-full z-10 pt-10">
+                <div className="flex items-center gap-4 text-[#C8A97E] text-[10px] font-bold tracking-[0.25em] mb-10 md:mb-16 uppercase opacity-90">
+                    <span className="w-12 h-[1px] bg-[#C8A97E] opacity-50"></span>
+                    MWAREX · EST. 2026
+                </div>
+
+                <div className="flex flex-col items-center lg:items-start text-center lg:text-left max-w-4xl mx-auto lg:mx-0">
                     {/* Left Column: Content */}
-                    <div className="flex flex-col items-start text-left order-1 lg:order-1 relative z-30">
-                        {/* Announcement Badge */}
-                        <motion.div
-                            initial={{ opacity: 0, y: -20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.5 }}
-                            className="mb-6"
-                        >
-                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary/50 border border-border/60 backdrop-blur-sm text-xs font-medium text-muted-foreground hover:bg-secondary/80 hover:border-primary/20 transition-all cursor-pointer group">
-                                <span className="flex h-1.5 w-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></span>
-                                <span className="text-foreground/90">New: YouTube API 2.0</span>
-                                <ArrowRight className="w-3.5 h-3.5 text-muted-foreground group-hover:translate-x-0.5 transition-transform" />
-                            </div>
-                        </motion.div>
-
-                        {/* Main Heading with CinematicText */}
-                        <div className="mb-6 max-w-3xl">
-                            <h1 className="text-4xl md:text-5xl lg:text-[5.5rem] font-bold tracking-tighter text-foreground leading-[1.05]">
-                                <div className="flex flex-col items-start gap-1">
-                                    <BlurReveal
-                                        text="Simplify"
-                                        className="text-foreground dark:text-[#E5E7EB]"
-                                        delay={0.1}
-                                    />
-                                    <BlurReveal
-                                        text="your creator"
-                                        className="text-[#7C3AED] dark:text-[#A78BFA]"
-                                        delay={0.3}
-                                    />
-                                    <BlurReveal
-                                        text="workflow"
-                                        className="text-[#6366F1] dark:text-[#E6E6FA]"
-                                        delay={0.5}
-                                    />
-                                </div>
+                    <div className="flex flex-col items-center lg:items-start relative z-30">
+                        {/* Main Heading with Elegant Typography */}
+                        <div className="mb-8 md:mb-10 w-full">
+                            <h1 className="text-[2.5rem] md:text-[3.5rem] lg:text-[4.5rem] font-orbitron uppercase text-[#ffffff] leading-[1.05] font-bold tracking-[0.05em]">
+                                <motion.div
+                                    initial={{ opacity: 0, y: 30 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.8, ease: "easeOut" }}
+                                >
+                                    Simplify
+                                </motion.div>
+                                <motion.div
+                                    initial={{ opacity: 0, y: 30 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.8, delay: 0.1, ease: "easeOut" }}
+                                >
+                                    Your Creator
+                                </motion.div>
+                                <motion.div
+                                    initial={{ opacity: 0, y: 30 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+                                    className="text-[#C8A97E] pr-4 ml-8 md:ml-0"
+                                >
+                                    Workflow.
+                                </motion.div>
                             </h1>
                         </div>
 
-                        {/* Subtitle */}
-                        <motion.p
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.7, delay: 0.3 }}
-                            className="text-lg text-muted-foreground max-w-lg mb-8 leading-normal font-normal"
-                        >
-                            India’s First Scalable Web Platform designed to solve real-world creator and editor problems by connecting, managing, and simplifying the entire content workflow.
-                        </motion.p>
+                        {/* Subtitle - Typewriter Effect */}
+                        <div className="mb-10 md:mb-12 h-auto md:h-[120px] w-full flex justify-center lg:justify-start">
+                            <TypewriterText
+                                text="MWarex connects your editing team directly to your YouTube channel. Upload, review, chat, approve, and publish videos automatically — all in one secure workspace."
+                                className="text-[14px] md:text-[16px] font-oswald tracking-[0.15em] uppercase text-white/80 max-w-lg leading-relaxed flex flex-wrap justify-center lg:justify-start text-center lg:text-left"
+                            />
+                        </div>
 
-                        {/* CTA Buttons */}
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.5, delay: 0.4 }}
-                            className="flex flex-col sm:flex-row items-center gap-4 mb-12"
-                        >
-                            <Link href="/auth/signup">
-                                <div className="group relative px-8 py-3.5 bg-foreground text-white dark:text-black rounded-full font-medium text-base transition-all hover:bg-foreground/90 active:scale-95 shadow-lg shadow-foreground/10 cursor-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMiAyTDEwIDI2TDE0IDE2TDI2IDEyTDIgMloiIGZpbGw9IiMxMGI5ODEiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PC9zdmc+'),_pointer]">
-                                    <span className="relative flex items-center justify-center gap-2">
-                                        Start Free Trial
-                                        <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-                                    </span>
-                                </div>
-                            </Link>
-                        </motion.div>
-
-                        {/* Trust Badges */}
+                        {/* CTA Buttons - Line style with Gold */}
                         <motion.div
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
-                            transition={{ delay: 0.7, duration: 1 }}
-                            className="flex items-center gap-4 text-sm text-muted-foreground"
+                            transition={{ duration: 0.8, delay: 0.6 }}
+                            className="flex flex-col sm:flex-row items-center gap-6"
                         >
-                            <div className="flex -space-x-2">
-                                {[
-                                    '/images/creator-1.png',
-                                    '/images/creator-2.png',
-                                    '/images/creator-3.png',
-                                ].map((src, i) => (
-                                    <div
-                                        key={i}
-                                        className="relative w-9 h-9 rounded-full border-2 border-background overflow-hidden"
-                                    >
-                                        <img
-                                            src={src}
-                                            alt={`Creator ${i + 1}`}
-                                            className="w-full h-full object-cover"
-                                        />
-                                    </div>
-                                ))}
-                            </div>
-                            <p>Trusted by <span className="text-foreground font-medium">Indian</span> Creators</p>
+                            <Link href="/auth/signup">
+                                <div className="group relative px-8 py-3.5 border border-[#C8A97E] text-[#C8A97E] rounded-none text-[10px] sm:text-[11px] font-bold tracking-[0.2em] uppercase transition-all duration-300 hover:bg-[#C8A97E] hover:text-[#111] hover:shadow-[0_0_20px_rgba(200,169,126,0.3)]">
+                                    <span className="relative flex items-center justify-center gap-3">
+                                        Start Free Trial
+                                        <ArrowRight className="w-4 h-4 group-hover:translate-x-1 duration-300" />
+                                    </span>
+                                </div>
+                            </Link>
+
+                            <button
+                                onClick={() => toast.info("Demo Video Coming Soon", {
+                                    description: "We are currently finalizing the complete end-to-end workflow video. It will be officially uploaded very soon. Stay tuned!",
+                                    duration: 5000,
+                                })}
+                                className="group flex items-center gap-2 text-[10px] sm:text-[11px] uppercase tracking-[0.2em] text-white/50 hover:text-white transition-colors duration-300"
+                            >
+                                <Play className="w-3 h-3 group-hover:scale-110 transition-transform duration-300" fill="currentColor" /> Watch Demo
+                            </button>
                         </motion.div>
                     </div>
 
-                    {/* Right Column: Video Preview */}
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.95, x: 20 }}
-                        animate={{ opacity: 1, scale: 1, x: 0 }}
-                        transition={{ duration: 0.8, delay: 0.5 }}
-                        className="w-full relative z-20 order-2 lg:order-2 flex justify-center lg:justify-end"
-                    >
-                        {/* Wrapper to constrain size as requested ("small") */}
-                        <div className="w-full max-w-lg lg:max-w-none xl:max-w-xl 2xl:max-w-2xl transform hover:scale-[1.02] transition-transform duration-500">
-                            <HeroVideo />
-                        </div>
-                    </motion.div>
+                    {/* Right Column: Video Preview Area (Currently Hidden per user request) */}
+                    {/* 
+                           Reserved for future video implementation 
+                        */}
 
                 </div>
             </div>
         </section>
+    );
+}
+
+function TypewriterText({ text, className }: { text: string; className?: string }) {
+    const words = text.split(" ");
+
+    const container = {
+        hidden: { opacity: 0 },
+        visible: {
+            opacity: 1,
+            transition: {
+                staggerChildren: 0.04,
+                delayChildren: 0.5,
+            },
+        },
+    };
+
+    const child = {
+        hidden: { opacity: 0, y: 5 },
+        visible: {
+            opacity: 1,
+            y: 0,
+            transition: {
+                type: "spring" as const,
+                damping: 12,
+                stiffness: 200,
+            },
+        },
+    };
+
+    return (
+        <motion.div
+            variants={container}
+            initial="hidden"
+            animate="visible"
+            className={className}
+        >
+            {words.map((word, index) => (
+                <span key={index} className="mr-[0.3em] mb-1 flex">
+                    {word.split("").map((char, charIndex) => (
+                        <motion.span key={charIndex} variants={child}>
+                            {char}
+                        </motion.span>
+                    ))}
+                </span>
+            ))}
+        </motion.div>
     );
 }

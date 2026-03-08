@@ -20,7 +20,6 @@ import {
 import { getUserData, logout, isAuthenticated } from "@/lib/auth";
 import { userAPI } from "@/lib/api";
 import { toast } from "sonner";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { MWareXLogo } from "@/components/mwarex-logo";
 import { cn } from "@/lib/utils";
 
@@ -110,12 +109,12 @@ export default function EditorSettingsPage() {
     return (
         <div
             style={{ willChange: "transform", transform: "translateZ(0)" }}
-            className="min-h-screen bg-background text-foreground"
+            className="min-h-screen text-foreground"
         >
             {/* ... Header ... */}
             <header
                 style={{ willChange: "transform", transform: "translateZ(0)" }}
-                className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border"
+                className="sticky top-0 z-40 bg-[#0d0d0d]/95 backdrop-blur-sm border-b border-white/10"
             >
                 <div className="max-w-4xl mx-auto px-4 md:px-6 py-3 flex items-center justify-between">
                     <div className="flex items-center gap-4">
@@ -136,7 +135,6 @@ export default function EditorSettingsPage() {
                     </div>
                     <div className="flex items-center gap-3">
                         {saving && <span className="text-xs text-muted-foreground animate-pulse">Saving...</span>}
-                        <ThemeToggle />
                         <button
                             onClick={handleLogout}
                             className="p-2 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
@@ -148,7 +146,7 @@ export default function EditorSettingsPage() {
                 </div>
             </header>
 
-            <main className="max-w-4xl mx-auto px-4 md:px-6 py-8 space-y-8">
+            <main className="relative z-10 max-w-4xl mx-auto px-4 md:px-6 py-8 space-y-8">
                 {/* ... Demo Notice ... */}
 
                 {/* AI Preferences Section */}

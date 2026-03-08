@@ -144,16 +144,6 @@ export const HeroVideo = () => {
     return (
         <div className="relative flex h-full w-full items-center justify-center bg-transparent py-10">
             <div className="absolute top-0 grid content-start justify-items-center gap-6 text-center z-10 w-full pointer-events-none">
-                {!showVideoPopOver && (
-                    <motion.span
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 0.6 }}
-                        exit={{ opacity: 0 }}
-                        className="after:to-foreground relative max-w-[12ch] text-xs uppercase leading-tight after:absolute after:left-1/2 after:top-full after:h-16 after:w-px after:bg-gradient-to-b after:from-transparent after:content-['']"
-                    >
-                        Click the video to play
-                    </motion.span>
-                )}
             </div>
             <AnimatePresence>
                 {showVideoPopOver && (
@@ -163,31 +153,28 @@ export const HeroVideo = () => {
             <motion.div
                 layoutId="hero-video-container"
                 onMouseMove={handlePointerMove}
-                onMouseLeave={() => {
-                    opacity.set(0);
-                }}
+                onMouseLeave={() => opacity.set(0)}
                 onClick={() => setShowVideoPopOver(true)}
-                className="w-full max-w-4xl aspect-video rounded-3xl overflow-hidden cursor-none relative border border-white/10 shadow-[0_0_40px_rgba(255,255,255,0.1)] bg-black group"
+                className="w-full max-w-sm aspect-video sm:aspect-auto sm:h-[250px] rounded-2xl overflow-hidden cursor-pointer relative border border-white/10 shadow-[0_0_50px_rgba(200,169,126,0.05)] bg-[#111111]/80 backdrop-blur-md group flex items-center justify-center transition-all duration-700 hover:border-[#C8A97E]/30 hover:bg-[#151515]"
             >
-                <motion.div
-                    style={{ x, y, opacity }}
-                    className="relative z-20 flex w-fit select-none items-center justify-center gap-2 p-3 rounded-full bg-white/20 backdrop-blur-md border border-white/10 text-sm text-white font-medium pointer-events-none"
-                >
-                    <Play className="size-4 fill-white" /> Play Showreel
-                </motion.div>
+                {/* Subtle continuous border reflection effect */}
+                <div className="absolute inset-0 w-full h-full bg-gradient-to-tr from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
 
-                {/* Preview Video (Paused) */}
-                <video
-                    muted
-                    playsInline
-                    loop
-                    className="h-full w-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-500 will-change-transform group-hover:scale-105 transform"
-                >
-                    <source src="/assets/demo-video.mp4" />
-                </video>
+                {/* Animated Gradient Glow */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-[#C8A97E]/20 blur-[50px] rounded-full group-hover:bg-[#C8A97E]/40 transition-colors duration-700"></div>
 
-                {/* Overlay for better text visibility */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-80 hover:opacity-40 transition-opacity duration-500" />
+                <div className="relative z-20 flex flex-col items-center justify-center gap-4 text-center">
+                    <div className="w-16 h-16 rounded-full border border-white/10 flex items-center justify-center bg-white/5 group-hover:scale-110 group-hover:border-[#C8A97E]/50 group-hover:bg-[#C8A97E]/10 transition-all duration-500 shadow-xl">
+                        <Play className="size-6 fill-white text-white group-hover:fill-[#C8A97E] group-hover:text-[#C8A97E] transition-colors duration-500 ml-1" />
+                    </div>
+                    <div>
+                        <span className="block text-white text-sm font-serif mb-1 group-hover:text-[#C8A97E] transition-colors duration-500">Play Video</span>
+                        <span className="block text-[10px] text-white/40 uppercase tracking-[0.2em]">Platform Tour · 1m 20s</span>
+                    </div>
+                </div>
+
+                {/* Grid Pattern Background */}
+                <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:40px_40px] opacity-20 [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_10%,transparent_100%)] mix-blend-overlay pointer-events-none"></div>
             </motion.div>
         </div>
     );

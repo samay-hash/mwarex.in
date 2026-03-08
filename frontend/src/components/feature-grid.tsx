@@ -9,129 +9,98 @@ const features = [
         title: "Youtube API",
         description: "Direct server-to-server publishing. No downloads required.",
         icon: Zap,
-        align: "top"
     },
     {
         title: "Role-Based Access",
         description: "Granular permissions for editors, managers, and viewers.",
         icon: Lock,
-        align: "right"
     },
     {
         title: "Secure Storage",
         description: "Enterprise-grade encryption for all your raw footage.",
         icon: Shield,
-        align: "left"
     },
     {
         title: "1-Click Approvals",
         description: "Review streams instantly and approve from any device.",
         icon: MousePointer2,
-        align: "bottom"
     }
 ];
 
 export function FeatureGrid() {
     return (
-        <section className="py-32 relative overflow-hidden bg-background" id="features">
+        <section className="py-32 relative overflow-hidden bg-[#111111] border-t border-white/5" id="features">
             {/* Background elements */}
-            <div className="absolute inset-0">
-                {/* Subtle Grid */}
-                <div
-                    className="absolute inset-0 opacity-[0.03]"
-                    style={{
-                        backgroundImage: `
-                            linear-gradient(var(--foreground) 1px, transparent 1px),
-                            linear-gradient(90deg, var(--foreground) 1px, transparent 1px)
-                        `,
-                        backgroundSize: '40px 40px',
-                    }}
-                />
+            <div className="absolute inset-0 pointer-events-none">
+                <div className="absolute top-[30%] left-[-20%] w-[600px] h-[600px] bg-[#C8A97E]/5 rounded-full blur-[150px] opacity-40" />
+                <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-[#111111] rounded-full blur-[120px]" />
+                <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.015] mix-blend-overlay"></div>
             </div>
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[60px] md:blur-[120px] pointer-events-none" />
 
             <div className="max-w-7xl mx-auto px-6 relative z-10">
-                <div className="text-center mb-24">
+                <div className="text-center mb-24 flex flex-col items-center">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
-                        className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/5 border border-primary/10 mb-6"
+                        className="flex items-center gap-4 text-[#C8A97E] text-[10px] font-bold tracking-[0.25em] mb-8 uppercase"
                     >
-                        <span className="text-primary font-medium text-sm">Features</span>
+                        <span className="w-8 h-[1px] bg-[#C8A97E] opacity-50"></span>
+                        Capabilities
+                        <span className="w-8 h-[1px] bg-[#C8A97E] opacity-50"></span>
                     </motion.div>
 
-                    <h2 className="text-3xl md:text-5xl font-bold tracking-tight mb-4 text-foreground">
-                        Built for <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-violet-500">Scale</span>
+                    <h2 className="text-4xl md:text-5xl lg:text-7xl font-serif font-normal text-white tracking-tight mb-8">
+                        Built for <span className="italic text-[#C8A97E]">Scale.</span>
                     </h2>
-                    <p className="text-muted-foreground max-w-2xl mx-auto">
+                    <p className="text-white/40 max-w-2xl mx-auto text-[15px] font-light leading-relaxed">
                         Everything you need to manage secure video workflows, organized in one powerful dashboard.
                     </p>
                 </div>
 
-                {/* Cross Layout Container */}
-                <div className="relative w-full max-w-4xl mx-auto md:min-h-[600px] flex flex-col md:flex-row items-center justify-center">
-
-                    {/* Center Core Visual */}
-                    <motion.div
-                        initial={{ scale: 0.8, opacity: 0 }}
-                        whileInView={{ scale: 1, opacity: 1 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.8 }}
-                        className="relative w-48 h-48 md:w-64 md:h-64 rounded-full border border-border bg-card/50 backdrop-blur-xl flex items-center justify-center z-20 shadow-2xl"
-                    >
-                        {/* Static rings - no animation */}
-                        <div className="absolute inset-0 rounded-full border border-border/30" />
-                        <div className="absolute inset-4 rounded-full border border-border/20" />
-
-                        <div className="text-center p-4">
-                            <span className="block text-4xl font-bold text-foreground mb-2">10x</span>
-                            <span className="text-xs text-muted-foreground uppercase tracking-widest">Faster Workflow</span>
-                        </div>
-                    </motion.div>
+                {/* Elegant Minimalist Grid Layout */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 relative w-full">
 
                     {/* Surrounding Cards */}
                     {features.map((feature, index) => {
-                        // Position logic based on "align"
-                        const posMap = {
-                            top: "top-0 left-1/2 -translate-x-1/2 -translate-y-full mb-8",
-                            bottom: "bottom-0 left-1/2 -translate-x-1/2 translate-y-full mt-8",
-                            left: "left-0 top-1/2 -translate-y-1/2 -translate-x-full mr-8",
-                            right: "right-0 top-1/2 -translate-y-1/2 translate-x-full ml-8",
-                        };
-
                         return (
                             <motion.div
                                 key={feature.title}
-                                initial={{ opacity: 0, [feature.align === 'top' || feature.align === 'bottom' ? 'y' : 'x']: 20 }}
-                                whileInView={{ opacity: 1, [feature.align === 'top' || feature.align === 'bottom' ? 'y' : 'x']: 0 }}
-                                transition={{ delay: index * 0.1 + 0.5 }}
-                                className={cn(
-                                    "absolute hidden md:flex flex-col items-center text-center p-6 w-64 rounded-2xl border border-border bg-card/80 backdrop-blur-md hover:bg-card transition-all group shadow-lg",
-                                    posMap[feature.align as keyof typeof posMap]
-                                )}
+                                initial={{ opacity: 0, y: 15, scale: 0.95 }}
+                                whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                                viewport={{ once: true, margin: "-50px" }}
+                                transition={{ delay: index * 0.1, duration: 0.8, ease: "easeOut" }}
+                                className="group relative flex flex-col p-8 md:p-10 border border-white/5 bg-[#0a0a0a]/50 backdrop-blur-md transition-all duration-700 hover:bg-[#111111] hover:border-[#C8A97E]/20"
                             >
-                                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-4 border border-primary/20 group-hover:bg-primary/20 transition-colors">
-                                    <feature.icon className="w-5 h-5" />
+                                {/* Top right subtle accent line */}
+                                <div className="absolute top-0 right-0 w-8 h-px bg-gradient-to-r from-transparent to-[#C8A97E]/0 group-hover:to-[#C8A97E]/50 transition-colors duration-700"></div>
+                                <div className="absolute top-0 right-0 w-px h-8 bg-gradient-to-b from-[#C8A97E]/0 to-transparent group-hover:from-[#C8A97E]/50 transition-colors duration-700"></div>
+
+                                <div className="mb-12">
+                                    <feature.icon className="w-8 h-8 text-white/20 group-hover:text-[#C8A97E] transition-colors duration-500" strokeWidth={1} />
                                 </div>
-                                <h3 className="text-lg font-semibold text-foreground mb-2">{feature.title}</h3>
-                                <p className="text-sm text-muted-foreground">{feature.description}</p>
+
+                                <div className="mt-auto">
+                                    <h3 className="text-xl font-serif text-white mb-3 group-hover:text-[#C8A97E] transition-colors duration-500">{feature.title}</h3>
+                                    <p className="text-[13px] text-white/30 font-light leading-[1.8] group-hover:text-white/50 transition-colors duration-500">{feature.description}</p>
+                                </div>
                             </motion.div>
                         );
                     })}
-
-                    {/* Mobile View: Simple Grid */}
-                    <div className="md:hidden grid grid-cols-1 gap-6 w-full pt-12">
-                        {features.map((feature) => (
-                            <div key={feature.title} className="flex flex-col items-center text-center p-6 rounded-2xl border border-border bg-card/80">
-                                <feature.icon className="w-8 h-8 text-primary mb-4" />
-                                <h3 className="text-xl font-bold text-foreground mb-2">{feature.title}</h3>
-                                <p className="text-muted-foreground">{feature.description}</p>
-                            </div>
-                        ))}
-                    </div>
-
                 </div>
+
+                {/* 10x Banner below grid */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.8, delay: 0.4 }}
+                    className="mt-16 w-full border border-white/5 bg-gradient-to-r from-transparent via-[#111111] to-transparent py-10 flex flex-col items-center justify-center group"
+                >
+                    <span className="block text-4xl md:text-6xl font-serif text-[#ffffff] mb-3 group-hover:text-[#C8A97E] transition-colors duration-700 italic">10x</span>
+                    <span className="text-[10px] text-white/30 uppercase tracking-[0.3em] font-bold">Faster Workflow</span>
+                </motion.div>
+
             </div>
         </section>
     );

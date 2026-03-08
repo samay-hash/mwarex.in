@@ -20,6 +20,8 @@ module.exports = {
             fontFamily: {
                 sans: ["var(--font-inter)", "ui-sans-serif", "system-ui", "sans-serif"],
                 serif: ["var(--font-playfair)", "ui-serif", "Georgia", "serif"],
+                orbitron: ["var(--font-orbitron)", "sans-serif"],
+                oswald: ["var(--font-oswald)", "sans-serif"],
             },
             colors: {
                 border: "var(--border)",
