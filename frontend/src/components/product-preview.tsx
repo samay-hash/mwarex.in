@@ -6,18 +6,7 @@ import { cn } from "@/lib/utils";
 
 export function ProductPreview() {
     return (
-        <section className="relative bg-[#111111] py-32 overflow-hidden border-t border-white/5">
-            {/* Background Ambience */}
-            <div className="absolute inset-0 pointer-events-none">
-                {/* Subtle dark gradient mapping */}
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-white/[0.03] via-[#0a0a0a] to-[#0a0a0a]" />
-                <div className="absolute top-[20%] left-[-10%] w-[500px] h-[500px] bg-[#C8A97E]/5 rounded-full blur-[120px] opacity-50" />
-                <div className="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-[#222]/50 rounded-full blur-[150px] opacity-50" />
-
-                {/* Subtle grid lines */}
-                <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:100px_100px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,#000_20%,transparent_100%)]"></div>
-            </div>
-
+        <section className="relative py-32 overflow-hidden">
             <div className="max-w-7xl mx-auto px-6 relative z-10">
                 {/* Header */}
                 <div className="text-center mb-24 flex flex-col items-center">

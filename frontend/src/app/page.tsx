@@ -78,8 +78,14 @@ export default function LandingPage() {
               <div className="absolute inset-0 bg-gradient-to-t from-[#111111] via-transparent to-[#111111]" />
             </div>
 
-            {/* Premium corner net grid — starts strong at corners, fades inward */}
-            <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
+            {/* Premium corner net grid — starts strong at corners, fades inward, with a soft fade at the very top edge */}
+            <div
+              className="absolute inset-0 pointer-events-none overflow-hidden z-0"
+              style={{
+                maskImage: 'linear-gradient(to bottom, transparent 0%, black 15%, black 100%)',
+                WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 15%, black 100%)'
+              }}
+            >
               {/* Top-left — strongest */}
               <div className="absolute top-0 left-0 w-[50%] h-[70%]" style={{
                 backgroundImage: 'linear-gradient(rgba(200,169,126,0.09) 1px, transparent 1px), linear-gradient(90deg, rgba(200,169,126,0.09) 1px, transparent 1px)',

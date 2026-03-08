@@ -29,7 +29,7 @@ const features = [
 
 export function FeatureGrid() {
     return (
-        <section className="py-32 relative overflow-hidden bg-[#111111] border-t border-white/5" id="features">
+        <section className="py-32 relative overflow-hidden" id="features">
             {/* Background elements */}
             <div className="absolute inset-0 pointer-events-none">
                 <div className="absolute top-[30%] left-[-20%] w-[600px] h-[600px] bg-[#C8A97E]/5 rounded-full blur-[150px] opacity-40" />
@@ -45,9 +45,7 @@ export function FeatureGrid() {
                         viewport={{ once: true }}
                         className="flex items-center gap-4 text-[#C8A97E] text-[10px] font-bold tracking-[0.25em] mb-8 uppercase"
                     >
-                        <span className="w-8 h-[1px] bg-[#C8A97E] opacity-50"></span>
                         Capabilities
-                        <span className="w-8 h-[1px] bg-[#C8A97E] opacity-50"></span>
                     </motion.div>
 
                     <h2 className="text-4xl md:text-5xl lg:text-7xl font-serif font-normal text-white tracking-tight mb-8">

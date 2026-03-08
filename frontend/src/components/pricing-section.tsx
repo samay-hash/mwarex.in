@@ -164,7 +164,7 @@ export function PricingSection() {
     };
 
     return (
-        <section className="py-32 relative bg-[#111111] border-t border-white/5" id="pricing">
+        <section className="py-32 relative" id="pricing">
             <div className="absolute inset-0 pointer-events-none">
                 <div className="absolute top-[20%] left-1/2 -translate-x-1/2 w-full max-w-[800px] h-[500px] bg-[#C8A97E]/[0.02] blur-[120px] rounded-full" />
                 <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.015] mix-blend-overlay"></div>
@@ -180,9 +180,7 @@ export function PricingSection() {
                         viewport={{ once: true }}
                         className="flex items-center gap-4 text-[#C8A97E] text-[10px] font-bold tracking-[0.25em] mb-8 uppercase"
                     >
-                        <span className="w-8 h-[1px] bg-[#C8A97E] opacity-50"></span>
                         Investment
-                        <span className="w-8 h-[1px] bg-[#C8A97E] opacity-50"></span>
                     </motion.div>
 
                     <h2 className="text-4xl md:text-5xl lg:text-7xl font-serif text-[#ffffff] font-normal tracking-tight mb-8">
