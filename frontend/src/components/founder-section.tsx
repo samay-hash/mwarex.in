@@ -20,24 +20,6 @@ export function FounderSection() {
                 <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.015] mix-blend-overlay"></div>
             </div>
 
-            {/* Premium corner net grid — top corners only, fades inward */}
-            <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
-                {/* Top-left */}
-                <div className="absolute top-0 left-0 w-[50%] h-[60%]" style={{
-                    backgroundImage: 'linear-gradient(rgba(200,169,126,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(200,169,126,0.08) 1px, transparent 1px)',
-                    backgroundSize: '36px 36px',
-                    maskImage: 'radial-gradient(ellipse at top left, black 0%, transparent 65%)',
-                    WebkitMaskImage: 'radial-gradient(ellipse at top left, black 0%, transparent 65%)'
-                }} />
-                {/* Top-right */}
-                <div className="absolute top-0 right-0 w-[50%] h-[60%]" style={{
-                    backgroundImage: 'linear-gradient(rgba(200,169,126,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(200,169,126,0.08) 1px, transparent 1px)',
-                    backgroundSize: '36px 36px',
-                    maskImage: 'radial-gradient(ellipse at top right, black 0%, transparent 65%)',
-                    WebkitMaskImage: 'radial-gradient(ellipse at top right, black 0%, transparent 65%)'
-                }} />
-            </div>
-
             <div className="max-w-7xl mx-auto px-6 relative z-10">
 
                 {/* Section Badge */}

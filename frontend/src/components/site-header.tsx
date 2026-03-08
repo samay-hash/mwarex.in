@@ -17,17 +17,17 @@ export function SiteHeader() {
                 style={{ willChange: "transform, opacity", transform: "translateZ(0)" }}
                 className="fixed top-0 left-0 right-0 z-50 px-4 md:px-12 py-6"
             >
-                {/* 3-column grid: Logo | Nav (centered) | Actions */}
-                <div className="w-full grid grid-cols-3 items-center">
+                {/* Layout: Logo (Left) | Nav (Absolute Center) | Actions (Right) */}
+                <div className="w-full relative flex items-center justify-between">
                     {/* Left: Logo */}
-                    <Link href="/" className="z-50 hover:scale-105 transition-transform duration-300 justify-self-start">
+                    <Link href="/" className="z-50 hover:scale-105 transition-transform duration-300">
                         <div className="flex items-center gap-2">
                             <MWareXLogo showText={true} />
                         </div>
                     </Link>
 
                     {/* Center: Desktop Navigation */}
-                    <nav className="hidden lg:flex items-center justify-center gap-10 text-[11px] font-bold tracking-[1.5px] uppercase text-white/50">
+                    <nav className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 hidden lg:flex items-center justify-center gap-10 text-[11px] font-bold tracking-[1.5px] uppercase text-white/50 w-max">
                         <Link href="/#workflow" className="relative group hover:text-white transition-colors py-2">
                             Workflow
                             <span className="absolute bottom-1 left-0 w-0 h-px bg-[#C8A97E] group-hover:w-full transition-all duration-300"></span>
@@ -45,8 +45,8 @@ export function SiteHeader() {
                     </nav>
 
                     {/* Right: Desktop Actions + Mobile Toggle */}
-                    <div className="flex items-center justify-end gap-6">
-                        <div className="hidden lg:flex items-center gap-6 z-10 text-[11px] font-bold tracking-[0.25em] uppercase text-white/50">
+                    <div className="flex items-center gap-6 z-50">
+                        <div className="hidden lg:flex items-center gap-6 text-[11px] font-bold tracking-[0.25em] uppercase text-white/50">
                             <Link href="/auth/signin" className="hover:text-white transition-colors">Login</Link>
                             <span className="text-white/10 font-light">|</span>
                             <Link href="/auth/signup" className="text-[#00E5FF] hover:text-white transition-colors">Register</Link>
@@ -60,7 +60,7 @@ export function SiteHeader() {
 
                         {/* Mobile Menu Toggle */}
                         <button
-                            className="lg:hidden z-50 p-2 text-white"
+                            className="lg:hidden p-2 -mr-2 text-white"
                             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                         >
                             {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}

@@ -78,24 +78,37 @@ export default function LandingPage() {
               <div className="absolute inset-0 bg-gradient-to-t from-[#111111] via-transparent to-[#111111]" />
             </div>
 
-            {/* Premium corner net grid — top corners only, clean boundary */}
+            {/* Premium corner net grid — starts strong at corners, fades inward */}
             <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
-              {/* Top-left */}
-              <div className="absolute top-0 left-0 w-[50%] h-[65%]" style={{
+              {/* Top-left — strongest */}
+              <div className="absolute top-0 left-0 w-[50%] h-[70%]" style={{
                 backgroundImage: 'linear-gradient(rgba(200,169,126,0.09) 1px, transparent 1px), linear-gradient(90deg, rgba(200,169,126,0.09) 1px, transparent 1px)',
                 backgroundSize: '36px 36px',
-                maskImage: 'radial-gradient(ellipse at top left, black 0%, transparent 65%)',
-                WebkitMaskImage: 'radial-gradient(ellipse at top left, black 0%, transparent 65%)'
+                maskImage: 'radial-gradient(ellipse at top left, black 0%, transparent 60%)',
+                WebkitMaskImage: 'radial-gradient(ellipse at top left, black 0%, transparent 60%)'
               }} />
-              {/* Top-right */}
-              <div className="absolute top-0 right-0 w-[50%] h-[65%]" style={{
+              {/* Top-right — strongest */}
+              <div className="absolute top-0 right-0 w-[50%] h-[70%]" style={{
                 backgroundImage: 'linear-gradient(rgba(200,169,126,0.09) 1px, transparent 1px), linear-gradient(90deg, rgba(200,169,126,0.09) 1px, transparent 1px)',
                 backgroundSize: '36px 36px',
-                maskImage: 'radial-gradient(ellipse at top right, black 0%, transparent 65%)',
-                WebkitMaskImage: 'radial-gradient(ellipse at top right, black 0%, transparent 65%)'
+                maskImage: 'radial-gradient(ellipse at top right, black 0%, transparent 60%)',
+                WebkitMaskImage: 'radial-gradient(ellipse at top right, black 0%, transparent 60%)'
+              }} />
+              {/* Bottom-left — subtler */}
+              <div className="absolute bottom-0 left-0 w-[40%] h-[50%]" style={{
+                backgroundImage: 'linear-gradient(rgba(200,169,126,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(200,169,126,0.05) 1px, transparent 1px)',
+                backgroundSize: '36px 36px',
+                maskImage: 'radial-gradient(ellipse at bottom left, black 0%, transparent 55%)',
+                WebkitMaskImage: 'radial-gradient(ellipse at bottom left, black 0%, transparent 55%)'
+              }} />
+              {/* Bottom-right — subtler */}
+              <div className="absolute bottom-0 right-0 w-[40%] h-[50%]" style={{
+                backgroundImage: 'linear-gradient(rgba(200,169,126,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(200,169,126,0.05) 1px, transparent 1px)',
+                backgroundSize: '36px 36px',
+                maskImage: 'radial-gradient(ellipse at bottom right, black 0%, transparent 55%)',
+                WebkitMaskImage: 'radial-gradient(ellipse at bottom right, black 0%, transparent 55%)'
               }} />
             </div>
-
 
             <div className="max-w-5xl mx-auto px-6 text-center relative z-10">
               {/* Badge */}
