@@ -13,7 +13,7 @@ export const metadata: Metadata = {
         type: "website",
         images: [
             {
-                url: "https://mwarex.in/images/samay-samrat-nvidia.jpg",
+                url: "https://mwarex.in/images/samay-samrat.jpg",
                 width: 1200,
                 height: 630,
                 alt: "Samay Samrat - Founder of MwareX",
@@ -101,7 +101,7 @@ export default function AboutPage() {
                             <div className="flex flex-col md:flex-row gap-6 items-start">
                                 <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-primary/30 flex-shrink-0">
                                     <Image
-                                        src="/images/samay-samrat-nvidia.jpg"
+                                        src="/images/samay-samrat.jpg"
                                         alt="Samay Samrat - Founder of Mwarex"
                                         width={80}
                                         height={80}

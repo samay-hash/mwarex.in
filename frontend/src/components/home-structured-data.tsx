@@ -9,13 +9,13 @@ export function HomeStructuredData() {
             "url": "https://mwarex.in",
             "logo": {
                 "@type": "ImageObject",
-                "url": "https://mwarex.in/web-app-manifest-512x512.png"
+                "url": "https://mwarex.in/mwarexin.png"
             },
             "founder": {
                 "@type": "Person",
                 "name": "Samay Samrat",
                 "url": "https://mwarex.in/founder",
-                "image": "https://mwarex.in/images/samay-samrat-nvidia.jpg",
+                "image": "https://mwarex.in/images/samay-samrat.jpg",
                 "jobTitle": "Founder & CEO",
                 "sameAs": [
                     "https://www.youtube.com/@futxsamay",
