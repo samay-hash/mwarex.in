@@ -51,12 +51,6 @@ export const metadata: Metadata = {
     locale: "en_IN",
     images: [
       {
-        url: "https://mwarex.in/images/samay-samrat.jpg",
-        width: 1200,
-        height: 630,
-        alt: "Samay Samrat - Founder of MWareX",
-      },
-      {
         url: "https://mwarex.in/images/samay-samrat-nvidia.jpg",
         width: 1200,
         height: 630,
@@ -80,16 +74,18 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "MWareX | Streamline Your Video Workflow",
     description: "The ultimate platform for YouTubers and editors. Founded by Samay Samrat.",
-    images: ["https://mwarex.in/images/samay-samrat.jpg"],
+    images: ["https://mwarex.in/images/samay-samrat-nvidia.jpg"],
     creator: "@ChemistGamer1",
   },
   icons: {
     icon: [
-      { url: '/mwarexin.png', type: 'image/png', media: '(prefers-color-scheme: light)' },
-      { url: '/blackmwarex.png', type: 'image/png', media: '(prefers-color-scheme: dark)' },
+      { url: '/favicon.ico' },
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/favicon-96x96.png', type: 'image/png', sizes: '96x96' },
     ],
     apple: [
-      { url: '/mwarexin.png', type: 'image/png' },
+      { url: '/web-app-manifest-512x512.png', sizes: '512x512' },
+      { url: '/apple-touch-icon.png', sizes: '180x180' }
     ],
   },
   manifest: '/site.webmanifest',

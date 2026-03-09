@@ -1,6 +1,5 @@
-// This is a server component - renders structured data for SEO
+// This is a server component - renders structured data for SEO 
 // Injected separately since page.tsx is a client component
-
 export function HomeStructuredData() {
     const combinedSchema = [
         {
@@ -10,13 +9,13 @@ export function HomeStructuredData() {
             "url": "https://mwarex.in",
             "logo": {
                 "@type": "ImageObject",
-                "url": "https://mwarex.in/mwarexin.png"
+                "url": "https://mwarex.in/web-app-manifest-512x512.png"
             },
             "founder": {
                 "@type": "Person",
                 "name": "Samay Samrat",
                 "url": "https://mwarex.in/founder",
-                "image": "https://mwarex.in/images/samay-samrat.jpg",
+                "image": "https://mwarex.in/images/samay-samrat-nvidia.jpg",
                 "jobTitle": "Founder & CEO",
                 "sameAs": [
                     "https://www.youtube.com/@futxsamay",

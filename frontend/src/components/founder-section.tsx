@@ -7,7 +7,6 @@ import Link from 'next/link';
 import { ArrowRight, Youtube, Twitter, Github, Mail, Sparkles, Rocket, Users, Globe } from 'lucide-react';
 
 const founderImages = [
-    '/images/samay-samrat.jpg',
     '/images/samay-samrat-nvidia.jpg',
 ];
 

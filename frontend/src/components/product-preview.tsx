@@ -41,10 +41,9 @@ export function ProductPreview() {
                     </motion.p>
                 </div>
 
-                {/* 2x2 Grid - Sleek, Minimalist Cards */}
+           
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
 
-                    {/* Card 1: Protected & Secure */}
                     <FeatureCard
                         title="Isolated Workspaces"
                         description="Every creator gets a private, sandboxed workspace. Video assets, drafts, and credentials are stored in encrypted cloud environments — no cross-tenant data leaks, ever."
