@@ -17,7 +17,7 @@ export function HeroSection() {
     useEffect(() => {
         const interval = setInterval(() => {
             setCurrentBg((prev) => (prev + 1) % BACKGROUNDS.length);
-        }, 6500);
+        }, 7000);
         return () => clearInterval(interval);
     }, []);
 
@@ -43,14 +43,14 @@ export function HeroSection() {
                         <img
                             src={BACKGROUNDS[currentBg]}
                             alt="Background"
-                            className={`w-full h-full object-cover opacity-50 ${currentBg === 1 ? 'object-right lg:object-center' : 'object-center'}`}
+                            className={`w-full h-full object-cover opacity-70 ${currentBg === 1 ? 'object-right lg:object-center' : 'object-center'}`}
                         />
                     </motion.div>
                 </AnimatePresence>
             </div>
 
             {/* Dark gradient overlay for deep contrast and blending */}
-            <div className="absolute inset-0 -z-10 bg-gradient-to-r from-[#111111] via-[#111111]/80 to-[#111111]/30 pointer-events-none" />
+            <div className="absolute inset-0 -z-10 bg-gradient-to-r from-[#111111] via-[#111111]/75 to-[#111111]/10 pointer-events-none" />
             <div className="absolute inset-0 -z-10 bg-gradient-to-t from-[#111111] via-transparent to-[#111111]/50 pointer-events-none" />
 
             <div className="max-w-7xl mx-auto px-6 md:px-12 w-full z-10 pt-10">
