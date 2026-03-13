@@ -10,25 +10,34 @@ async function uploadToYoutube(video, userId) {
     auth: oauth2Client,
   });
 
-  const res = await youtube.videos.insert({
-    part: "snippet,status",
-    requestBody: {
-      snippet: {
-        title: video.title,
-        description: video.description,
+    // Check if the URL is an S3 URL and get a signed download URL so axios can stream it
+    let streamUrl = video.fileUrl;
+    if (streamUrl && streamUrl.includes("amazonaws.com")) {
+      const { getSignedDownloadUrl } = require("./S3Service");
+      const urlObj = new URL(streamUrl);
+      const key = urlObj.pathname.slice(1);
+      streamUrl = await getSignedDownloadUrl(key);
+    }
+
+    const res = await youtube.videos.insert({
+      part: "snippet,status",
+      requestBody: {
+        snippet: {
+          title: video.title,
+          description: video.description,
+        },
+        status: {
+          privacyStatus: "private",
+        },
       },
-      status: {
-        privacyStatus: "private",
+      media: {
+        body: (await axios({
+          method: "get",
+          url: streamUrl,
+          responseType: "stream",
+        })).data,
       },
-    },
-    media: {
-      body: (await axios({
-        method: "get",
-        url: video.fileUrl,
-        responseType: "stream",
-      })).data,
-    },
-  });
+    });
 
   if (video.thumbnailUrl) {
     try {
