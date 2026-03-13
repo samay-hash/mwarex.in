@@ -131,7 +131,10 @@ export default function CreatorDashboard() {
         .then(res => {
           setRooms(res.data);
           if (res.data.length > 0) {
-            setCurrentRoom(res.data[0]);
+            // Restore previously selected room from sessionStorage (survives refresh)
+            const savedRoomId = typeof window !== "undefined" ? sessionStorage.getItem("creatorCurrentRoomId") : null;
+            const savedRoom = savedRoomId ? res.data.find((r: any) => r._id === savedRoomId) : null;
+            setCurrentRoom(savedRoom || res.data[0]);
           } else {
             // Prompt to create first room
             setIsRoomModalOpen(true);
@@ -400,6 +403,14 @@ export default function CreatorDashboard() {
       };
     }
   }, [currentRoom]);
+
+  // Persist the currently selected room so refresh restores it
+  useEffect(() => {
+    if (currentRoom && typeof window !== "undefined") {
+      sessionStorage.setItem("creatorCurrentRoomId", currentRoom._id);
+    }
+  }, [currentRoom]);
+
 
   const handleCreateRoom = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -60,6 +60,11 @@ function JoinContent() {
         if (roomRes.data.valid) {
           setCreatorId(roomRes.data.roomId);
           setRoomName(roomRes.data.roomName);
+          // Store the room ID so we can lock the editor to it after join
+          if (typeof window !== "undefined") {
+            localStorage.setItem("lockedRoomId", String(roomRes.data.roomId));
+            localStorage.setItem("lockedRoomName", roomRes.data.roomName || "");
+          }
           setStep("signup");
           return;
         }
@@ -116,8 +121,13 @@ function JoinContent() {
       // 3. Join the room
       if (token) {
         try {
-          await roomAPI.join(token);
+          const joinResult = await roomAPI.join(token);
           console.log("Joined room successfully");
+          // Persist the locked room so editor dashboard restricts to this room
+          if (joinResult.data?.room?._id && typeof window !== "undefined") {
+            localStorage.setItem("lockedRoomId", joinResult.data.room._id);
+            localStorage.setItem("lockedRoomName", joinResult.data.room.name || "");
+          }
         } catch (joinErr: any) {
           // "Already a member" is fine — not an error
           if (!joinErr.response?.data?.message?.includes("Already")) {

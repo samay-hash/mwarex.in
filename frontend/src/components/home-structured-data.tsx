@@ -1,5 +1,3 @@
-// This is a server component - renders structured data for SEO 
-// Injected separately since page.tsx is a client component
 export function HomeStructuredData() {
     const combinedSchema = [
         {

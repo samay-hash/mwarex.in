@@ -65,6 +65,8 @@ export default function EditorDashboard() {
   const [isRoomModalOpen, setIsRoomModalOpen] = useState(false);
   const [joinToken, setJoinToken] = useState("");
   const [isJoining, setIsJoining] = useState(false);
+  // If set, editor is locked to this single room and cannot switch rooms
+  const [lockedRoomId, setLockedRoomId] = useState<string | null>(null);
 
   // Form State
   const [title, setTitle] = useState("");
@@ -105,21 +107,34 @@ export default function EditorDashboard() {
 
     // Fetch Rooms for Editor
     if (!data?.isDemo) {
-      roomAPI.list()
-        .then(res => {
-          setRooms(res.data);
-          if (res.data.length > 0) {
-            setCurrentRoom(res.data[0]);
-          } else {
+      // Check if this editor was invited to a specific room (locked mode)
+      const savedLockedRoomId = typeof window !== "undefined" ? localStorage.getItem("lockedRoomId") : null;
+      const savedLockedRoomName = typeof window !== "undefined" ? localStorage.getItem("lockedRoomName") : null;
+
+      if (savedLockedRoomId) {
+        // Lock editor to only this room — do NOT load other rooms
+        setLockedRoomId(savedLockedRoomId);
+        const lockedRoom = { _id: savedLockedRoomId, name: savedLockedRoomName || "My Workspace" };
+        setRooms([lockedRoom]);
+        setCurrentRoom(lockedRoom);
+      } else {
+        // No lock — load all rooms normally
+        roomAPI.list()
+          .then(res => {
+            setRooms(res.data);
+            if (res.data.length > 0) {
+              setCurrentRoom(res.data[0]);
+            } else {
+              setIsLoading(false);
+              // Maybe prompt to join a room?
+              setIsRoomModalOpen(true);
+            }
+          })
+          .catch((err) => {
+            console.error(err);
             setIsLoading(false);
-            // Maybe prompt to join a room?
-            setIsRoomModalOpen(true);
-          }
-        })
-        .catch((err) => {
-          console.error(err);
-          setIsLoading(false);
-        });
+          });
+      }
     }
 
     // Fetch subscription
@@ -363,40 +378,48 @@ export default function EditorDashboard() {
             </div>
           </div>
 
-          {/* Room Switcher */}
-          <div className="flex items-center gap-2 ml-4 relative group">
-            <button className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-secondary/50 hover:bg-secondary border border-transparent hover:border-border transition-all">
-              <span className="font-medium text-xs">{currentRoom?.name || "Select Workspace"}</span>
-              <Wand2 className="w-3 h-3 text-muted-foreground" />
-            </button>
-            {/* Dropdown */}
-            <div className="absolute top-full left-0 mt-2 w-48 bg-popover border border-border rounded-lg shadow-xl overflow-hidden hidden group-focus-within:block group-hover:block z-50">
-              <div className="max-h-48 overflow-y-auto p-1">
-                {rooms.map(room => (
+          {/* Room Switcher — hidden when editor is locked to a specific room */}
+          {!lockedRoomId ? (
+            <div className="flex items-center gap-2 ml-4 relative group">
+              <button className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-secondary/50 hover:bg-secondary border border-transparent hover:border-border transition-all">
+                <span className="font-medium text-xs">{currentRoom?.name || "Select Workspace"}</span>
+                <Wand2 className="w-3 h-3 text-muted-foreground" />
+              </button>
+              {/* Dropdown */}
+              <div className="absolute top-full left-0 mt-2 w-48 bg-popover border border-border rounded-lg shadow-xl overflow-hidden hidden group-focus-within:block group-hover:block z-50">
+                <div className="max-h-48 overflow-y-auto p-1">
+                  {rooms.map(room => (
+                    <button
+                      key={room._id}
+                      onClick={() => setCurrentRoom(room)}
+                      className={cn(
+                        "w-full flex items-center gap-2 p-2 rounded-md text-xs transition-colors text-left",
+                        currentRoom?._id === room._id ? "bg-primary/10 text-primary" : "hover:bg-secondary text-muted-foreground hover:text-foreground"
+                      )}
+                    >
+                      <span className="truncate">{room.name}</span>
+                      {currentRoom?._id === room._id && <CheckCircle className="w-3 h-3 ml-auto" />}
+                    </button>
+                  ))}
+                </div>
+                <div className="p-1 border-t border-border">
                   <button
-                    key={room._id}
-                    onClick={() => setCurrentRoom(room)}
-                    className={cn(
-                      "w-full flex items-center gap-2 p-2 rounded-md text-xs transition-colors text-left",
-                      currentRoom?._id === room._id ? "bg-primary/10 text-primary" : "hover:bg-secondary text-muted-foreground hover:text-foreground"
-                    )}
+                    onClick={() => setIsRoomModalOpen(true)}
+                    className="w-full flex items-center gap-2 p-2 rounded-md text-xs font-medium text-muted-foreground hover:text-primary hover:bg-primary/5 transition-colors"
                   >
-                    <span className="truncate">{room.name}</span>
-                    {currentRoom?._id === room._id && <CheckCircle className="w-3 h-3 ml-auto" />}
+                    <Plus className="w-3 h-3" />
+                    Join Workspace
                   </button>
-                ))}
-              </div>
-              <div className="p-1 border-t border-border">
-                <button
-                  onClick={() => setIsRoomModalOpen(true)}
-                  className="w-full flex items-center gap-2 p-2 rounded-md text-xs font-medium text-muted-foreground hover:text-primary hover:bg-primary/5 transition-colors"
-                >
-                  <Plus className="w-3 h-3" />
-                  Join Workspace
-                </button>
+                </div>
               </div>
             </div>
-          </div>
+          ) : (
+            // Locked room badge — editor can only see their assigned workspace
+            <div className="flex items-center gap-2 ml-4 px-3 py-1.5 rounded-lg bg-secondary/50 border border-border/50">
+              <Lock className="w-3 h-3 text-muted-foreground" />
+              <span className="font-medium text-xs text-muted-foreground">{currentRoom?.name || "Workspace"}</span>
+            </div>
+          )}
 
 
           <div className="flex items-center gap-2">
