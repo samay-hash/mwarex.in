@@ -89,6 +89,19 @@ export const videoAPI = {
     api.post(`/api/v1/videos/${id}/upload-edit`, formData, {
       headers: { "Content-Type": "multipart/form-data" },
     }),
+
+  // Register a video that was already uploaded directly to S3
+  registerFromS3: (data: {
+    fileUrl: string;
+    s3Key?: string;
+    title: string;
+    description?: string;
+    roomId?: string;
+    editorId?: string;
+    isRaw?: boolean;
+    thumbnailUrl?: string;
+    creatorId?: string;
+  }) => api.post("/api/v1/videos/register-s3", data),
 };
 
 
@@ -196,6 +209,16 @@ export const roomAPI = {
   join: (token: string) => api.post("/api/v1/rooms/join", { token }),
   get: (id: string) => api.get(`/api/v1/rooms/${id}`),
   verify: (token: string) => api.get(`/api/v1/rooms/verify/${token}`),
+};
+
+// S3 Direct Upload APIs
+export const s3API = {
+  getPresignedUrl: (data: { filename: string; contentType: string; folder?: string }) =>
+    api.post("/api/v1/s3/presign", data),
+
+  // Get a signed download URL for a video stored on S3 (by video ID)
+  getDownloadUrl: (videoId: string, raw = true) =>
+    api.get(`/api/v1/s3/download-url/${videoId}?raw=${raw}`),
 };
 
 // Feedback APIs

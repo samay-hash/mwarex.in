@@ -17,12 +17,14 @@ import {
   Quote,
   RefreshCw,
   Download,
+  Upload,
   ArrowRight,
   Trash2
 } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { s3API } from "@/lib/api";
 
 interface VideoCardProps {
   video: {
@@ -66,6 +68,7 @@ export default function VideoCard({
   const router = useRouter();
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
   const [videoError, setVideoError] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   const getStatusIcon = () => {
     switch (video.status) {
@@ -294,56 +297,64 @@ export default function VideoCard({
           {showEditorActions && video.status === "editing_in_progress" && (
             <div className="space-y-2 pt-4 border-t border-border/40">
               <div className="grid grid-cols-2 gap-3">
+                {/* ── Download Raw Video ────────────────────────────── */}
                 <button
+                  disabled={isDownloading}
                   onClick={async (e) => {
                     e.stopPropagation();
-                    const url = video.rawFileUrl ? getVideoUrl(video.rawFileUrl) : getVideoUrl(video.fileUrl);
-
-                    // For Cloudinary URLs, inject fl_attachment to force download
-                    if (url.includes("res.cloudinary.com")) {
-                      const downloadUrl = url.replace("/upload/", "/upload/fl_attachment/");
-                      window.location.href = downloadUrl;
-                      return;
-                    }
-
-                    // For local/other URLs, use fetch + blob
+                    setIsDownloading(true);
                     try {
-                      const btn = e.currentTarget;
-                      const originalContent = btn.innerHTML;
-                      btn.textContent = "Downloading...";
-                      btn.setAttribute("disabled", "true");
+                      let downloadUrl: string;
+                      let filename = `${video.title || "raw-video"}.mp4`;
 
-                      const response = await fetch(url);
-                      const blob = await response.blob();
-                      const blobUrl = URL.createObjectURL(blob);
+                      const rawUrl = video.rawFileUrl || video.fileUrl;
 
+                      if (rawUrl?.includes("amazonaws.com")) {
+                        // S3 private file — get a signed URL from backend
+                        const res = await s3API.getDownloadUrl(video._id, true);
+                        downloadUrl = res.data.signedUrl;
+                        filename = res.data.filename || filename;
+                      } else if (rawUrl?.includes("res.cloudinary.com")) {
+                        // Cloudinary — inject fl_attachment
+                        downloadUrl = (getVideoUrl(rawUrl)).replace("/upload/", "/upload/fl_attachment/");
+                      } else {
+                        downloadUrl = getVideoUrl(rawUrl || "");
+                      }
+
+                      // Trigger download via hidden <a>
                       const link = document.createElement("a");
-                      link.href = blobUrl;
-                      link.download = `${video.title || "video"}.mp4`;
+                      link.href = downloadUrl;
+                      link.download = filename;
+                      link.target = "_blank"; // fallback for cross-origin
                       document.body.appendChild(link);
                       link.click();
                       document.body.removeChild(link);
-
-                      setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
-                      btn.innerHTML = originalContent;
-                      btn.removeAttribute("disabled");
                     } catch (err) {
                       console.error("Download failed:", err);
-                      window.open(url, "_blank");
+                      // Last resort: open in new tab
+                      const fallback = getVideoUrl(video.rawFileUrl || video.fileUrl);
+                      window.open(fallback, "_blank");
+                    } finally {
+                      setIsDownloading(false);
                     }
                   }}
-                  className="flex items-center justify-center gap-2 py-2.5 rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400 hover:bg-blue-500/20 transition-colors text-xs font-bold uppercase tracking-wide border border-blue-500/20 disabled:opacity-50"
+                  className="flex items-center justify-center gap-2 py-2.5 rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400 hover:bg-blue-500/20 transition-colors text-xs font-bold uppercase tracking-wide border border-blue-500/20 disabled:opacity-60 disabled:cursor-wait"
                 >
-                  <Download className="w-3.5 h-3.5" />
-                  Download
+                  {isDownloading ? (
+                    <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Downloading...</>
+                  ) : (
+                    <><Download className="w-3.5 h-3.5" /> Download Raw</>
+                  )}
                 </button>
+
+                {/* ── Submit Edited Version ─────────────────────────── */}
                 <button
                   onClick={(e) => { e.stopPropagation(); onUploadEdit?.(video._id); }}
                   disabled={isLoading}
                   className="flex items-center justify-center gap-2 py-2.5 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition-colors text-xs font-bold uppercase tracking-wide border border-primary/20 disabled:opacity-50"
                 >
-                  <Youtube className="w-4 h-4" />
-                  Upload Edit
+                  <Upload className="w-3.5 h-3.5" />
+                  Submit Edit
                 </button>
               </div>
               <button

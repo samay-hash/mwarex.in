@@ -1,6 +1,6 @@
 const BaseController = require("./BaseController");
 const VideoService = require("../services/VideoService");
-const uploadToYoutube = require("../services/youtubeUploader");
+const { enqueueYoutubeUpload } = require("../services/YouTubeQueue");
 const { getOAuth2Client } = require("../tools/googleClient");
 
 class VideoController extends BaseController {
@@ -102,28 +102,58 @@ class VideoController extends BaseController {
 
             this.emitVideoUpdate(req, video, "video_approved");
 
-            this.success(res, { message: "Video approved. Uploading to YouTube in background..." });
+            // Push to BullMQ — retryable, tracked, non-blocking
+            await enqueueYoutubeUpload({ videoId: video._id.toString(), creatorId: creatorId.toString() });
 
-            uploadToYoutube(video, creatorId)
-                .then(async (yt) => {
-                    console.log("YouTube Upload Success:", yt.id);
-                    video.status = "uploaded";
-                    video.youtubeId = yt.id;
-                    await video.save();
+            return this.success(res, { message: "Video approved. YouTube upload queued in background!" });
+        } catch (err) {
+            return this.handleError(res, err);
+        }
+    }
 
-                    if (req.io && video.roomId) {
-                        req.io.to(`room_${video.roomId}`).emit("video_updated", {
-                            video,
-                            action: "youtube_uploaded",
-                            updatedAt: new Date().toISOString(),
-                        });
-                    }
-                })
-                .catch(async (uploadErr) => {
-                    console.error("YouTube Upload Error:", uploadErr.message);
-                    video.status = "upload_failed";
-                    await video.save();
+    /**
+     * POST /api/v1/videos/register-s3
+     * Called by the frontend AFTER a successful direct S3 upload.
+     * Body: { s3Key, fileUrl, title, description, roomId, editorId, isRaw }
+     */
+    async registerFromS3(req, res) {
+        try {
+            const { s3Key, fileUrl, title, description, roomId, editorId, isRaw, thumbnailUrl } = req.body;
+
+            if (!fileUrl) {
+                return this.badRequest(res, "fileUrl is required");
+            }
+
+            const fakeFile = { path: fileUrl, originalname: s3Key || "video" };
+
+            let video;
+            if (isRaw) {
+                video = await this.videoService.uploadRawVideo({
+                    file: fakeFile,
+                    title: title || "Untitled",
+                    description: description || "",
+                    creatorId: req.body.creatorId,
+                    editorId,
+                    roomId,
+                    thumbnailUrl: thumbnailUrl || "",
+                    role: req.role,
+                    userId: req.userId,
                 });
+            } else {
+                video = await this.videoService.uploadVideo({
+                    file: fakeFile,
+                    title: title || "Untitled",
+                    description: description || "",
+                    creatorId: req.body.creatorId,
+                    editorId,
+                    roomId,
+                    role: req.role,
+                    userId: req.userId,
+                });
+            }
+
+            this.emitVideoUpdate(req, video, "video_uploaded");
+            return this.success(res, { message: "Video registered from S3", video });
         } catch (err) {
             return this.handleError(res, err);
         }

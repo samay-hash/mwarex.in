@@ -33,6 +33,7 @@ import { SubscriptionModal } from "@/components/subscription-modal";
 import { cn } from "@/lib/utils";
 import { SeasonSwitcher } from "@/components/seasonal-background";
 import { toast } from "sonner";
+import { S3UploadModal } from "@/components/S3UploadModal";
 
 interface Video {
   _id: string;
@@ -67,6 +68,8 @@ export default function EditorDashboard() {
   const [isJoining, setIsJoining] = useState(false);
   // If set, editor is locked to this single room and cannot switch rooms
   const [lockedRoomId, setLockedRoomId] = useState<string | null>(null);
+  // S3 direct upload modal
+  const [isS3UploadOpen, setIsS3UploadOpen] = useState(false);
 
   // Form State
   const [title, setTitle] = useState("");
@@ -279,8 +282,7 @@ export default function EditorDashboard() {
 
   const openUploadEditModal = (id: string) => {
     setUploadEditId(id);
-    setTitle("Edited Version"); // Default title?
-    setIsUploadModalOpen(true);
+    setIsS3UploadOpen(true); // open S3 upload modal
   };
 
   const handleDeleteForMe = async (id: string) => {
@@ -447,7 +449,7 @@ export default function EditorDashboard() {
               <LogOut className="w-4 h-4" />
             </button>
             <button
-              onClick={() => { setUploadEditId(null); setIsUploadModalOpen(true); }}
+              onClick={() => setIsS3UploadOpen(true)}
               className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg font-medium text-sm hover:opacity-90 transition-opacity cursor-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMiAyTDEwIDI2TDE0IDE2TDI2IDEyTDIgMloiIGZpbGw9IiMxMGI5ODEiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PC9zdmc+'),_pointer]"
             >
               <Plus className="w-4 h-4" />
@@ -946,6 +948,16 @@ export default function EditorDashboard() {
           </div>
         )}
       </AnimatePresence>
+
+      {/* S3 Direct-Upload Modal — supports files up to 10 GB */}
+      <S3UploadModal
+        isOpen={isS3UploadOpen}
+        onClose={() => { setIsS3UploadOpen(false); setUploadEditId(null); }}
+        onSuccess={() => { fetchVideos(); setUploadEditId(null); }}
+        roomId={currentRoom?._id}
+        isRaw={false}
+        title={uploadEditId ? "Submit Edited Version" : "New Submission"}
+      />
     </div >
   );
 }

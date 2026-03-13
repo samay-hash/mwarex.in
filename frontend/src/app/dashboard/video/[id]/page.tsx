@@ -17,7 +17,7 @@ import {
     Sliders,
     Scissors
 } from "lucide-react";
-import { videoAPI, userAPI } from "@/lib/api";
+import { videoAPI, userAPI, s3API } from "@/lib/api";
 import { getSocket } from "@/lib/socket";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -31,6 +31,7 @@ export default function VideoStudioPage() {
     const [video, setVideo] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [userData, setUserData] = useState<any>(null);
+    const [signedVideoSrc, setSignedVideoSrc] = useState<string>("");
 
     // Edit State
     const [editSettings, setEditSettings] = useState({
@@ -85,13 +86,25 @@ export default function VideoStudioPage() {
     const fetchVideo = async () => {
         try {
             const res = await videoAPI.getVideo(id);
-            setVideo(res.data);
-            if (res.data.editSettings) {
-                setEditSettings(prev => ({ ...prev, ...res.data.editSettings }));
+            const vData = res.data;
+            setVideo(vData);
+            if (vData.editSettings) {
+                setEditSettings(prev => ({ ...prev, ...vData.editSettings }));
             }
-            if (res.data.comments) {
-                setComments(res.data.comments);
+            if (vData.comments) {
+                setComments(vData.comments);
             }
+
+            // Resolve playable video source
+            const isRaw = (vData.status === "raw_uploaded" || vData.status === "editing_in_progress") && !!vData.rawFileUrl;
+            const targetUrl = isRaw ? vData.rawFileUrl : vData.fileUrl;
+            if (targetUrl && targetUrl.includes("amazonaws.com")) {
+                const s3Res = await s3API.getDownloadUrl(id, isRaw);
+                setSignedVideoSrc(s3Res.data.signedUrl);
+            } else {
+                setSignedVideoSrc(getVideoUrl(targetUrl || ""));
+            }
+
         } catch (error) {
             console.error(error);
             toast.error("Failed to load video");
@@ -164,8 +177,6 @@ export default function VideoStudioPage() {
     const currentVideoPath = (video?.status === "raw_uploaded" || video?.status === "editing_in_progress") && video?.rawFileUrl
         ? video.rawFileUrl
         : video?.fileUrl || "";
-
-    const videoSrc = getVideoUrl(currentVideoPath);
 
     if (loading) {
         return (
@@ -244,12 +255,18 @@ export default function VideoStudioPage() {
                 {/* Video Player Area */}
                 <div className="flex-1 bg-black/95 relative flex items-center justify-center p-8">
                     <div className="relative w-full max-w-5xl aspect-video bg-black rounded-lg shadow-2xl overflow-hidden border border-white/10">
-                        <video
-                            src={videoSrc}
-                            className="w-full h-full object-contain"
-                            controls
-                            style={bgStyle}
-                        />
+                        {signedVideoSrc ? (
+                            <video
+                                src={signedVideoSrc}
+                                className="w-full h-full object-contain"
+                                controls
+                                style={bgStyle}
+                            />
+                        ) : (
+                            <div className="w-full h-full flex items-center justify-center">
+                                <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+                            </div>
+                        )}
                     </div>
 
                     {/* Active Filters Overlay info */}

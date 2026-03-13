@@ -43,6 +43,7 @@ import { cn } from "@/lib/utils";
 import { DashboardOnboarding } from "@/components/onboarding";
 import { SeasonSwitcher } from "@/components/seasonal-background";
 import { toast } from "sonner";
+import { S3UploadModal } from "@/components/S3UploadModal";
 
 interface Video {
   _id: string;
@@ -172,6 +173,8 @@ export default function CreatorDashboard() {
   const [uploadFile, setUploadFile] = useState<File | null>(null);
   const [uploadTitle, setUploadTitle] = useState("");
   const [uploadDesc, setUploadDesc] = useState("");
+  // S3 direct upload modal (primary — supports up to 10 GB)
+  const [isS3UploadOpen, setIsS3UploadOpen] = useState(false);
 
   const handleUploadRaw = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -612,7 +615,7 @@ export default function CreatorDashboard() {
           </div>
           <div className="flex items-center gap-2">
             <button
-              onClick={() => setIsUploadModalOpen(true)}
+              onClick={() => setIsS3UploadOpen(true)}
               className="flex items-center gap-2 px-4 py-2 bg-secondary text-foreground rounded-lg font-medium text-sm hover:bg-secondary/80 transition-colors"
             >
               <VideoIcon className="w-4 h-4" />
@@ -1258,6 +1261,16 @@ export default function CreatorDashboard() {
         isOpen={isUpgradeModalOpen}
         onClose={() => setIsUpgradeModalOpen(false)}
         currentPlan={subscription?.plan || "free"}
+      />
+
+      {/* S3 Direct Upload Modal — supports up to 10 GB */}
+      <S3UploadModal
+        isOpen={isS3UploadOpen}
+        onClose={() => setIsS3UploadOpen(false)}
+        onSuccess={fetchVideos}
+        roomId={currentRoom?._id}
+        isRaw={true}
+        title="Upload Raw Video"
       />
     </div>
   );

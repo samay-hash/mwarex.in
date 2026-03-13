@@ -13,6 +13,10 @@ class BaseController {
         console.error(`[${this.constructor.name}] Error:`, message);
         return res.status(statusCode).json({ message });
     }
+
+    badRequest(res, message) {
+        return res.status(400).json({ message });
+    }
 }
 
 module.exports = BaseController;
