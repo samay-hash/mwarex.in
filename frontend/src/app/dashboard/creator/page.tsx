@@ -105,6 +105,26 @@ export default function CreatorDashboard() {
     setUserData(data);
     setIsDemo(data?.isDemo === true);
 
+    // If userData is incomplete (missing name/id), fetch fresh data from backend
+    if (!data?.isDemo && (!data?.name || !data?.id)) {
+      userAPI.getMe()
+        .then(res => {
+          const freshData = {
+            email: res.data.email || data?.email,
+            name: res.data.name || data?.name || "",
+            id: res.data._id || data?.id || "",
+          };
+          setUserData(freshData);
+          // Also persist it to localStorage for future page loads
+          if (typeof window !== "undefined") {
+            localStorage.setItem("userData", JSON.stringify(freshData));
+          }
+          const letter = freshData.name?.[0] || freshData.email?.[0] || "U";
+          setAvatarLetter(letter);
+        })
+        .catch(err => console.error("Failed to refresh user data", err));
+    }
+
     // Only fetch videos if not a demo user
     if (!data?.isDemo) {
       fetchVideos();

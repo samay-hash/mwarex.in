@@ -73,5 +73,8 @@ export const logout = () => {
   if (typeof window !== "undefined") {
     localStorage.removeItem("userRole");
     localStorage.removeItem("userData");
+    localStorage.removeItem("lockedRoomId");
+    localStorage.removeItem("lockedRoomName");
+    sessionStorage.removeItem("creatorCurrentRoomId");
   }
 };

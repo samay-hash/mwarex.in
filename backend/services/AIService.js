@@ -60,39 +60,6 @@ class AIService {
 
     async generateThumbnails(topic) {
         const prompts = await this.generateThumbnailPrompts(topic);
-        const axios = require("axios");
-        const cloudinary = require("cloudinary").v2;
-
-        cloudinary.config({
-            cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-            api_key: process.env.CLOUDINARY_API_KEY,
-            api_secret: process.env.CLOUDINARY_API_SECRET,
-        });
-
-        if (process.env.POLLINATIONS_API_KEY) {
-            const uploadPromises = prompts.map(async (p) => {
-                const seed = Math.floor(Math.random() * 1000000);
-                const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(p)}?width=1280&height=720&nologo=true&seed=${seed}&model=flux`;
-
-                const imageRes = await axios.get(imageUrl, {
-                    responseType: "arraybuffer",
-                    headers: { Authorization: `Bearer ${process.env.POLLINATIONS_API_KEY}` },
-                });
-
-                return new Promise((resolve, reject) => {
-                    const uploadStream = cloudinary.uploader.upload_stream(
-                        { folder: "mwarex_thumbnails" },
-                        (error, result) => {
-                            if (error) reject(error);
-                            else resolve({ prompt: p, url: result.secure_url });
-                        }
-                    );
-                    uploadStream.end(imageRes.data);
-                });
-            });
-
-            return await Promise.all(uploadPromises);
-        }
 
         return prompts.map((p) => {
             const seed = Math.floor(Math.random() * 1000000);

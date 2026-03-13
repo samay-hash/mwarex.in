@@ -955,6 +955,7 @@ export default function EditorDashboard() {
         onClose={() => { setIsS3UploadOpen(false); setUploadEditId(null); }}
         onSuccess={() => { fetchVideos(); setUploadEditId(null); }}
         roomId={currentRoom?._id}
+        editorId={userData?.id}
         isRaw={false}
         title={uploadEditId ? "Submit Edited Version" : "New Submission"}
       />

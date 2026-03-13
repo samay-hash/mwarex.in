@@ -18,9 +18,9 @@ class AuthController extends BaseController {
 
     async signin(req, res) {
         try {
-            const { token, email } = await this.authService.signin(req.body);
+            const { token, email, name, id, role } = await this.authService.signin(req.body);
             res.cookie("auth", token, this.authService.getCookieOptions());
-            return this.success(res, { token });
+            return this.success(res, { token, email, name, id, role });
         } catch (err) {
             return this.handleError(res, err);
         }

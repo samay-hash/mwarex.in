@@ -45,7 +45,7 @@ class AuthService {
             process.env.JWT_SECRET_USER
         );
 
-        return { token, email: user.email };
+        return { token, email: user.email, name: user.name, id: user._id.toString(), role: user.role };
     }
 
     async getProfile(userId) {

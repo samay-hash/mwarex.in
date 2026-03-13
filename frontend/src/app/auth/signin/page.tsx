@@ -101,14 +101,21 @@ export default function SignInPage() {
         response = await authAPI.userSignin({ email, password });
       }
       setToken(response.data.token);
-      setUserRole(userType);
-      setUserData({ email });
 
-      if (userType === "creator") {
+      // Use role from backend response if available, otherwise fall back to selected userType
+      const effectiveRole = response.data.role || userType;
+      setUserRole(effectiveRole as "creator" | "editor" | "admin");
+      setUserData({
+        email: response.data.email || email,
+        name: response.data.name || "",
+        id: response.data.id || "",
+      });
+
+      if (effectiveRole === "creator") {
         router.push("/dashboard/creator");
-      } else if (userType === "editor") {
+      } else if (effectiveRole === "editor") {
         router.push("/dashboard/editor");
-      } else if (userType === "admin") {
+      } else if (effectiveRole === "admin" || userType === "admin") {
         router.push("/dashboard/admin");
       }
     } catch (err: unknown) {
