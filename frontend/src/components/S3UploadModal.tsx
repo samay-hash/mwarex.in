@@ -247,7 +247,7 @@ export function S3UploadModal({
               </div>
               <button
                 onClick={handleClose}
-                disabled={isUploading && phase !== "error"}
+                disabled={isUploading}
                 className="text-muted-foreground hover:text-foreground transition-colors p-1.5 rounded-md hover:bg-secondary disabled:opacity-30 disabled:cursor-not-allowed"
               >
                 <X className="w-4 h-4" />
