@@ -193,18 +193,18 @@ export default function VideoStudioPage() {
     return (
         <div className="min-h-screen bg-background text-foreground flex flex-col h-screen overflow-hidden">
             {/* Header */}
-            <header className="h-16 border-b border-border bg-card/50 backdrop-blur-md flex items-center justify-between px-6 z-10 shrink-0">
-                <div className="flex items-center gap-4">
+            <header className="h-16 border-b border-border bg-card/50 backdrop-blur-md flex items-center justify-between px-4 lg:px-6 z-10 shrink-0">
+                <div className="flex items-center gap-2 lg:gap-4 overflow-hidden">
                     <button
                         onClick={() => router.back()}
-                        className="p-2 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
+                        className="p-1.5 lg:p-2 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors shrink-0"
                     >
                         <ArrowLeft className="w-5 h-5" />
                     </button>
-                    <div>
-                        <h1 className="font-semibold text-lg line-clamp-1">{video.title}</h1>
-                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                            <span className={cn("capitalize px-1.5 py-0.5 rounded border text-[10px]",
+                    <div className="min-w-0">
+                        <h1 className="font-semibold text-base lg:text-lg truncate">{video.title}</h1>
+                        <div className="flex items-center gap-1.5 lg:gap-2 text-[10px] lg:text-xs text-muted-foreground">
+                            <span className={cn("capitalize px-1.5 py-0.5 rounded border text-[9px] lg:text-[10px]",
                                 video.status === 'approved' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' :
                                     video.status === 'rejected' ? 'bg-red-500/10 text-red-500 border-red-500/20' :
                                         'bg-yellow-500/10 text-yellow-500 border-yellow-500/20'
@@ -212,20 +212,21 @@ export default function VideoStudioPage() {
                                 {video.status}
                             </span>
                             <span>•</span>
-                            <span>Updated {new Date(video.updatedAt || video.createdAt).toLocaleDateString()}</span>
+                            <span className="truncate">Updated {new Date(video.updatedAt || video.createdAt).toLocaleDateString()}</span>
                         </div>
                     </div>
                 </div>
 
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 lg:gap-3 shrink-0">
                     {activeTab === 'edit' && (
                         <button
                             onClick={handleSaveSettings}
                             disabled={isSaving}
-                            className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+                            className="flex items-center gap-2 px-3 lg:px-4 py-1.5 lg:py-2 bg-primary text-primary-foreground rounded-lg text-xs lg:text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
                         >
-                            {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                            Save Changes
+                            {isSaving ? <Loader2 className="w-3.5 h-3.5 lg:w-4 h-4 animate-spin" /> : <Save className="w-3.5 h-3.5 lg:w-4 h-4" />}
+                            <span className="hidden xs:inline">Save Changes</span>
+                            <span className="xs:hidden">Save</span>
                         </button>
                     )}
 
@@ -233,17 +234,17 @@ export default function VideoStudioPage() {
                         <>
                             <button
                                 onClick={handleReject}
-                                className="p-2 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-colors border border-red-500/20"
+                                className="p-1.5 lg:p-2 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-colors border border-red-500/20"
                                 title="Reject"
                             >
-                                <XCircle className="w-5 h-5" />
+                                <XCircle className="w-4 h-4 lg:w-5 h-5" />
                             </button>
                             <button
                                 onClick={handleApprove}
-                                className="p-2 rounded-lg bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20 transition-colors border border-emerald-500/20"
+                                className="p-1.5 lg:p-2 rounded-lg bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20 transition-colors border border-emerald-500/20"
                                 title="Approve"
                             >
-                                <CheckCircle className="w-5 h-5" />
+                                <CheckCircle className="w-4 h-4 lg:w-5 h-5" />
                             </button>
                         </>
                     )}
@@ -251,9 +252,9 @@ export default function VideoStudioPage() {
             </header>
 
             {/* Main Workspace */}
-            <div className="flex-1 flex overflow-hidden">
+            <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
                 {/* Video Player Area */}
-                <div className="flex-1 bg-black/95 relative flex items-center justify-center p-8">
+                <div className="flex-[0.45] lg:flex-1 bg-black/95 relative flex items-center justify-center p-4 lg:p-8 shrink-0">
                     <div className="relative w-full max-w-5xl aspect-video bg-black rounded-lg shadow-2xl overflow-hidden border border-white/10">
                         {signedVideoSrc ? (
                             <video
@@ -261,6 +262,7 @@ export default function VideoStudioPage() {
                                 className="w-full h-full object-contain"
                                 controls
                                 style={bgStyle}
+                                playsInline
                             />
                         ) : (
                             <div className="w-full h-full flex items-center justify-center">
@@ -270,16 +272,16 @@ export default function VideoStudioPage() {
                     </div>
 
                     {/* Active Filters Overlay info */}
-                    <div className="absolute bottom-4 left-4 flex gap-2">
-                        {editSettings.brightness !== 100 && <span className="text-[10px] bg-black/50 text-white px-2 py-1 rounded backdrop-blur">Brightness: {editSettings.brightness}%</span>}
-                        {editSettings.contrast !== 100 && <span className="text-[10px] bg-black/50 text-white px-2 py-1 rounded backdrop-blur">Contrast: {editSettings.contrast}%</span>}
+                    <div className="absolute bottom-4 left-4 flex flex-wrap gap-2 pointer-events-none">
+                        {editSettings.brightness !== 100 && <span className="text-[9px] lg:text-[10px] bg-black/50 text-white px-2 py-1 rounded backdrop-blur border border-white/10 uppercase tracking-tighter">Bright: {editSettings.brightness}%</span>}
+                        {editSettings.contrast !== 100 && <span className="text-[9px] lg:text-[10px] bg-black/50 text-white px-2 py-1 rounded backdrop-blur border border-white/10 uppercase tracking-tighter">Cont: {editSettings.contrast}%</span>}
                     </div>
                 </div>
 
                 {/* Sidebar */}
-                <div className="w-96 bg-card border-l border-border flex flex-col shrink-0">
+                <div className="flex-[0.55] lg:w-96 bg-card border-t lg:border-t-0 lg:border-l border-border flex flex-col shrink-0 lg:shrink-0 overflow-hidden min-h-[350px] lg:min-h-0">
                     {/* Tabs */}
-                    <div className="flex border-b border-border">
+                    <div className="flex border-b border-border shrink-0">
                         <button
                             onClick={() => setActiveTab("edit")}
                             className={cn(
@@ -306,18 +308,18 @@ export default function VideoStudioPage() {
 
                     <div className="flex-1 overflow-y-auto custom-scrollbar relative">
                         {activeTab === "edit" ? (
-                            <div className="p-6 space-y-8">
+                            <div className="p-4 lg:p-6 space-y-6 lg:space-y-8">
                                 <div className="space-y-4">
                                     <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground mb-4">
                                         <Settings2 className="w-4 h-4" />
                                         Color Correction
                                     </div>
 
-                                    <div className="space-y-4">
+                                    <div className="space-y-4 lg:space-y-6">
                                         <div className="space-y-2">
                                             <div className="flex justify-between text-xs">
-                                                <span>Brightness</span>
-                                                <span>{editSettings.brightness}%</span>
+                                                <span className="text-muted-foreground">Brightness</span>
+                                                <span className="font-mono text-primary">{editSettings.brightness}%</span>
                                             </div>
                                             <input
                                                 type="range" min="0" max="200"
@@ -329,8 +331,8 @@ export default function VideoStudioPage() {
 
                                         <div className="space-y-2">
                                             <div className="flex justify-between text-xs">
-                                                <span>Contrast</span>
-                                                <span>{editSettings.contrast}%</span>
+                                                <span className="text-muted-foreground">Contrast</span>
+                                                <span className="font-mono text-primary">{editSettings.contrast}%</span>
                                             </div>
                                             <input
                                                 type="range" min="0" max="200"
@@ -342,8 +344,8 @@ export default function VideoStudioPage() {
 
                                         <div className="space-y-2">
                                             <div className="flex justify-between text-xs">
-                                                <span>Saturation</span>
-                                                <span>{editSettings.saturation}%</span>
+                                                <span className="text-muted-foreground">Saturation</span>
+                                                <span className="font-mono text-primary">{editSettings.saturation}%</span>
                                             </div>
                                             <input
                                                 type="range" min="0" max="200"
@@ -355,8 +357,8 @@ export default function VideoStudioPage() {
 
                                         <div className="space-y-2">
                                             <div className="flex justify-between text-xs">
-                                                <span>Grayscale</span>
-                                                <span>{editSettings.grayscale}%</span>
+                                                <span className="text-muted-foreground">Grayscale</span>
+                                                <span className="font-mono text-primary">{editSettings.grayscale}%</span>
                                             </div>
                                             <input
                                                 type="range" min="0" max="100"
@@ -373,15 +375,15 @@ export default function VideoStudioPage() {
                                         <Scissors className="w-4 h-4" />
                                         Trim (Visual Only)
                                     </div>
-                                    <div className="p-4 bg-secondary/20 rounded-lg text-xs text-muted-foreground text-center">
+                                    <div className="p-4 bg-secondary/20 rounded-lg text-[10px] lg:text-xs text-muted-foreground text-center border border-dashed border-border">
                                         Use these markers to indicate start/end points for final cut.
                                     </div>
                                     {/* Placeholder for Trim UI - Complexity reduced for this Iteration */}
                                 </div>
                             </div>
                         ) : (
-                            <div className="flex flex-col h-full">
-                                <div className="flex-1 p-4 space-y-4">
+                            <div className="flex flex-col h-full overflow-hidden">
+                                <div className="flex-1 p-4 space-y-4 overflow-y-auto custom-scrollbar">
                                     {comments.length === 0 ? (
                                         <div className="text-center py-10 text-muted-foreground text-sm">
                                             <MessageSquare className="w-8 h-8 opacity-20 mx-auto mb-2" />
@@ -393,14 +395,14 @@ export default function VideoStudioPage() {
                                             return (
                                                 <div key={i} className={cn("flex flex-col gap-1 max-w-[85%]", isMe ? "ml-auto items-end" : "items-start")}>
                                                     <div className={cn(
-                                                        "px-4 py-2.5 rounded-2xl text-sm",
+                                                        "px-3 lg:px-4 py-2 lg:py-2.5 rounded-2xl text-[13px] lg:text-sm",
                                                         isMe
                                                             ? "bg-primary text-primary-foreground rounded-br-none"
                                                             : "bg-secondary text-foreground rounded-bl-none border border-border"
                                                     )}>
                                                         {msg.text}
                                                     </div>
-                                                    <span className="text-[10px] text-muted-foreground px-1">
+                                                    <span className="text-[9px] lg:text-[10px] text-muted-foreground px-1">
                                                         {msg.senderId?.name || "User"} • {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                                     </span>
                                                 </div>
@@ -410,21 +412,21 @@ export default function VideoStudioPage() {
                                     <div ref={chatBottomRef} />
                                 </div>
 
-                                <form onSubmit={handleSendMessage} className="p-4 border-t border-border bg-card">
+                                <form onSubmit={handleSendMessage} className="p-4 border-t border-border bg-card shrink-0">
                                     <div className="relative">
                                         <input
                                             type="text"
                                             value={newMessage}
                                             onChange={(e) => setNewMessage(e.target.value)}
                                             placeholder="Type a message..."
-                                            className="w-full bg-secondary/50 border border-border focus:border-primary/50 rounded-xl pl-4 pr-12 py-3 text-sm outline-none transition-all focus:bg-background"
+                                            className="w-full bg-secondary/50 border border-border focus:border-primary/50 rounded-xl pl-4 pr-12 py-2.5 lg:py-3 text-[13px] lg:text-sm outline-none transition-all focus:bg-background"
                                         />
                                         <button
                                             type="submit"
                                             disabled={sendingMessage || !newMessage.trim()}
-                                            className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 bg-primary text-primary-foreground rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50"
+                                            className="absolute right-1.5 top-1/2 -translate-y-1/2 p-1.5 lg:p-2 bg-primary text-primary-foreground rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50"
                                         >
-                                            {sendingMessage ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                                            {sendingMessage ? <Loader2 className="w-3.5 h-3.5 lg:w-4 h-4 animate-spin" /> : <Send className="w-3.5 h-3.5 lg:w-4 h-4" />}
                                         </button>
                                     </div>
                                 </form>
