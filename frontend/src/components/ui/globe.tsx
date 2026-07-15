@@ -85,7 +85,7 @@ export function Globe({
       ...config,
       width: widthRef.current * 2,
       height: widthRef.current * 2,
-      onRender: (state) => {
+      onRender: (state: Record<string, any>) => {
         if (!pointerInteracting.current) phiRef.current += 0.005;
         state.phi = phiRef.current + rs.get();
         state.width = widthRef.current * 2;
