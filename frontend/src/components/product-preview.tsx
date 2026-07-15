@@ -5,7 +5,7 @@ import { motion, useScroll, useSpring, useTransform } from "framer-motion";
 import { AnimatedList } from "./ui/animated-list";
 import { Globe } from "./ui/globe";
 import { WheelPicker, WheelPickerWrapper } from "./wheel-picker";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+
 import { cn } from "@/lib/utils";
 import { Server } from "lucide-react";
 
