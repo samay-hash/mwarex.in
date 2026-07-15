@@ -1,0 +1,21 @@
+{
+  "name": "Timmo — Beautiful Focus Timer, Heatmaps & Leaderboards",
+  "short_name": "Timmo",
+  "description": "A minimalist, premium focus application featuring workspaces, countdowns, activity heatmaps, global leaderboards, and customizable aesthetics.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "icons": [
+    {
+      "src": "/icon.webp",
+      "sizes": "512x512",
+      "type": "image/webp",
+      "purpose": "any maskable"
+    }
+  ],
+  "developer": {
+    "name": "Samiran De",
+    "url": "https://github.com/Sam721166"
+  }
+}

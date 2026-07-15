@@ -359,7 +359,6 @@ Return ONLY raw JSON. No markdown formatting.
                 effect = effects[i].get("effect", "none")
                 query = effects[i].get("broll_query", "")
                 
-                # Minimum duration to make B-roll look good
                 sentence_dur = seg["end"] - seg["start"]
                 if effect == "broll" and query and sentence_dur >= 2.0:
                     brolls_to_fetch.append({

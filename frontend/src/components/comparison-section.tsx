@@ -110,8 +110,19 @@ export function ComparisonSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.15 }}
-          className="hidden md:block rounded-2xl border border-white/[0.06] bg-white/[0.02] backdrop-blur-sm overflow-hidden"
+          className="hidden md:block rounded-2xl border border-white/[0.06] bg-white/[0.02] backdrop-blur-sm overflow-hidden relative"
         >
+          {/* Subtle Corner Glow Border for MWareX Column */}
+          <div className="absolute top-0 bottom-0 left-[14.2857%] w-[14.2857%] pointer-events-none z-20 overflow-hidden">
+             <div className="absolute inset-0 border border-[#C8A97E]/20" />
+             
+             {/* Top Right subtle glow */}
+             <div className="absolute -top-3 -right-3 w-10 h-10 bg-[#C8A97E]/40 blur-[10px] rounded-full animate-pulse" />
+             
+             {/* Bottom Left subtle glow */}
+             <div className="absolute -bottom-3 -left-3 w-10 h-10 bg-[#C8A97E]/40 blur-[10px] rounded-full animate-pulse" style={{ animationDelay: '1s' }} />
+          </div>
+
           {/* Header Row */}
           <div className="grid grid-cols-7 border-b border-white/[0.06]">
             <div className="px-5 py-4 flex items-center">

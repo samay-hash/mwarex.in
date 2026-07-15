@@ -386,7 +386,7 @@ export default function SignUpPage() {
           className="absolute top-12 left-12"
         >
           <p className="text-zinc-400 text-sm font-medium">Start your journey</p>
-          <p className="text-zinc-500 text-xs mt-1">Join 10,000+ creators today</p>
+          <p className="text-zinc-500 text-xs mt-1">Join 3500+ creators today</p>
         </motion.div>
       </motion.div>
 

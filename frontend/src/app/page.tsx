@@ -74,20 +74,14 @@ export default function LandingPage() {
           <FounderSection />
 
           {/* Enhanced Final CTA Section - Craftsman Style */}
-          <section className="py-36 md:py-44 relative overflow-hidden bg-[#111111]">
+          <section className="pt-20 pb-52 md:pt-24 md:pb-64 relative overflow-hidden bg-[#111111]">
             {/* Cinematic Background - Pushed to the side */}
             <div className="absolute inset-0 pointer-events-none z-0">
-              <div 
-                className="absolute inset-0 w-full h-full lg:left-auto lg:right-0 lg:w-[65%]"
-                style={{
-                  maskImage: 'linear-gradient(to right, transparent 0%, black 60%)',
-                  WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 60%)'
-                }}
-              >
+              <div className="absolute inset-0 w-full h-full">
                 <img
-                  src="/bg-images/10055.jpg"
+                  src="/bg-images/lastpage.png"
                   alt="Feature Background"
-                  className="w-full h-full object-cover object-right md:object-center opacity-30 md:opacity-50 mix-blend-screen"
+                  className="w-full h-full object-cover object-center opacity-30 md:opacity-50 mix-blend-screen"
                 />
               </div>
               {/* Overlays for smooth integration */}

@@ -1,59 +1,52 @@
 "use client";
 
 import { useRef } from "react";
-import { motion, useScroll, useTransform, useSpring } from "framer-motion";
-import { UserPlus, Users, Upload, Youtube, CheckCircle } from "lucide-react";
+import { motion } from "framer-motion";
+import { UserPlus, Users, Upload, Youtube, CheckCircle, LineChart } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const workflowSteps = [
     {
         step: 1,
-        title: "Upload Raw Footage",
-        description: "Drop huge 10GB+ raw files directly into your workspace. No more Google Drive links or WeTransfer limits.",
+        title: "Upload Footage",
+        description: "Drop 10GB+ raw files directly into your workspace. No Google Drive links.",
         icon: Upload,
     },
     {
         step: 2,
-        title: "AI Content Analysis",
-        description: "Our multimodal AI analyzes your footage to identify mistakes, silences, stutters, and cinematic B-roll automatically.",
+        title: "AI Analysis",
+        description: "AI identifies mistakes, silences, and cinematic B-roll automatically.",
         icon: UserPlus,
-        badge: "Powered by Gemini"
+        badge: "Gemini"
     },
     {
         step: 3,
-        title: "Autonomous Editing",
-        description: "The engine instantly cuts and stitches the video. What used to take days of manual editing now takes minutes.",
+        title: "Autonomous Edit",
+        description: "Instantly cuts and stitches the video. Days of editing done in minutes.",
         icon: Users,
     },
     {
         step: 4,
         title: "AI Chat Assistant",
-        description: "Review the cut and chat directly with your video timeline to request pacing changes or specific re-edits.",
+        description: "Review the cut and chat with your timeline for pacing changes.",
         icon: CheckCircle,
     },
     {
         step: 5,
         title: "One-Click Publish",
-        description: "Approve the final cut and stream it directly to YouTube, Instagram, X, linkedIn via API. No downloading heavy files back to your PC.",
+        description: "Approve and stream directly to YouTube, Instagram, X, and LinkedIn.",
         icon: Youtube,
+    },
+    {
+        step: 6,
+        title: "Global Tracking",
+        description: "Track cross-platform views, engagement, and viral velocity in real-time.",
+        icon: LineChart,
     },
 ];
 
 export function HowItWorks() {
     const containerRef = useRef<HTMLDivElement>(null);
-
-    const { scrollYProgress } = useScroll({
-        target: containerRef,
-        offset: ["start end", "end start"]
-    });
-
-    const smoothProgress = useSpring(scrollYProgress, {
-        stiffness: 100,
-        damping: 30,
-        restDelta: 0.001
-    });
-
-    const lineHeight = useTransform(smoothProgress, [0.1, 0.9], ["0%", "100%"]);
 
     return (
         <section
@@ -61,9 +54,8 @@ export function HowItWorks() {
             className="py-32 relative bg-[#111111] overflow-hidden border-t border-white/5"
             id="workflow"
         >
-            {/* Background Elements - Professional Image integration */}
+            {/* Background Elements - Restored to Original */}
             <div className="absolute inset-0 pointer-events-none z-0">
-                {/* Base Image */}
                 <img 
                     src="/bg-images/10071.jpg" 
                     alt="Process Background" 
@@ -71,18 +63,16 @@ export function HowItWorks() {
                 />
                 <div className="absolute inset-0 bg-[#111111]/40 mix-blend-multiply" />
                 
-                {/* Flawless Gradient Fades to seamlessly blend with solid #111111 background */}
                 <div className="absolute inset-0 bg-gradient-to-b from-[#111111] via-transparent to-[#111111] opacity-100" />
                 <div className="absolute inset-0 bg-gradient-to-r from-[#111111] via-transparent to-[#111111] opacity-90" />
                 
-                {/* Theme Accent Glow */}
                 <div className="absolute top-1/4 right-[5%] w-[500px] h-[500px] bg-[#C8A97E]/[0.03] rounded-full blur-[120px]" />
                 <div className="absolute bottom-1/4 left-[5%] w-[600px] h-[600px] bg-[#C8A97E]/[0.02] rounded-full blur-[150px]" />
             </div>
 
-            <div className="max-w-6xl mx-auto px-6 relative z-10">
+            <div className="max-w-7xl mx-auto px-6 relative z-10">
                 {/* Section Header */}
-                <div className="text-center mb-32 flex flex-col items-center">
+                <div className="text-center mb-24 flex flex-col items-center">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
@@ -115,92 +105,78 @@ export function HowItWorks() {
                     </motion.p>
                 </div>
 
-                {/* Timeline Container */}
-                <div className="relative max-w-4xl mx-auto">
-                    {/* Center Vertical Line - Subtle static line */}
-                    <div className="absolute left-8 md:left-1/2 top-0 bottom-0 w-px md:-translate-x-1/2 bg-white/5" />
+                {/* 3x2 Grid Container */}
+                <div className="relative">
+                    
+                    {/* Connecting Lines (Desktop Only) */}
+                    <div className="hidden lg:block absolute inset-0 pointer-events-none z-0">
+                        {/* Top Row horizontal line */}
+                        <div className="absolute top-[35%] left-[15%] w-[70%] h-px bg-gradient-to-r from-transparent via-[#C8A97E]/30 to-transparent border-dashed" />
+                        {/* Bottom Row horizontal line */}
+                        <div className="absolute top-[85%] left-[15%] w-[70%] h-px bg-gradient-to-r from-transparent via-[#C8A97E]/30 to-transparent border-dashed" />
+                    </div>
 
-                    {/* Animated Progress Line */}
-                    <motion.div
-                        className="absolute left-8 md:left-1/2 top-0 w-px md:-translate-x-1/2 overflow-hidden bg-[#C8A97E]"
-                        style={{ height: lineHeight }}
-                    >
-                        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-4 h-4 bg-[#C8A97E] blur-[4px]" />
-                    </motion.div>
-
-                    {/* Steps */}
-                    <div className="space-y-24 md:space-y-32">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-x-12 md:gap-y-16 relative z-10">
                         {workflowSteps.map((step, index) => {
-                            const isEven = index % 2 === 0;
+                            // Arrow logic: don't show on last item of row (index 2 and 5)
+                            const showArrow = (index !== 2 && index !== 5);
 
                             return (
                                 <motion.div
                                     key={step.step}
                                     initial={{ opacity: 0, y: 30 }}
                                     whileInView={{ opacity: 1, y: 0 }}
-                                    viewport={{ once: true, margin: "-100px" }}
+                                    viewport={{ once: true, margin: "-50px" }}
                                     transition={{ duration: 0.8, ease: "easeOut", delay: index * 0.1 }}
-                                    className={cn(
-                                        "relative flex flex-col md:flex-row gap-8 md:gap-0 items-start md:items-center",
-                                        isEven ? "" : "md:flex-row-reverse"
-                                    )}
+                                    className="relative flex flex-col group"
                                 >
-                                    {/* Timeline Node - Elegant hollow circle */}
-                                    <div
-                                        className="absolute left-8 md:left-1/2 w-3 h-3 -translate-x-[5px] md:-translate-x-[5px] rounded-full border border-[#C8A97E] bg-[#111111] z-20 flex items-center justify-center transition-all duration-500 hover:scale-150 hover:bg-[#C8A97E]"
-                                    >
-                                    </div>
-
-                                    {/* Content Area */}
-                                    <div className={cn(
-                                        "pl-20 md:pl-0 w-full md:w-1/2 flex flex-col relative group",
-                                        isEven ? "md:pr-16 md:items-end text-left md:text-right" : "md:pl-16 md:items-start text-left"
-                                    )}>
-                                        {/* Massive Background Number */}
-                                        <div className={cn(
-                                            "absolute top-1/2 -translate-y-1/2 text-[120px] font-serif font-bold text-white/[0.02] pointer-events-none select-none z-0 transition-colors duration-700 group-hover:text-white/[0.04]",
-                                            isEven ? "right-12" : "left-12"
-                                        )}>
-                                            0{step.step}
-                                        </div>
-
-                                        <div className="relative z-10 w-full">
-                                            {/* Badge & Step Indicator */}
-                                            <div className={cn(
-                                                "flex items-center gap-3 mb-6",
-                                                isEven ? "md:justify-end" : "justify-start"
-                                            )}>
+                                    {/* Glassmorphism Card */}
+                                    <div className="relative w-full h-full overflow-hidden rounded-[1.5rem] bg-[#111111]/60 backdrop-blur-md border border-white/5 p-6 md:p-8 transition-all duration-700 hover:bg-[#151515]/80 hover:border-[#C8A97E]/30 hover:-translate-y-2 hover:shadow-[0_10px_40px_-10px_rgba(200,169,126,0.15)] flex flex-col">
+                                        
+                                        <div className="absolute -top-12 -right-12 w-24 h-24 bg-[#C8A97E]/10 rounded-full blur-[40px] transition-all duration-700 group-hover:bg-[#C8A97E]/20" />
+                                        
+                                        {/* Header Row: Icon + Phase */}
+                                        <div className="relative z-10 flex items-center justify-between mb-6">
+                                            <div className="shrink-0 w-12 h-12 rounded-xl bg-white/[0.02] border border-white/5 flex items-center justify-center group-hover:border-[#C8A97E]/40 group-hover:bg-[#C8A97E]/10 transition-all duration-500 shadow-inner">
+                                                <step.icon className="w-5 h-5 text-white/40 group-hover:text-[#C8A97E] transition-colors duration-500" />
+                                            </div>
+                                            
+                                            <div className="flex flex-col items-end">
                                                 <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#C8A97E]">
                                                     Phase 0{step.step}
                                                 </span>
                                                 {step.badge && (
-                                                    <span className="text-[9px] font-medium text-black bg-[#C8A97E] px-2 py-0.5 uppercase tracking-wider">
+                                                    <span className="mt-1.5 text-[8px] font-semibold text-black bg-[#C8A97E] px-2 py-0.5 rounded-sm uppercase tracking-wider">
                                                         {step.badge}
                                                     </span>
                                                 )}
                                             </div>
+                                        </div>
 
-                                            {/* Title */}
-                                            <h3 className="text-2xl md:text-3xl font-serif text-white mb-4 group-hover:text-[#C8A97E] transition-colors duration-500">
+                                        {/* Content */}
+                                        <div className="relative z-10 flex-1">
+                                            <h3 className="text-xl font-serif text-white mb-3 group-hover:text-[#C8A97E] transition-colors duration-500">
                                                 {step.title}
                                             </h3>
-
-                                            {/* Description */}
-                                            <p className="text-[14px] text-white/40 leading-[1.8] font-light max-w-sm">
+                                            <p className="text-[13px] text-white/40 leading-[1.8] font-light">
                                                 {step.description}
                                             </p>
                                         </div>
-                                    </div>
-
-                                    {/* Icon Container for Visual Balance - Opposite to Content */}
-                                    <div className={cn(
-                                        "hidden md:flex w-1/2 items-center",
-                                        isEven ? "pl-16 justify-start" : "pr-16 justify-end"
-                                    )}>
-                                        <div className="w-16 h-16 rounded-full border border-white/5 bg-white/[0.02] flex items-center justify-center transition-all duration-700 hover:border-[#C8A97E]/30 hover:bg-[#C8A97E]/5">
-                                            <step.icon className="w-6 h-6 text-white/20" strokeWidth={1} />
+                                        
+                                        {/* Watermark Number */}
+                                        <div className="absolute -bottom-4 -right-2 text-[80px] font-serif font-bold text-white/[0.02] pointer-events-none select-none z-0 transition-all duration-700 group-hover:text-white/[0.04]">
+                                            0{step.step}
                                         </div>
                                     </div>
+
+                                    {/* Arrow connecting to next card (Desktop only) */}
+                                    {showArrow && (
+                                        <div className="hidden lg:flex absolute top-[35%] -right-10 z-20 w-8 items-center justify-center pointer-events-none">
+                                            <div className="w-full h-px bg-gradient-to-r from-[#C8A97E]/50 to-[#C8A97E] relative">
+                                                <div className="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 border-t border-r border-[#C8A97E] rotate-45" />
+                                            </div>
+                                        </div>
+                                    )}
                                 </motion.div>
                             );
                         })}

@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /$
+Allow: /login
+Disallow: /clock
+Disallow: /stopwatch
+Disallow: /countdown
+Disallow: /analytics
+Disallow: /settings
+Disallow: /leaderboard
+Disallow: /profile
+
+Sitemap: https://www.timmo.co.in/sitemap.xml

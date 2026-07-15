@@ -17,7 +17,7 @@ router.post("/invite", creatorAuth, async (req, res) => {
 
     await EditorAssignment.create({
       creatorId: req.userId,
-      editorEmail: email,
+      editorEmail: email,  
       inviteToken: token,
     });
 

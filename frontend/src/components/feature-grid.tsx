@@ -83,7 +83,7 @@ export function FeatureGrid() {
                                 whileInView={{ opacity: 1, y: 0, scale: 1 }}
                                 viewport={{ once: true, margin: "-50px" }}
                                 transition={{ delay: index * 0.1, duration: 0.8, ease: "easeOut" }}
-                                className="group relative flex flex-col p-8 md:p-10 border border-white/5 bg-[#0a0a0a]/50 backdrop-blur-md transition-all duration-700 hover:bg-[#111111] hover:border-[#C8A97E]/20"
+                                className="group relative flex flex-col p-8 md:p-10 border-[3px] border-double border-white/10 bg-[#0a0a0a]/50 backdrop-blur-md transition-all duration-700 hover:bg-[#111111] hover:border-[#C8A97E]/30"
                             >
                                 {/* Top right subtle accent line */}
                                 <div className="absolute top-0 right-0 w-8 h-px bg-gradient-to-r from-transparent to-[#C8A97E]/0 group-hover:to-[#C8A97E]/50 transition-colors duration-700"></div>
@@ -108,7 +108,7 @@ export function FeatureGrid() {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.8, delay: 0.4 }}
-                    className="mt-16 w-full border border-white/5 bg-gradient-to-r from-transparent via-[#111111] to-transparent py-10 flex flex-col items-center justify-center group"
+                    className="mt-16 w-full border-[3px] border-double border-white/10 bg-gradient-to-r from-transparent via-[#111111] to-transparent py-10 flex flex-col items-center justify-center group"
                 >
                     <span className="block text-4xl md:text-6xl font-serif text-[#ffffff] mb-3 group-hover:text-[#C8A97E] transition-colors duration-700 italic">10x</span>
                     <span className="text-[10px] text-white/30 uppercase tracking-[0.3em] font-bold">Faster Workflow</span>
