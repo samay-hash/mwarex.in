@@ -65,14 +65,17 @@ export default function VerificationPage() {
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="max-w-md w-full bg-[#111111] border border-red-500/20 rounded-2xl p-10 text-center shadow-[0_0_50px_rgba(239,68,68,0.1)]"
+          className="max-w-md w-full bg-[#111111] border border-amber-500/20 rounded-2xl p-10 text-center shadow-[0_0_50px_rgba(245,158,11,0.1)]"
         >
-          <div className="w-20 h-20 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
-            <XCircle className="w-10 h-10 text-red-500" />
+          <div className="w-20 h-20 bg-amber-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
+            <Loader2 className="w-10 h-10 text-amber-500 animate-spin" />
           </div>
-          <h1 className="text-2xl font-serif text-white mb-2">Invalid Certificate</h1>
-          <p className="text-white/50 text-sm leading-relaxed mb-8">
-            This certificate does not exist or has been revoked. Please check the Certificate ID and try again.
+          <h1 className="text-2xl font-serif text-white mb-2">Processing Certificate</h1>
+          <p className="text-white/50 text-sm leading-relaxed mb-6">
+            Your certificate details are currently being updated in our secure system and will be available here shortly.
+          </p>
+          <p className="text-[#C8A97E] text-xs font-bold tracking-widest uppercase mb-8">
+            - Team MWareX
           </p>
           <div className="bg-[#0a0a0a] rounded-xl p-4 border border-white/5 text-xs text-white/40 font-mono">
             ID: {id}
