@@ -15,6 +15,7 @@ const inviteRoutes = require("./routes/invite");
 const settingsRoutes = require("./routes/settings");
 const paymentRoutes = require("./routes/payment");
 const cryptoRoutes = require("./routes/crypto");
+const certificateRoutes = require("./routes/certificate");
 const { verifyConnection } = require("./services/emailService");
 
 const googleAuthRoutes = require("./routes/googleAuth");
@@ -97,6 +98,7 @@ app.use("/api/editor", editorRoutes);
 app.use("/api/v1", inviteRoutes);
 app.use("/api/v1/payment", paymentRoutes);
 app.use("/api/v1/payment/crypto", cryptoRoutes);
+app.use("/api/v1/certificates", certificateRoutes);
 app.use("/api/v1/rooms", require("./routes/room"));
 app.use("/api/v1/feedback", require("./routes/feedback"));
 app.use("/api/v1/s3", require("./routes/s3"));
