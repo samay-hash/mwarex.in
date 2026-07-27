@@ -570,6 +570,107 @@ Do not include any markdown formatting like \`\`\`json.`
             throw new Error("Failed to generate voiceover. Check API key or quota.");
         }
     }
+
+    async analyzeCreatorChannel(channelData) {
+        try {
+            const prompt = `
+You are an expert YouTube Strategist and Algorithm Decoder.
+Analyze the following YouTube channel performance data and provide a detailed "Creator DNA" intelligence report.
+
+Channel Name: ${channelData.channelName}
+Subscribers: ${channelData.subscriberCount}
+Total Views: ${channelData.totalViews}
+Videos Analyzed: ${channelData.videosAnalyzed}
+
+Recent Videos:
+${JSON.stringify(channelData.recentVideos, null, 2)}
+
+Based on this data, output a strict JSON object with the following structure:
+{
+  "audienceDNA": {
+    "loves": ["Topic 1", "Format 2"],
+    "ignores": ["Topic 3"]
+  },
+  "nextMoveEngine": {
+    "topic": "Suggested viral topic",
+    "confidence": 85,
+    "angle": "Why you should use this angle"
+  },
+  "videoAutopsy": {
+    "videoTitle": "Best performing video title",
+    "signals": ["High CTR", "Good retention trigger"]
+  },
+  "performanceComparison": {
+    "highPerformer": {
+      "videoTitle": "Title of best video",
+      "views": "e.g. 52K",
+      "engagement": "e.g. 12.6%",
+      "reasonsWorked": ["Strong curiosity hook", "High demand topic"],
+      "dnaScore": 9.2
+    },
+    "lowPerformer": {
+      "videoTitle": "Title of worst video",
+      "views": "e.g. 2K",
+      "engagement": "e.g. 1.6%",
+      "reasonsUnderperformed": ["Weak hook", "Too technical"],
+      "dnaScore": 2.1
+    }
+  },
+  "styleDNA": {
+    "traits": ["High Energy", "Fast Paced"],
+    "hookPatterns": ["Always starts with a question", "Fast visual cuts"],
+    "storyStructure": ["Cliffhanger endings", "Fast pacing"]
+  },
+  "uploadPredictor": {
+    "viralProbability": "High",
+    "bestUploadTime": "Friday 5 PM"
+  },
+  "opportunities": [
+    { "topic": "Untapped niche", "competition": "Low" }
+  ],
+  "criticalMistakes": [
+    "Mistake 1 that is hurting growth",
+    "Mistake 2 based on poor video stats or descriptions"
+  ]
+}
+Output ONLY valid JSON.
+`;
+            
+            try {
+                // Try Gemini first
+                const response = await axios.post(
+                    `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
+                    {
+                        contents: [{ parts: [{ text: prompt }] }],
+                        generationConfig: {
+                            responseMimeType: "application/json",
+                        }
+                    }
+                );
+                const jsonText = response.data.candidates[0].content.parts[0].text;
+                return JSON.parse(jsonText);
+            } catch (geminiError) {
+                console.error("[AIService] Gemini Failed, falling back to Pollinations:", geminiError?.response?.data || geminiError.message);
+                
+                // Fallback to Pollinations
+                const response = await axios.post('https://text.pollinations.ai/', {
+                    messages: [{ role: 'user', content: prompt }],
+                    jsonMode: true,
+                });
+                
+                let text = response.data;
+                if (typeof text === 'string') {
+                    // Clean markdown if any
+                    text = text.replace(/```json/g, '').replace(/```/g, '').trim();
+                    return JSON.parse(text);
+                }
+                return text;
+            }
+        } catch (error) {
+            console.error("[AIService] analyzeCreatorChannel Final Error:", error?.response?.data || error.message);
+            throw new Error("AI Analysis Failed due to API limits. Please check your API key quota.");
+        }
+    }
 }
 
 module.exports = new AIService();

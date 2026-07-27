@@ -19,6 +19,7 @@ const certificateRoutes = require("./routes/certificate");
 const { verifyConnection } = require("./services/emailService");
 
 const googleAuthRoutes = require("./routes/googleAuth");
+const youtubeRoutes = require("./routes/youtube");
 
 const http = require("http");
 const { Server } = require("socket.io");
@@ -104,6 +105,7 @@ app.use("/api/v1/feedback", require("./routes/feedback"));
 app.use("/api/v1/s3", require("./routes/s3"));
 app.use("/api/v1/marketplace", require("./routes/marketplace"));
 app.use("/api/v1/support", require("./routes/support"));
+app.use("/api/v1/youtube", youtubeRoutes);
 app.use("/auth", googleAuthRoutes);
 
 app.get("/health", (req, res) => {

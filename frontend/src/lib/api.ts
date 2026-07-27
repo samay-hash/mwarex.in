@@ -143,6 +143,12 @@ export const userAPI = {
   removeEditor: (id: string) => api.delete(`/api/v1/user/editors/${id}`),
 };
 
+// YouTube APIs
+export const youtubeAPI = {
+  getDNA: () => api.get("/api/v1/youtube/dna"),
+  analyze: () => api.post("/api/v1/youtube/analyze"),
+};
+
 // Invite APIs
 export const inviteAPI = {
   sendInvite: (email: string, inviteLink?: string) => api.post("/api/v1/invite", { email, inviteLink }),

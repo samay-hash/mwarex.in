@@ -24,6 +24,9 @@ router.get("/google", (req, res) => {
         "https://www.googleapis.com/auth/userinfo.profile",
         "https://www.googleapis.com/auth/userinfo.email",
         "https://www.googleapis.com/auth/youtube.upload",
+        // Additional read-only scopes for Creator DNA features
+        "https://www.googleapis.com/auth/youtube.readonly",
+        "https://www.googleapis.com/auth/yt-analytics.readonly",
       ],
     });
 

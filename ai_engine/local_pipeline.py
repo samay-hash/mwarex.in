@@ -308,7 +308,7 @@ def node_plan(state: VideoState) -> VideoState:
     print("\n--- [Groq] Strategizing Top 0.1% Cinematic B-Roll Placements ---")
     segments = state["segments"]
     
-    llm = ChatGroq(model="llama3-70b-8192", temperature=0.2, groq_api_key=os.getenv("GROQ_API_KEY"))
+    llm = ChatGroq(model="llama-3.1-70b-versatile", temperature=0.2, groq_api_key=os.getenv("GROQ_API_KEY"))
     
     transcript_summary = ""
     for i, seg in enumerate(segments):

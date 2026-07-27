@@ -1,7 +1,7 @@
 "use client";
 
-import { useRef } from "react";
-import { motion } from "framer-motion";
+import React, { useRef } from "react";
+import { motion, useMotionValue, useTransform, useSpring } from "framer-motion";
 import { UserPlus, Users, Upload, Youtube, CheckCircle, LineChart } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -47,6 +47,37 @@ const workflowSteps = [
 
 export function HowItWorks() {
     const containerRef = useRef<HTMLDivElement>(null);
+
+    // 3D Tilt Effect State
+    const x = useMotionValue(0);
+    const y = useMotionValue(0);
+
+    const mouseXSpring = useSpring(x, { stiffness: 150, damping: 20 });
+    const mouseYSpring = useSpring(y, { stiffness: 150, damping: 20 });
+
+    const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["15deg", "-15deg"]);
+    const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-15deg", "15deg"]);
+
+    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        const rect = e.currentTarget.getBoundingClientRect();
+        
+        const width = rect.width;
+        const height = rect.height;
+        
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+        
+        const xPct = mouseX / width - 0.5;
+        const yPct = mouseY / height - 0.5;
+        
+        x.set(xPct);
+        y.set(yPct);
+    };
+
+    const handleMouseLeave = () => {
+        x.set(0);
+        y.set(0);
+    };
 
     return (
         <section
@@ -105,82 +136,74 @@ export function HowItWorks() {
                     </motion.p>
                 </div>
 
-                {/* 3x2 Grid Container */}
-                <div className="relative">
+                {/* Single Page Layout: Left Phone -> Right Grid */}
+                <div className="relative mt-20 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
                     
-                    {/* Connecting Lines (Desktop Only) */}
-                    <div className="hidden lg:block absolute inset-0 pointer-events-none z-0">
-                        {/* Top Row horizontal line */}
-                        <div className="absolute top-[35%] left-[15%] w-[70%] h-px bg-gradient-to-r from-transparent via-[#C8A97E]/30 to-transparent border-dashed" />
-                        {/* Bottom Row horizontal line */}
-                        <div className="absolute top-[85%] left-[15%] w-[70%] h-px bg-gradient-to-r from-transparent via-[#C8A97E]/30 to-transparent border-dashed" />
+                    {/* Left Column: Mobile Image */}
+                    <div className="lg:col-span-5 flex flex-col items-center justify-center relative order-2 lg:order-1">
+                        <motion.div 
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            whileInView={{ opacity: 1, scale: 1 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 1, ease: "easeOut" }}
+                            className="relative flex items-center justify-center cursor-grab active:cursor-grabbing w-full max-w-[360px]"
+                            style={{
+                                rotateX,
+                                rotateY,
+                                transformStyle: "preserve-3d",
+                                perspective: 1200
+                            }}
+                            onMouseMove={handleMouseMove}
+                            onMouseLeave={handleMouseLeave}
+                        >
+                            <img 
+                                src="/3dmob.png" 
+                                alt="MWareX 3D Mobile App" 
+                                className="w-full h-auto object-contain relative z-10 drop-shadow-[0_0_40px_rgba(200,169,126,0.15)]"
+                                style={{ transform: "translateZ(50px)" }} // Pop out effect
+                            />
+                        </motion.div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-x-12 md:gap-y-16 relative z-10">
-                        {workflowSteps.map((step, index) => {
-                            // Arrow logic: don't show on last item of row (index 2 and 5)
-                            const showArrow = (index !== 2 && index !== 5);
-
-                            return (
-                                <motion.div
-                                    key={step.step}
-                                    initial={{ opacity: 0, y: 30 }}
-                                    whileInView={{ opacity: 1, y: 0 }}
-                                    viewport={{ once: true, margin: "-50px" }}
-                                    transition={{ duration: 0.8, ease: "easeOut", delay: index * 0.1 }}
-                                    className="relative flex flex-col group"
-                                >
-                                    {/* Glassmorphism Card */}
-                                    <div className="relative w-full h-full overflow-hidden rounded-[1.5rem] bg-[#111111]/60 backdrop-blur-md border border-white/5 p-6 md:p-8 transition-all duration-700 hover:bg-[#151515]/80 hover:border-[#C8A97E]/30 hover:-translate-y-2 hover:shadow-[0_10px_40px_-10px_rgba(200,169,126,0.15)] flex flex-col">
-                                        
-                                        <div className="absolute -top-12 -right-12 w-24 h-24 bg-[#C8A97E]/10 rounded-full blur-[40px] transition-all duration-700 group-hover:bg-[#C8A97E]/20" />
-                                        
-                                        {/* Header Row: Icon + Phase */}
-                                        <div className="relative z-10 flex items-center justify-between mb-6">
-                                            <div className="shrink-0 w-12 h-12 rounded-xl bg-white/[0.02] border border-white/5 flex items-center justify-center group-hover:border-[#C8A97E]/40 group-hover:bg-[#C8A97E]/10 transition-all duration-500 shadow-inner">
-                                                <step.icon className="w-5 h-5 text-white/40 group-hover:text-[#C8A97E] transition-colors duration-500" />
-                                            </div>
-                                            
-                                            <div className="flex flex-col items-end">
-                                                <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#C8A97E]">
-                                                    Phase 0{step.step}
-                                                </span>
-                                                {step.badge && (
-                                                    <span className="mt-1.5 text-[8px] font-semibold text-black bg-[#C8A97E] px-2 py-0.5 rounded-sm uppercase tracking-wider">
-                                                        {step.badge}
-                                                    </span>
-                                                )}
-                                            </div>
+                    {/* Right Column: 6 Steps Grid */}
+                    <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-5 relative z-10 order-1 lg:order-2">
+                        {workflowSteps.map((step, index) => (
+                            <motion.div
+                                key={step.step}
+                                initial={{ opacity: 0, x: 30 }}
+                                whileInView={{ opacity: 1, x: 0 }}
+                                viewport={{ once: true, margin: "-50px" }}
+                                transition={{ duration: 0.6, ease: "easeOut", delay: index * 0.1 }}
+                                className="relative flex flex-col group h-full"
+                            >
+                                <div className="relative w-full h-full overflow-hidden rounded-3xl bg-[#111111]/80 backdrop-blur-xl border border-white/5 p-6 transition-all duration-500 hover:bg-[#151515] hover:border-[#C8A97E]/30 hover:shadow-[0_10px_30px_-10px_rgba(200,169,126,0.15)] flex flex-col">
+                                    <div className="absolute -top-12 -right-12 w-24 h-24 bg-[#C8A97E]/10 rounded-full blur-[40px] transition-all duration-500 group-hover:bg-[#C8A97E]/20" />
+                                    
+                                    <div className="relative z-10 flex items-center gap-4 mb-4">
+                                        <div className="shrink-0 w-12 h-12 rounded-xl bg-white/[0.02] border border-white/5 flex items-center justify-center group-hover:border-[#C8A97E]/40 group-hover:bg-[#C8A97E]/10 transition-all duration-500 shadow-inner">
+                                            <step.icon className="w-5 h-5 text-white/40 group-hover:text-[#C8A97E] transition-colors duration-500" />
                                         </div>
-
-                                        {/* Content */}
-                                        <div className="relative z-10 flex-1">
-                                            <h3 className="text-xl font-serif text-white mb-3 group-hover:text-[#C8A97E] transition-colors duration-500">
-                                                {step.title}
-                                            </h3>
-                                            <p className="text-[13px] text-white/40 leading-[1.8] font-light">
-                                                {step.description}
-                                            </p>
-                                        </div>
-                                        
-                                        {/* Watermark Number */}
-                                        <div className="absolute -bottom-4 -right-2 text-[80px] font-serif font-bold text-white/[0.02] pointer-events-none select-none z-0 transition-all duration-700 group-hover:text-white/[0.04]">
-                                            0{step.step}
+                                        <div className="flex flex-col items-start">
+                                            <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#C8A97E]">Phase 0{step.step}</span>
+                                            {step.badge && (
+                                                <span className="mt-0.5 text-[8px] font-bold text-black bg-[#C8A97E] px-2 py-0.5 rounded-sm uppercase tracking-wider">{step.badge}</span>
+                                            )}
                                         </div>
                                     </div>
 
-                                    {/* Arrow connecting to next card (Desktop only) */}
-                                    {showArrow && (
-                                        <div className="hidden lg:flex absolute top-[35%] -right-10 z-20 w-8 items-center justify-center pointer-events-none">
-                                            <div className="w-full h-px bg-gradient-to-r from-[#C8A97E]/50 to-[#C8A97E] relative">
-                                                <div className="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 border-t border-r border-[#C8A97E] rotate-45" />
-                                            </div>
-                                        </div>
-                                    )}
-                                </motion.div>
-                            );
-                        })}
+                                    <div className="relative z-10 flex-1">
+                                        <h3 className="text-lg font-serif text-white mb-2 group-hover:text-[#C8A97E] transition-colors duration-500">{step.title}</h3>
+                                        <p className="text-xs text-white/40 leading-[1.6] font-light">{step.description}</p>
+                                    </div>
+                                    
+                                    <div className="absolute bottom-1 right-3 text-[60px] font-serif font-black text-white/[0.02] pointer-events-none select-none z-0 transition-all duration-500 group-hover:text-white/[0.04] group-hover:-translate-y-1">
+                                        0{step.step}
+                                    </div>
+                                </div>
+                            </motion.div>
+                        ))}
                     </div>
+
                 </div>
             </div>
         </section>

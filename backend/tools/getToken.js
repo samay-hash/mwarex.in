@@ -9,7 +9,11 @@ const oauth2Client = new google.auth.OAuth2(
 );
 
 const scopes = [
+  "https://www.googleapis.com/auth/userinfo.profile",
+  "https://www.googleapis.com/auth/userinfo.email",
   "https://www.googleapis.com/auth/youtube.upload",
+  "https://www.googleapis.com/auth/youtube.readonly",
+  "https://www.googleapis.com/auth/yt-analytics.readonly",
 ];
 
 const url = oauth2Client.generateAuthUrl({

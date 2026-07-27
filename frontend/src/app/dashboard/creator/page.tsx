@@ -39,7 +39,8 @@ import {
   Linkedin,
   Twitter,
   Link2,
-  PanelLeftClose
+  PanelLeftClose,
+  CheckCircle2
 } from "lucide-react";
 import VideoCard from "@/components/VideoCard";
 import { videoAPI, inviteAPI, getGoogleAuthUrl, paymentAPI, userAPI, roomAPI } from "@/lib/api";
@@ -61,6 +62,7 @@ import AssignEditorModal from "@/components/AssignEditorModal";
 import EditorRosterPanel from "@/components/EditorRosterPanel";
 import ClipExtractorModal from "@/components/ClipExtractorModal";
 import ClipsGridView from "@/components/ClipsGridView";
+import CreatorDNAView from "@/components/CreatorDNAView";
 
 interface Video {
   _id: string;
@@ -109,7 +111,7 @@ export default function CreatorDashboard() {
   const geminiCancels = useRef<Record<string, () => void>>({});
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"pending" | "all" | "raw_uploaded" | "clips">("pending");
-  const [activeView, setActiveView] = useState<"dashboard" | "marketplace" | "future" | "pipeline">("dashboard");
+  const [activeView, setActiveView] = useState<"dashboard" | "marketplace" | "future" | "pipeline" | "creator-dna">("dashboard");
   const [searchQuery, setSearchQuery] = useState("");
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");
@@ -120,7 +122,7 @@ export default function CreatorDashboard() {
   const [avatarLetter, setAvatarLetter] = useState("U");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-  const [userData, setUserData] = useState<{ name?: string; email?: string; isDemo?: boolean } | null>(null);
+  const [userData, setUserData] = useState<{ name?: string; email?: string; isDemo?: boolean; youtubeTokens?: any } | null>(null);
   const [pageLoaded, setPageLoaded] = useState(false);
   const [isDemo, setIsDemo] = useState(false);
   const [subscription, setSubscription] = useState<any>(null);
@@ -166,13 +168,12 @@ export default function CreatorDashboard() {
     setUserData(data);
     setIsDemo(data?.isDemo === true);
 
-    // If userData is incomplete (missing name/id), fetch fresh data from backend
-    if (!data?.isDemo && (!data?.name || !data?.id)) {
+    // Always fetch fresh data from backend to ensure we have the latest tokens and settings
+    if (!data?.isDemo) {
       userAPI.getMe()
         .then(res => {
           const freshData = {
-            email: res.data.email || data?.email,
-            name: res.data.name || data?.name || "",
+            ...res.data,
             id: res.data._id || data?.id || "",
           };
           setUserData(freshData);
@@ -952,6 +953,15 @@ export default function CreatorDashboard() {
             <Cpu className="w-4 h-4 shrink-0" />
             <span className={cn("whitespace-nowrap transition-opacity duration-200", isSidebarCollapsed ? "opacity-0 w-0 hidden" : "opacity-100")}>AI Strategy</span>
           </button>
+          
+          <button
+            onClick={() => setActiveView("creator-dna")}
+            title={isSidebarCollapsed ? "Creator DNA" : undefined}
+            className={cn("w-full flex items-center py-2.5 rounded-lg font-medium text-sm transition-all overflow-hidden", isSidebarCollapsed ? "justify-center px-0" : "gap-3 px-3", activeView === "creator-dna" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-secondary hover:text-foreground")}
+          >
+            <Cpu className="w-4 h-4 shrink-0" />
+            <span className={cn("whitespace-nowrap transition-opacity duration-200", isSidebarCollapsed ? "opacity-0 w-0 hidden" : "opacity-100")}>Creator DNA</span>
+          </button>
 
           <button
             onClick={() => { setActiveView("future"); setIsSidebarOpen(false); }}
@@ -1083,7 +1093,9 @@ export default function CreatorDashboard() {
         </header>
 
         <div className="p-4 md:p-6 lg:p-8 max-w-7xl mx-auto">
-          {activeView === "future" ? (
+          {activeView === "creator-dna" ? (
+            <CreatorDNAView isYoutubeConnected={!!userData?.youtubeTokens?.accessToken} />
+          ) : activeView === "future" ? (
             <FutureFeatures />
           ) : activeView === "pipeline" ? (
             <AIPipeline />
@@ -1923,12 +1935,19 @@ export default function CreatorDashboard() {
                       <p className="text-xs text-muted-foreground">Publish videos directly</p>
                     </div>
                   </div>
-                  <a
-                    href={getGoogleAuthUrl()}
-                    className="px-4 py-2 bg-primary text-primary-foreground text-sm font-medium rounded-lg hover:opacity-90 transition-opacity whitespace-nowrap"
-                  >
-                    Connect
-                  </a>
+                  {userData?.youtubeTokens?.accessToken ? (
+                    <div className="flex items-center gap-2 px-4 py-2 bg-green-500/10 text-green-500 border border-green-500/20 text-sm font-medium rounded-lg">
+                      <CheckCircle2 className="w-4 h-4" />
+                      Connected
+                    </div>
+                  ) : (
+                    <a
+                      href={getGoogleAuthUrl()}
+                      className="px-4 py-2 bg-primary text-primary-foreground text-sm font-medium rounded-lg hover:opacity-90 transition-opacity whitespace-nowrap"
+                    >
+                      Connect
+                    </a>
+                  )}
                 </div>
 
                 {/* Instagram */}
