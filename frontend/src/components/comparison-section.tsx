@@ -112,15 +112,46 @@ export function ComparisonSection() {
           transition={{ duration: 0.6, delay: 0.15 }}
           className="hidden md:block rounded-2xl border border-white/[0.06] bg-white/[0.02] backdrop-blur-sm overflow-hidden relative"
         >
-          {/* Subtle Corner Glow Border for MWareX Column */}
-          <div className="absolute top-0 bottom-0 left-[14.2857%] w-[14.2857%] pointer-events-none z-20 overflow-hidden">
-             <div className="absolute inset-0 border border-[#C8A97E]/20" />
-             
-             {/* Top Right subtle glow */}
-             <div className="absolute -top-3 -right-3 w-10 h-10 bg-[#C8A97E]/40 blur-[10px] rounded-full animate-pulse" />
-             
-             {/* Bottom Left subtle glow */}
-             <div className="absolute -bottom-3 -left-3 w-10 h-10 bg-[#C8A97E]/40 blur-[10px] rounded-full animate-pulse" style={{ animationDelay: '1s' }} />
+          {/* Static Corner Glow for MWareX Column */}
+          <div className="absolute top-0 bottom-0 left-[14.2857%] w-[14.2857%] pointer-events-none z-20">
+            <svg className="absolute inset-0 w-full h-full overflow-visible">
+              <defs>
+                <filter id="border-glow" x="-20%" y="-20%" width="140%" height="140%">
+                  <feGaussianBlur stdDeviation="3" result="blur" />
+                  <feMerge>
+                    <feMergeNode in="blur" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
+                
+                {/* Radial gradient for soft corner fading */}
+                <radialGradient id="corner-fade">
+                   <stop offset="0%" stopColor="white" />
+                   <stop offset="50%" stopColor="white" stopOpacity="0.8" />
+                   <stop offset="100%" stopColor="black" />
+                </radialGradient>
+
+                {/* Mask: 15% opacity on body, 100% glowing at opposite corners */}
+                <mask id="corner-mask">
+                   <rect width="100%" height="100%" fill="rgba(255,255,255,0.15)" />
+                   {/* Top Left Corner */}
+                   <circle cx="0" cy="0" r="50" fill="url(#corner-fade)" />
+                   {/* Bottom Right Corner */}
+                   <circle cx="100%" cy="100%" r="50" fill="url(#corner-fade)" />
+                </mask>
+              </defs>
+              
+              {/* Static light, masked to glow brightly at the two corners simultaneously */}
+              <rect
+                width="100%"
+                height="100%"
+                fill="none"
+                stroke="#C8A97E"
+                strokeWidth="1.5"
+                filter="url(#border-glow)"
+                mask="url(#corner-mask)"
+              />
+            </svg>
           </div>
 
           {/* Header Row */}
