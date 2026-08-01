@@ -22,69 +22,86 @@ try {
         maxRetriesPerRequest: null, // required by BullMQ
         tls: isTLS ? { rejectUnauthorized: false } : undefined,
         enableReadyCheck: false,
-        lazyConnect: false,
+        lazyConnect: true,          // don't connect until we explicitly call .connect()
+        retryStrategy: (times) => {
+            if (times > 3) {
+                console.error("[Redis] Max retries reached. Giving up.");
+                return null; // stop retrying
+            }
+            return Math.min(times * 2000, 10000);
+        },
     });
 
     redisConnection.on("connect", () => console.log("[Redis] ✅ Connected:", REDIS_URL.split("@").pop()));
     redisConnection.on("error",   (err) => console.error("[Redis] ❌ Error:", err.message));
 
-    // ── Queue ─────────────────────────────────────────────────────────────
-    youtubeUploadQueue = new Queue(QUEUE_NAME, { connection: redisConnection });
-
-    // ── Worker ────────────────────────────────────────────────────────────
-    worker = new Worker(
-        QUEUE_NAME,
-        async (job) => {
-            const { videoId, creatorId } = job.data;
-            console.log(`[YouTubeQueue] Processing job for video ${videoId}`);
-
-            const video = await VideoRepository.findById(videoId);
-            if (!video) throw new Error(`Video ${videoId} not found`);
-
-            // Streams directly from S3 URL → YouTube API
-            const ytData = await uploadToYoutube(video, creatorId);
-
-            video.youtubeId = ytData.id;
-            video.status = "uploaded";
-            await video.save();
-
-            console.log(`[YouTubeQueue] ✅ Uploaded video ${videoId} → YouTube ID: ${ytData.id}`);
-            return { youtubeId: ytData.id };
-        },
-        {
-            connection: redisConnection,
-            concurrency: 2, // max 2 simultaneous YouTube uploads
-        }
-    );
-
-    worker.on("completed", (job, result) => console.log(`[YouTubeQueue] Job ${job.id} done:`, result));
-    worker.on("failed", async (job, err) => {
-        console.error(`[YouTubeQueue] ❌ Job ${job.id} failed:`, err.message);
-        try {
-            const videoId = job?.data?.videoId;
-            await VideoRepository.findByIdAndUpdate(videoId, {
-                status: "upload_failed",
-            });
-            
-            if (global.io) {
-                // Fetch video to get roomId
-                const video = await VideoRepository.findById(videoId);
-                if (video && video.roomId) {
-                    global.io.to(`room_${video.roomId.toString()}`).emit("youtube_progress", {
-                        videoId: videoId,
-                        percent: 0,
-                        message: "❌ Upload failed: " + err.message,
-                        error: true
-                    });
-                }
-            }
-        } catch (dbErr) {
-            console.error(`[YouTubeQueue] Failed to update status to upload_failed:`, dbErr.message);
-        }
+    // Try to connect — but don't crash if it fails
+    await redisConnection.connect().catch((err) => {
+        console.error("[Redis] ⚠️ Could not connect:", err.message);
+        redisConnection = null;
     });
-    worker.on("error", (err) => console.error("[YouTubeQueue] Worker error:", err.message));
 
-    console.log("[YouTubeQueue] ✅ Queue & Worker initialized");
+    if (redisConnection) {
+        // ── Queue ─────────────────────────────────────────────────────────────
+        youtubeUploadQueue = new Queue(QUEUE_NAME, { connection: redisConnection });
+
+        // ── Worker ────────────────────────────────────────────────────────────
+        worker = new Worker(
+            QUEUE_NAME,
+            async (job) => {
+                const { videoId, creatorId } = job.data;
+                console.log(`[YouTubeQueue] Processing job for video ${videoId}`);
+
+                const video = await VideoRepository.findById(videoId);
+                if (!video) throw new Error(`Video ${videoId} not found`);
+
+                // Streams directly from S3 URL → YouTube API
+                const ytData = await uploadToYoutube(video, creatorId);
+
+                video.youtubeId = ytData.id;
+                video.status = "uploaded";
+                await video.save();
+
+                console.log(`[YouTubeQueue] ✅ Uploaded video ${videoId} → YouTube ID: ${ytData.id}`);
+                return { youtubeId: ytData.id };
+            },
+            {
+                connection: redisConnection,
+                concurrency: 2, // max 2 simultaneous YouTube uploads
+            }
+        );
+
+        worker.on("completed", (job, result) => console.log(`[YouTubeQueue] Job ${job.id} done:`, result));
+        worker.on("failed", async (job, err) => {
+            console.error(`[YouTubeQueue] ❌ Job ${job.id} failed:`, err.message);
+            try {
+                const videoId = job?.data?.videoId;
+                await VideoRepository.findByIdAndUpdate(videoId, {
+                    status: "upload_failed",
+                });
+                
+                if (global.io) {
+                    // Fetch video to get roomId
+                    const video = await VideoRepository.findById(videoId);
+                    if (video && video.roomId) {
+                        global.io.to(`room_${video.roomId.toString()}`).emit("youtube_progress", {
+                            videoId: videoId,
+                            percent: 0,
+                            message: "❌ Upload failed: " + err.message,
+                            error: true
+                        });
+                    }
+                }
+            } catch (dbErr) {
+                console.error(`[YouTubeQueue] Failed to update status to upload_failed:`, dbErr.message);
+            }
+        });
+        worker.on("error", (err) => console.error("[YouTubeQueue] Worker error:", err.message));
+
+        console.log("[YouTubeQueue] ✅ Queue & Worker initialized");
+    } else {
+        console.warn("[YouTubeQueue] ⚠️ Redis not available — YouTube upload queue disabled.");
+    }
 } catch (err) {
     console.error("[YouTubeQueue] ⚠️ Could not initialize queue — Redis unavailable:", err.message);
     console.error("[YouTubeQueue] YouTube uploads will NOT be queued until Redis is connected.");
