@@ -22,11 +22,11 @@ try {
         maxRetriesPerRequest: null, // required by BullMQ
         tls: isTLS ? { rejectUnauthorized: false } : undefined,
         enableReadyCheck: false,
-        lazyConnect: true,          // don't connect until we explicitly call .connect()
+        lazyConnect: true,
         retryStrategy: (times) => {
             if (times > 3) {
                 console.error("[Redis] Max retries reached. Giving up.");
-                return null; // stop retrying
+                return null; // stop retrying — don't loop forever
             }
             return Math.min(times * 2000, 10000);
         },
@@ -35,13 +35,17 @@ try {
     redisConnection.on("connect", () => console.log("[Redis] ✅ Connected:", REDIS_URL.split("@").pop()));
     redisConnection.on("error",   (err) => console.error("[Redis] ❌ Error:", err.message));
 
-    // Try to connect — but don't crash if it fails
-    await redisConnection.connect().catch((err) => {
-        console.error("[Redis] ⚠️ Could not connect:", err.message);
-        redisConnection = null;
-    });
+    // Attempt connection — wrapped in an IIFE so we can use await
+    (async () => {
+        try {
+            await redisConnection.connect();
+        } catch (connErr) {
+            console.error("[Redis] ⚠️ Could not connect:", connErr.message);
+            console.warn("[YouTubeQueue] ⚠️ Redis not available — YouTube upload queue disabled.");
+            redisConnection = null;
+            return; // exit IIFE — skip queue/worker setup
+        }
 
-    if (redisConnection) {
         // ── Queue ─────────────────────────────────────────────────────────────
         youtubeUploadQueue = new Queue(QUEUE_NAME, { connection: redisConnection });
 
@@ -81,7 +85,6 @@ try {
                 });
                 
                 if (global.io) {
-                    // Fetch video to get roomId
                     const video = await VideoRepository.findById(videoId);
                     if (video && video.roomId) {
                         global.io.to(`room_${video.roomId.toString()}`).emit("youtube_progress", {
@@ -99,9 +102,8 @@ try {
         worker.on("error", (err) => console.error("[YouTubeQueue] Worker error:", err.message));
 
         console.log("[YouTubeQueue] ✅ Queue & Worker initialized");
-    } else {
-        console.warn("[YouTubeQueue] ⚠️ Redis not available — YouTube upload queue disabled.");
-    }
+    })();
+
 } catch (err) {
     console.error("[YouTubeQueue] ⚠️ Could not initialize queue — Redis unavailable:", err.message);
     console.error("[YouTubeQueue] YouTube uploads will NOT be queued until Redis is connected.");
