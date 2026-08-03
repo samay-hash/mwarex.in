@@ -21,6 +21,10 @@ import subprocess
 import threading
 import traceback
 from urllib.parse import urlparse
+from concurrent.futures import ThreadPoolExecutor
+
+# Limit concurrent video processing to 2 instances to prevent OOM on free tiers
+executor = ThreadPoolExecutor(max_workers=2)
 import requests
 import boto3
 from flask import Flask, request, jsonify
@@ -75,6 +79,25 @@ except Exception as e:
 
 TMP_DIR = os.getenv("TMP_DIR", "/tmp/mwarex")
 os.makedirs(TMP_DIR, exist_ok=True)
+
+def cleanup_temp_dir():
+    """Wipe orphaned files in TMP_DIR on startup to prevent Disk Leaks."""
+    print("[AI ENGINE] Running startup Garbage Collection...")
+    try:
+        now = time.time()
+        count = 0
+        for f in os.listdir(TMP_DIR):
+            filepath = os.path.join(TMP_DIR, f)
+            if os.path.isfile(filepath):
+                # Delete files older than 24 hours
+                if os.stat(filepath).st_mtime < now - 86400:
+                    os.remove(filepath)
+                    count += 1
+        print(f"[AI ENGINE] GC Complete. Removed {count} orphaned files.")
+    except Exception as e:
+        print(f"[AI ENGINE] GC Failed: {e}")
+
+cleanup_temp_dir()
 
 def download_from_s3(file_url, local_path):
     """Download a file from any public URL or S3 using the bucket key."""
@@ -170,6 +193,7 @@ def extract_audio(video_path, audio_path):
     print("[STEP 1] Extracting audio...")
     cmd = [
         "ffmpeg", "-y",
+        "-threads", "1",
         "-i", video_path,
         "-vn",                       # no video
         "-acodec", "pcm_s16le",      # 16-bit PCM
@@ -216,15 +240,24 @@ def transcribe_audio(audio_path):
 
 
 def _whisper_single(audio_path):
-    """Transcribe a single audio file with Groq Whisper."""
-    with open(audio_path, "rb") as f:
-        response = groq_client.audio.transcriptions.create(
-            file=("audio.wav", f),
-            model="whisper-large-v3",
-            response_format="verbose_json",
-            timestamp_granularities=["word", "segment"],
-            language="en",
-        )
+    """Transcribe a single audio file with Groq Whisper with retry."""
+    max_retries = 3
+    for attempt in range(max_retries):
+        try:
+            with open(audio_path, "rb") as f:
+                response = groq_client.audio.transcriptions.create(
+                    file=("audio.wav", f),
+                    model="whisper-large-v3",
+                    response_format="verbose_json",
+                    timestamp_granularities=["word", "segment"],
+                    language="en",
+                )
+            break
+        except Exception as e:
+            print(f"[STEP 2] Whisper call failed (attempt {attempt+1}/{max_retries}): {e}")
+            if attempt == max_retries - 1:
+                raise e
+            time.sleep(2 ** attempt)
     
     # Extract words with timestamps
     words = []
@@ -366,7 +399,7 @@ def llm_analyze_transcript(transcript_text, segments, silences, ai_prompt, video
     if segments:
         segment_text = "\n".join([f"[{s['start']:.1f}s - {s['end']:.1f}s] {s['text']}" for s in segments])
     
-    prompt = f"""You are an expert AI video editor. Analyze this video transcript and produce precise editing instructions.
+    prompt = f"""You are a master, top-tier YouTube video editor (like MrBeast's editor). Your job is to take this raw transcript and create a highly engaging, fast-paced video.
 
 VIDEO DURATION: {video_duration:.1f} seconds
 USER INSTRUCTIONS: {ai_prompt}
@@ -378,38 +411,44 @@ TIMESTAMPED TRANSCRIPT:
 TASK: Return a JSON object with these keys:
 
 1. "keep_segments" — array of {{"start": float, "end": float}} timestamps of segments to KEEP in the final video.
-   Rules:
-   - Remove all silence gaps longer than 1.5 seconds
-   - Remove filler words clusters ("um", "uh", "like", "you know", "basically", "actually", "so yeah")
-   - Remove obvious stutters and restarts
-   - KEEP all meaningful speech, intentional pauses (under 1s), and natural transitions
-   - Segments should NOT overlap
-   - Cover the full video — don't skip large meaningful sections
+   GOD-MODE RULES FOR CUTTING:
+   - KILL THE BORING: Remove all silences, 'ums', 'ahs', 'like', and repetitive sentences aggressively.
+   - FAST PACING: No single continuous clip should feel dragged out. Cut the dead air between sentences.
+   - RETAIN CONTEXT: Make sure the cuts make logical sense and speech flows perfectly.
+   - Segments MUST NOT overlap.
 
 2. "broll_moments" — array of {{"timestamp": float, "duration": float, "search_query": string}}
-   - Identify 2-4 moments where B-roll footage would enhance the video
-   - search_query should be a 2-3 word Pexels search term (e.g. "city skyline", "typing keyboard")
-   - Only suggest B-roll during topic transitions or visual variety moments
+   - Identify 2-4 moments where B-roll footage would enhance the video.
+   - search_query MUST be a 2-3 word Pexels search term (e.g. "city skyline", "typing keyboard").
 
 3. "clip_suggestions" — array of {{"title": string, "start": float, "end": float, "score": int, "hashtags": string}}
-   - Identify 3-5 best standalone clips (30-90 seconds) for Reels/Shorts
-   - score is 1-100 based on engagement potential
-   - hashtags are relevant social media tags
+   - Extract the 3 most viral, standalone 30-60 second clips for YouTube Shorts/Reels.
+   - The first 3 seconds of the clip MUST be a strong hook.
 
 Return ONLY the raw JSON object. No markdown, no explanations."""
 
     try:
-        response = groq_client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
-            messages=[
-                {"role": "system", "content": "You are a precise JSON-outputting video editing AI. Output ONLY valid JSON."},
-                {"role": "user", "content": prompt}
-            ],
-            temperature=0.3,
-            max_tokens=4096,
-        )
-        
-        text = response.choices[0].message.content.strip()
+        # Exponential backoff retry logic (up to 3 tries)
+        max_retries = 3
+        text = ""
+        for attempt in range(max_retries):
+            try:
+                response = groq_client.chat.completions.create(
+                    model="llama-3.3-70b-versatile",
+                    messages=[
+                        {"role": "system", "content": "You are a precise JSON-outputting video editing AI. Output ONLY valid JSON."},
+                        {"role": "user", "content": prompt}
+                    ],
+                    temperature=0.3,
+                    max_tokens=4096,
+                )
+                text = response.choices[0].message.content.strip()
+                break  # Success
+            except Exception as e:
+                print(f"[STEP 4] LLM call failed (attempt {attempt+1}/{max_retries}): {e}")
+                if attempt == max_retries - 1:
+                    raise e
+                time.sleep(2 ** attempt)
         # Clean any markdown wrapping
         text = re.sub(r"^```(?:json)?\s*", "", text)
         text = re.sub(r"\s*```$", "", text)
@@ -476,6 +515,7 @@ def cut_and_stitch(input_path, keep_segments, output_path, video_id):
         
         cmd = [
             "ffmpeg", "-y",
+            "-threads", "1", "-preset", "ultrafast",
             "-i", input_path,
             "-ss", str(seg["start"]),
             "-to", str(seg["end"]),
@@ -505,6 +545,7 @@ def cut_and_stitch(input_path, keep_segments, output_path, video_id):
         
         cmd = [
             "ffmpeg", "-y",
+            "-threads", "1", "-preset", "ultrafast",
             "-f", "concat", "-safe", "0",
             "-i", list_file,
             "-c:v", "libx264", "-preset", "fast", "-crf", "23",
@@ -1214,12 +1255,7 @@ def process_video():
     if not video_id or not file_url:
         return jsonify({"error": "videoId and fileUrl are required"}), 400
     
-    thread = threading.Thread(
-        target=process_video_background,
-        args=(video_id, file_url, ai_prompt),
-        daemon=True
-    )
-    thread.start()
+    executor.submit(process_video_background, video_id, file_url, ai_prompt)
     
     return jsonify({"message": "AI Video Pipeline started", "status": "processing"}), 202
 
@@ -1236,12 +1272,7 @@ def extract_clips():
     if not youtube_url and not video_id and not file_url:
         return jsonify({"error": "youtubeUrl, videoId, or fileUrl required"}), 400
     
-    thread = threading.Thread(
-        target=extract_clips_background,
-        args=(youtube_url, video_id, file_url, room_id, creator_id),
-        daemon=True
-    )
-    thread.start()
+    executor.submit(extract_clips_background, youtube_url, video_id, file_url, room_id, creator_id)
     
     return jsonify({"message": "Clip extraction started", "status": "processing"}), 202
 
@@ -1255,12 +1286,7 @@ def generate_captions_route():
     if not video_id or not file_url:
         return jsonify({"error": "videoId and fileUrl required"}), 400
     
-    thread = threading.Thread(
-        target=generate_captions_background,
-        args=(video_id, file_url),
-        daemon=True
-    )
-    thread.start()
+    executor.submit(generate_captions_background, video_id, file_url)
     
     return jsonify({"message": "Caption generation started", "status": "processing"}), 202
 
@@ -1269,6 +1295,7 @@ def generate_captions_route():
 def health():
     return jsonify({
         "status": "MWareX AI Video Engine is ALIVE 🚀",
+        "queue_size": executor._work_queue.qsize() if hasattr(executor, '_work_queue') else 0,
         "groq": "connected" if groq_client else "missing",
         "gemini": "connected" if genai and GEMINI_API_KEY else "missing",
         "pexels": "connected" if PEXELS_API_KEY else "missing",

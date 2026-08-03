@@ -66,6 +66,12 @@ export const videoAPI = {
 
   approve: (id: string) => api.post(`/api/v1/videos/${id}/approve`),
 
+  publishClip: (id: string) => api.post(`/api/v1/videos/${id}/publish-clip`),
+
+  exportEdit: (id: string, formData: FormData) => api.post(`/api/v1/videos/${id}/export-edit`, formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  }),
+
   reject: (id: string, reason?: string) => api.post(`/api/v1/videos/${id}/reject`, { reason }),
 
   deleteForMe: (id: string) => api.delete(`/api/v1/videos/${id}/delete-for-me`),

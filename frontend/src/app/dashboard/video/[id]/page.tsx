@@ -38,6 +38,10 @@ export default function ProjectWorkspace() {
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
     const [clips, setClips] = useState<any[]>([]);
+    
+    // Audio State
+    const [customAudioFile, setCustomAudioFile] = useState<File | null>(null);
+    const audioRef = useRef<HTMLAudioElement>(null);
 
     // History for Undo/Redo
     const [history, setHistory] = useState<any[][]>([]);
@@ -104,17 +108,51 @@ export default function ProjectWorkspace() {
     // --- Player Controls ---
     const togglePlay = () => {
         if (videoRef.current) {
-            isPlaying ? videoRef.current.pause() : videoRef.current.play();
+            if (isPlaying) {
+                videoRef.current.pause();
+                if (audioRef.current) audioRef.current.pause();
+            } else {
+                videoRef.current.play();
+                if (audioRef.current) audioRef.current.play();
+            }
             setIsPlaying(!isPlaying);
         }
     };
 
     const handleTimeUpdate = () => {
-        if (videoRef.current) setCurrentTime(videoRef.current.currentTime);
+        if (videoRef.current) {
+            setCurrentTime(videoRef.current.currentTime);
+            // Keep audio synced if it drifts
+            if (audioRef.current && Math.abs(audioRef.current.currentTime - videoRef.current.currentTime) > 0.5) {
+                audioRef.current.currentTime = videoRef.current.currentTime;
+            }
+        }
     };
 
     const handleLoadedMetadata = () => {
         if (videoRef.current) setDuration(videoRef.current.duration || 300);
+    };
+
+    const handleExportEdit = async () => {
+        if (!video) return;
+        try {
+            setIsExporting(true);
+            const toastId = toast.loading("Exporting and sending to YouTube...");
+            
+            const formData = new FormData();
+            if (customAudioFile) {
+                formData.append("audio", customAudioFile);
+            }
+            
+            await videoAPI.exportEdit(id, formData);
+            
+            toast.success("Project exported and queued for YouTube!", { id: toastId });
+        } catch (error: any) {
+            console.error("Export error:", error);
+            toast.error(error.response?.data?.message || "Failed to export project.");
+        } finally {
+            setIsExporting(false);
+        }
     };
 
     const handleTimelineClick = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -202,10 +240,11 @@ export default function ProjectWorkspace() {
                     </button>
                     
                     <button 
-                        onClick={() => toast.success("Project exported successfully!")} 
-                        className="h-9 px-6 rounded-lg bg-foreground hover:bg-zinc-200 text-background text-xs font-bold flex items-center gap-2 transition-all shadow-[0_0_15px_rgba(255,255,255,0.1)]"
+                        onClick={handleExportEdit} 
+                        disabled={isExporting}
+                        className="h-9 px-6 rounded-lg bg-foreground hover:bg-zinc-200 text-background text-xs font-bold flex items-center gap-2 transition-all shadow-[0_0_15px_rgba(255,255,255,0.1)] disabled:opacity-50"
                     >
-                        <Upload className="w-4 h-4" /> Export
+                        {isExporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />} Export
                     </button>
                     <div className="w-8 h-8 rounded-full ml-2 overflow-hidden border border-white/10 flex items-center justify-center bg-primary text-primary-foreground font-bold text-xs">
                         {userData?.name?.[0]?.toUpperCase() || "U"}
@@ -284,7 +323,39 @@ export default function ProjectWorkspace() {
                             </>
                         )}
 
-                        {activeGlobalTool !== 'media' && (
+                        {activeGlobalTool === 'audio' && (
+                            <div className="flex flex-col space-y-4">
+                                <div className="p-4 rounded-xl border border-dashed border-white/20 bg-white/5 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-white/10 hover:border-primary/50 transition-all group relative">
+                                    <input 
+                                        type="file" 
+                                        accept="audio/*" 
+                                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                        onChange={(e) => {
+                                            const file = e.target.files?.[0];
+                                            if (file) {
+                                                setCustomAudioFile(file);
+                                                toast.success("Audio loaded! It will be mixed on Export.");
+                                            }
+                                        }}
+                                    />
+                                    <Music className="w-8 h-8 text-zinc-400 mb-2 group-hover:text-primary transition-colors" />
+                                    <p className="text-xs font-semibold text-white">Import Custom Audio</p>
+                                    <p className="text-[10px] text-zinc-500 mt-1">MP3, WAV</p>
+                                </div>
+                                {customAudioFile && (
+                                    <div className="p-3 rounded-xl bg-primary/10 border border-primary/30 flex items-center gap-3">
+                                        <Volume2 className="w-4 h-4 text-primary" />
+                                        <div className="flex-1 truncate">
+                                            <p className="text-[11px] font-semibold text-primary truncate">{customAudioFile.name}</p>
+                                            <p className="text-[9px] text-primary/70">{(customAudioFile.size / 1024 / 1024).toFixed(2)} MB</p>
+                                        </div>
+                                        <button onClick={() => setCustomAudioFile(null)} className="text-zinc-500 hover:text-white"><X className="w-3 h-3" /></button>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {activeGlobalTool !== 'media' && activeGlobalTool !== 'audio' && (
                             <div className="flex flex-col items-center justify-center h-40 text-center opacity-50">
                                 <Wand2 className="w-8 h-8 text-zinc-500 mb-3" />
                                 <p className="text-xs text-zinc-400 font-medium">Select an item on the timeline<br/>to edit {activeGlobalTool}.</p>
@@ -321,14 +392,22 @@ export default function ProjectWorkspace() {
                             )}
                         >
                             {signedVideoSrc ? (
-                                <video 
-                                    ref={videoRef} 
-                                    src={signedVideoSrc} 
-                                    className="w-full h-full object-cover" 
-                                    onTimeUpdate={handleTimeUpdate} 
-                                    onLoadedMetadata={handleLoadedMetadata} 
-                                    onClick={togglePlay}
-                                />
+                                <>
+                                    <video 
+                                        ref={videoRef} 
+                                        src={signedVideoSrc} 
+                                        className="w-full h-full object-cover" 
+                                        onTimeUpdate={handleTimeUpdate} 
+                                        onLoadedMetadata={handleLoadedMetadata} 
+                                        onClick={togglePlay}
+                                    />
+                                    {customAudioFile && (
+                                        <audio 
+                                            ref={audioRef}
+                                            src={URL.createObjectURL(customAudioFile)}
+                                        />
+                                    )}
+                                </>
                             ) : (
                                 <div className="w-full h-full flex flex-col items-center justify-center text-zinc-500 bg-[#111]">
                                     <Loader2 className="w-8 h-8 animate-spin mb-4 text-primary" />
@@ -535,6 +614,19 @@ export default function ProjectWorkspace() {
                                             </div>
                                         </motion.div>
                                     ))}
+                                    {customAudioFile && (
+                                        <motion.div 
+                                            initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
+                                            className="absolute h-8 rounded-md flex items-center px-2 shadow-md border overflow-hidden bg-primary/20 border-primary/40 text-primary"
+                                            style={{ left: `1rem`, width: `100%` }}
+                                        >
+                                            <span className="text-[10px] font-bold truncate z-10 absolute left-2">{customAudioFile.name}</span>
+                                            {/* Mock Waveform */}
+                                            <div className="absolute inset-0 flex items-center opacity-30 px-2 gap-0.5 pt-3">
+                                                {[...Array(50)].map((_, i) => <div key={i} className="flex-1 rounded-full bg-primary" style={{ height: `${Math.max(20, Math.random() * 80)}%` }} />)}
+                                            </div>
+                                        </motion.div>
+                                    )}
                                 </AnimatePresence>
                             </div>
 

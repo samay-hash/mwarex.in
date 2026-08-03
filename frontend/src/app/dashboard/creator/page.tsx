@@ -1457,11 +1457,18 @@ export default function CreatorDashboard() {
                 onDownload={(clip) => {
                   window.open(clip.fileUrl, '_blank');
                 }}
-                onPublish={(clip, platform) => {
-                  toast.success(`Sent to ${platform}!`, { description: `Clip "${clip.title}" queued for publishing.` });
+                onPublish={async (clip, platform) => {
+                  try {
+                    const toastId = toast.loading(`Sending "${clip.title}" to ${platform}...`);
+                    await videoAPI.publishClip(clip._id);
+                    toast.success(`Sent to ${platform}!`, { id: toastId, description: `Clip "${clip.title}" queued for publishing.` });
+                  } catch (error: any) {
+                    const errorMsg = error.response?.data?.message || "Failed to publish clip.";
+                    toast.error(errorMsg);
+                  }
                 }}
                 onEdit={(clip) => {
-                  router.push(`/dashboard/review/${clip._id}`);
+                  router.push(`/dashboard/video/${clip._id}`);
                 }}
                 onDelete={(clip) => {
                   handleDeleteForEveryone(clip._id);

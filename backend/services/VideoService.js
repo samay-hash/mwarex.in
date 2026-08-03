@@ -167,6 +167,77 @@ class VideoService {
         return { video, creatorId };
     }
 
+    async publishClip(clipId, userId, io) {
+        const video = await this.videoRepository.findById(clipId);
+        if (!video) {
+            throw { status: 404, message: "Clip Not Found" };
+        }
+
+        const creatorId = video.creatorId || userId;
+        const creator = await this.userRepository.findById(creatorId);
+
+        if (!creator || !creator.youtubeTokens || !creator.youtubeTokens.refreshToken) {
+            throw {
+                status: 400,
+                message: "YouTube account not connected. Please go to Settings and connect your channel.",
+            };
+        }
+
+        // Send to Redis Background Queue
+        const { enqueueYoutubeUpload } = require("./YouTubeQueue");
+        await enqueueYoutubeUpload({ videoId: clipId, creatorId });
+
+        return { message: "Clip queued for YouTube publishing" };
+    }
+
+    async exportEdit(clipId, userId, audioFile) {
+        const video = await this.videoRepository.findById(clipId);
+        if (!video) throw { status: 404, message: "Clip Not Found" };
+
+        const creatorId = video.creatorId || userId;
+        const creator = await this.userRepository.findById(creatorId);
+
+        if (!creator || !creator.youtubeTokens || !creator.youtubeTokens.refreshToken) {
+            throw { status: 400, message: "YouTube account not connected. Please connect your channel." };
+        }
+
+        if (audioFile) {
+            console.log("[VideoService] Mixing custom audio with FFmpeg...");
+            const { exec } = require("child_process");
+            const util = require("util");
+            const execAsync = util.promisify(exec);
+            const path = require("path");
+            const fs = require("fs");
+            
+            const outputPath = path.join("/tmp", `mixed_${clipId}.mp4`);
+            
+            // Mix original video (video track only) with uploaded audio
+            const cmd = `ffmpeg -y -i "${video.fileUrl}" -i "${audioFile.path}" -c:v copy -c:a aac -map 0:v:0 -map 1:a:0 -shortest "${outputPath}"`;
+            
+            try {
+                await execAsync(cmd);
+                
+                const cloudinary = require("cloudinary").v2;
+                const uploadResult = await cloudinary.uploader.upload(outputPath, { resource_type: "video", folder: "mwarex_videos" });
+                
+                video.fileUrl = uploadResult.secure_url;
+                await video.save();
+                
+                // Cleanup tmp files
+                if (fs.existsSync(outputPath)) fs.unlinkSync(outputPath);
+                if (fs.existsSync(audioFile.path)) fs.unlinkSync(audioFile.path);
+            } catch (err) {
+                console.error("[VideoService] FFmpeg mix error:", err);
+                throw { status: 500, message: "Failed to mix audio: " + err.message };
+            }
+        }
+
+        const { enqueueYoutubeUpload } = require("./YouTubeQueue");
+        await enqueueYoutubeUpload({ videoId: clipId, creatorId });
+
+        return { message: "Clip edit exported and queued for YouTube publishing!" };
+    }
+
     async rejectVideo(videoId, reason) {
         const video = await this.videoRepository.findById(videoId);
         if (!video) {

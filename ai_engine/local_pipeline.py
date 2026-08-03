@@ -44,11 +44,16 @@ class AudioTranscriber:
         audio_path = f"{video_path}_audio.wav"
         print("[Transcriber] Extracting lossless audio...")
         cmd = [
-            "ffmpeg", "-y", "-i", video_path,
+            "ffmpeg", "-y", "-threads", "1", "-i", video_path,
             "-vn", "-acodec", "pcm_s16le", "-ar", "16000", "-ac", "1",
             audio_path
         ]
-        subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        result = subprocess.run(cmd, capture_output=True, text=True)
+        if result.returncode != 0:
+            print(f"[Transcriber] FFmpeg error: {result.stderr}")
+            # If it failed, check if the file was created. Sometimes it fails if there's no audio track.
+            if not os.path.exists(audio_path):
+                raise RuntimeError(f"FFmpeg failed to extract audio: {result.stderr[-500:]}")
         return audio_path
 
     def transcribe(self, audio_path: str) -> List[Dict[str, Any]]:

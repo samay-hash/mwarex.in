@@ -39,7 +39,11 @@ router.get("/", userAuth, (req, res) => VideoController.getAll(req, res));
 router.get("/pending", userAuth, (req, res) => VideoController.getPending(req, res));
 router.get("/youtube-status", userAuth, (req, res) => VideoController.youtubeStatus(req, res));
 router.post("/store-youtube-tokens", userAuth, (req, res) => VideoController.storeYoutubeTokens(req, res));
+const multerLocal = multer({ dest: '/tmp/mwarex_audio/' });
+
 router.post("/:id/approve", userAuth, (req, res) => VideoController.approve(req, res));
+router.post("/:id/publish-clip", userAuth, (req, res) => VideoController.publishClip(req, res));
+router.post("/:id/export-edit", userAuth, multerLocal.single("audio"), (req, res) => VideoController.exportEdit(req, res));
 router.post("/:id/ai-callback", aiAuth, (req, res) => VideoController.aiCallback(req, res));
 router.post("/:id/clips-callback", aiAuth, (req, res) => VideoController.clipsCallback(req, res));
 router.post("/:id/ai-progress", aiAuth, (req, res) => VideoController.aiProgress(req, res));

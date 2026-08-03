@@ -113,6 +113,32 @@ class VideoController extends BaseController {
         }
     }
 
+    async publishClip(req, res) {
+        try {
+            const result = await this.videoService.publishClip(
+                req.params.id,
+                req.userId,
+                req.io
+            );
+            return this.success(res, result);
+        } catch (err) {
+            return this.handleError(res, err);
+        }
+    }
+
+    async exportEdit(req, res) {
+        try {
+            const result = await this.videoService.exportEdit(
+                req.params.id,
+                req.userId,
+                req.file // The uploaded audio file
+            );
+            return this.success(res, result);
+        } catch (err) {
+            return this.handleError(res, err);
+        }
+    }
+
     /**
      * POST /api/v1/videos/register-s3
      * Called by the frontend AFTER a successful direct S3 upload.
