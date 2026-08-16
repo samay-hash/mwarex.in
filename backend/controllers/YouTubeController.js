@@ -1,4 +1,4 @@
-const CreatorDNA = require("../models/creatorDNA");
+const CreatorDNA = require("../models/CreatorDNA");
 const AIService = require("../services/AIService");
 const { getOAuth2Client } = require("../tools/googleClient");
 const { google } = require("googleapis");
