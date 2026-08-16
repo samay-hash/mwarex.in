@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { Sparkles, ArrowRight, CheckCircle2 } from "lucide-react";
 import { waitlistAPI } from "@/lib/api";
@@ -99,9 +100,9 @@ export function WaitlistForm() {
         className="mt-4 flex items-center justify-center gap-2 text-xs font-medium text-white/50"
       >
         <div className="flex -space-x-2">
-          <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-gray-700 to-gray-500 border border-[#111111]" />
-          <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-[#C8A97E] to-yellow-600 border border-[#111111]" />
-          <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-blue-700 to-blue-500 border border-[#111111]" />
+          <Image src="/waitlist/avatar1.png" alt="Creator 1" width={24} height={24} className="w-6 h-6 rounded-full border border-[#111111] object-cover" />
+          <Image src="/waitlist/avatar2.png" alt="Creator 2" width={24} height={24} className="w-6 h-6 rounded-full border border-[#111111] object-cover" />
+          <Image src="/waitlist/avatar3.png" alt="Creator 3" width={24} height={24} className="w-6 h-6 rounded-full border border-[#111111] object-cover" />
         </div>
         <span>
           Join <span className="text-[#C8A97E] font-bold">{count.toLocaleString()}</span> creators already waiting.
