@@ -55,26 +55,26 @@ export function WaitlistForm() {
           onSubmit={handleSubmit}
           className="relative"
         >
-          <div className="flex items-center bg-[#1A1A1A] border border-white/10 rounded-full p-1.5 focus-within:border-[#C8A97E]/50 focus-within:ring-1 focus-within:ring-[#C8A97E]/50 transition-all duration-300">
+          <div className="flex items-center bg-[#1A1A1A] border border-white/10 rounded-full p-1 sm:p-1.5 focus-within:border-[#C8A97E]/50 focus-within:ring-1 focus-within:ring-[#C8A97E]/50 transition-all duration-300">
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your email to get early access..."
+              placeholder="Enter your email..."
               required
-              className="flex-1 bg-transparent border-none outline-none px-4 text-white placeholder-white/40 text-sm font-medium"
+              className="flex-1 min-w-0 bg-transparent border-none outline-none px-3 sm:px-4 text-white placeholder-white/40 text-xs sm:text-sm font-medium"
             />
             <button
               type="submit"
               disabled={loading}
-              className="bg-[#C8A97E] text-[#111111] px-6 py-2.5 rounded-full font-bold text-sm flex items-center gap-2 hover:bg-[#D4B88E] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="bg-[#C8A97E] flex-shrink-0 text-[#111111] px-4 sm:px-6 py-2 sm:py-2.5 rounded-full font-bold text-xs sm:text-sm flex items-center gap-1 sm:gap-2 hover:bg-[#D4B88E] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? (
                 <div className="w-4 h-4 border-2 border-[#111111] border-t-transparent rounded-full animate-spin" />
               ) : (
                 <>
                   Join Waitlist
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 </>
               )}
             </button>
