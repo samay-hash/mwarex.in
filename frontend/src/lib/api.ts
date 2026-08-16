@@ -290,3 +290,9 @@ export const supportAPI = {
 export const RAZORPAY_KEY_ID = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_live_S9APuUYcsOCve3";
 
 export default api;
+
+// Waitlist API
+export const waitlistAPI = {
+  join: (data: { email: string }) => api.post("/api/v1/waitlist", data),
+  getCount: () => api.get("/api/v1/waitlist/count"),
+};

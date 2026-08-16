@@ -16,7 +16,6 @@ import { ComparisonSection } from "@/components/comparison-section";
 import { CrackedButton } from "@/components/cracked-button";
 import { FounderSection } from "@/components/founder-section";
 import { ClientShell } from "@/components/client-shell";
-
 export default function LandingPage() {
   return (
     <ClientShell>

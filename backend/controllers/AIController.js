@@ -36,7 +36,7 @@ class AIController extends BaseController {
     async analyzeScore(req, res) {
         try {
             const { title, description } = req.body;
-            const score = this.aiService.analyzeScore(title, description);
+            const score = await this.aiService.analyzeScore(title, description);
             return this.success(res, { score });
         } catch (err) {
             return this.handleError(res, err);

@@ -98,6 +98,7 @@ app.use("/api/v1/ai", aiRoutes);
 app.use("/api/editor", editorRoutes);
 app.use("/api/v1", inviteRoutes);
 app.use("/api/v1/payment", paymentRoutes);
+app.use("/api/v1/waitlist", require("./routes/waitlist"));
 app.use("/api/v1/payment/crypto", cryptoRoutes);
 app.use("/api/v1/certificates", certificateRoutes);
 app.use("/api/v1/rooms", require("./routes/room"));

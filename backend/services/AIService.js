@@ -4,7 +4,7 @@ const PYTHON_API_URL = process.env.PYTHON_API_URL || "http://localhost:5001";
 
 class AIService {
     constructor() {
-        this.useMock = false; // REAL AI — no more mocks!
+        this.useMock = false;
     }
 
     /**

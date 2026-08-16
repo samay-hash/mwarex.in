@@ -9,6 +9,7 @@ import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { SiteHeader } from './site-header';
 import { MagicalDust } from './magical-dust';
+import { WaitlistForm } from './waitlist-form';
 
 export function HeroSection() {
     const [menuOpen, setMenuOpen] = useState(false);
@@ -176,23 +177,13 @@ export function HeroSection() {
                         >
                             AUTOMATE YOUR CONTENT. AMPLIFY YOUR REACH
                         </motion.p>
-                        
-                        {/* CTA row (retained) */}
-                        <motion.div
+                        <motion.div 
                             initial={{ opacity: 0, y: 15, filter: "blur(12px)" }}
                             animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                             transition={{ duration: 1, delay: 0.85, ease: [0.16, 1, 0.3, 1] }}
-                            className="flex items-center gap-6"
+                            className="w-full max-w-sm mt-2"
                         >
-                            <Link href="/auth/signup">
-                                <div className="group flex items-center gap-3 px-6 py-3 border border-white/20 text-white/85 hover:bg-white hover:text-black text-[9px] font-bold tracking-[0.22em] uppercase transition-all duration-300">
-                                    Start Free Trial
-                                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform duration-300" />
-                                </div>
-                            </Link>
-                            <Link href="/auth/signin" className="text-[9px] font-bold tracking-[0.22em] uppercase text-white/40 hover:text-white/70 transition-colors">
-                                Sign In
-                            </Link>
+                            <WaitlistForm />
                         </motion.div>
                     </div>
 
